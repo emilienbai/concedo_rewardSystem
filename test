@@ -1,0 +1,34 @@
+- name: deployActionCharge
+  job:
+    deploy:
+      contract: Actions/ActionCharge.sol
+      instance: all
+
+- name: deployActionEndow
+  job: 
+    deploy:
+      contract: Actions/ActionEndow.sol
+      instance: all
+
+- name: deployActionLockActions
+  job:
+    deploy:
+      contract: Actions/ActionLockActions.sol
+      instance: all
+
+- name: deployActionUnlockAction
+  job: 
+    deploy: Actions/ActionUnlockActions.sol
+    instance: all
+
+- name: deployActionSetActionPermission
+  job: 
+    deploy: 
+      contract: Actions/ActionSetActionPermission.sol
+      instance: all
+
+- name: deployActionSetUserPermission
+  job: 
+    deploy: 
+      contract: Actions/ActionSetUserPermission.sol
+      instance: all

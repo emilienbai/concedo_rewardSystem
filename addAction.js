@@ -16,10 +16,10 @@ function getActionContractAddress(contractName, callback){
 function addAction(actionName, deployName, callback){
   let actionAdress =  contractData[deployName];
   let addr = utils.hexToString(actionAdress);
-  let params = "execute(bytes32,bytes20) " + actionName + " " + addr;
+  let params = "execute(address,bytes32,bytes20)";
 
   actionManagerContract.execute(  "addaction", 
-                          params,
+                          params, actionName, addr,
                           (error, result)=>{
                             if(error) console.error(error);
                             if(!result) callback(actionName, false)

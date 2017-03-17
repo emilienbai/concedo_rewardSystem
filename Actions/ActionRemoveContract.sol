@@ -4,7 +4,7 @@ import "../Doug/Doug.sol";
 // Remove contract.
 contract ActionRemoveContract is Action {
 
-    function execute(bytes32 name) returns (bool) {
+    function execute(address sender, bytes32 name) returns (bool) {
         if(!isActionManager()){
             return false;
         }

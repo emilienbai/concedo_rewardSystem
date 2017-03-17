@@ -6,7 +6,7 @@ import "../Interfaces/ContractProvider.sol";
 contract ActionRemoveUser is Action {
     event ShoutLog(bytes32 message, address addr);
 
-    function execute(bytes20 bytesAddress) returns (bool){
+    function execute(address sender, bytes20 bytesAddress) returns (bool){
         address userAddress = address(bytesAddress);
         if(!isActionManager()){
             return false;
@@ -34,7 +34,7 @@ contract ActionRemoveUser is Action {
     }
 
     //todoClean
-    function test(){
+    function test(address sender){
         ShoutLog("  Hello remove1", this);
         ContractProvider dg = ContractProvider(DOUG);
         address udb = dg.contracts("users");

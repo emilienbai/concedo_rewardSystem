@@ -4,7 +4,7 @@ import "./ActionDb.sol";
 // be done by overwriting this action with one that allows it.
 contract ActionRemoveAction is Action {
 
-    function execute(bytes32 name) returns (bool) {
+    function execute(address sender, bytes32 name) returns (bool) {
         if(!isActionManager()){
             return false;
         }

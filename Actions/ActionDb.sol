@@ -69,7 +69,7 @@ contract ActionAddAction is Action {
 
     event ShoutLog(address indexed addr, bytes32 indexed message);
 
-    function execute(bytes32 name, bytes20 byteAddr) returns (bool) {
+    function execute(address sender, bytes32 name, bytes20 byteAddr) returns (bool) {
         ShoutLog(this, "  Hello World");
 
         if(!isActionManager()){

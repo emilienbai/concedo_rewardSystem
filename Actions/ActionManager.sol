@@ -1,6 +1,6 @@
 import "../Doug/DougEnabled.sol";
 import "../Interfaces/ContractProvider.sol";
-import "../Permissions.sol";
+import "../Interfaces/Permissionner.sol";
 import "./ActionDb.sol";
 
 contract ActionManager is DougEnabled {
@@ -12,9 +12,6 @@ contract ActionManager is DougEnabled {
     bool success;
   }
 
-  struct ArgStruct {
-    bytes byteArray;
-  }
 
   event ShoutLog(address indexed addr, bytes32 indexed action, bool indexed success);
 
@@ -41,13 +38,7 @@ contract ActionManager is DougEnabled {
     permToLock = 255;    
   }
 
-  function useless() returns(address){
-    return ContractProvider(DOUG).contracts("actiondb");
-  }
-
-  function execute(bytes32 actionName, bytes data) returns (bool) {
-    mapping(uint => ArgStruct) argStructs;
-
+  function execute(bytes32 actionName, bytes data0, bytes data1, bytes data2, bytes data3, bytes data4) returns (bool) {
 
     address actionDb = ContractProvider(DOUG).contracts("actiondb");
     if (actionDb == 0x0){
@@ -65,7 +56,7 @@ contract ActionManager is DougEnabled {
     address pAddr = ContractProvider(DOUG).contracts("perms");
     // Only check permissions if there is a permissions contract.
     if(pAddr != 0x0){
-      Permissions p = Permissions(pAddr);
+      Permissionner p = Permissionner(pAddr);
 
       // First we check the permissions of the account that's trying to execute the action.
       uint8 perm = p.perms(msg.sender);
@@ -89,28 +80,20 @@ contract ActionManager is DougEnabled {
 
     // Set this as the currently active action.
     activeAction = actn;
-    // TODO keep up with return values from generic calls.
-    // Just assume it succeeds for now (important for logger).
 
-    uint sliceCount = 0;
-   
-    argStructs[0].byteArray.length = 0;
-    for (uint i=0;i < data.length; i++){
-      if (data[i] != ' '){
-        argStructs[sliceCount].byteArray.push(data[i]);
-      } else {
-        sliceCount ++;
-        argStructs[sliceCount].byteArray.length = 0;
-      }
+   bool result = true; 
+    
+    if(data4.length != 0){
+        result = actn.call(bytes4(sha3(data0)), msg.sender, data1, data2, data3, data4);
+    } else if(data3.length != 0){
+        result = actn.call(bytes4(sha3(data0)), msg.sender, data1, data2, data3);
+    } else if(data2.length != 0){
+        result = actn.call(bytes4(sha3(data0)), msg.sender, data1, data2);
+    } else if(data1.length != 0){
+        result = actn.call(bytes4(sha3(data0)), msg.sender, data1);
+    } else if(data0.length != 0){
+        result = actn.call(bytes4(sha3(data0)), msg.sender);
     }
-    bool result = true;
-    if (sliceCount == 0)
-      result = actn.call(bytes4(sha3(argStructs[0].byteArray)));
-    else if (sliceCount == 1)
-      result = actn.call(bytes4(sha3(argStructs[0].byteArray)), argStructs[1].byteArray);
-    else
-      result = actn.call(bytes4(sha3(argStructs[0].byteArray)), argStructs[1].byteArray, argStructs[2].byteArray);
-      //todo add slices
 
     activeAction = 0x0;
     _log(actionName,result);

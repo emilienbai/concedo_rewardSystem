@@ -36,6 +36,7 @@ contract UserDb is Validee {
     }
     
     function removeUser(address userAddress) returns (bool){
+        ShoutLog("  Calling removeUser");
         if(!validate()){
             return false;
         }

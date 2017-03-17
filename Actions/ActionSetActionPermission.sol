@@ -5,7 +5,7 @@ import "../Interfaces/ContractProvider.sol";
 // The set action permission. This is the permission level required to run the action.
 contract ActionSetActionPermission is Action {
 
-    function execute(bytes32 name, uint8 perm) returns (bool) {
+    function execute(address sender, bytes32 name, uint8 perm) returns (bool) {
         if(!isActionManager()){
             return false;
         }

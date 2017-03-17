@@ -7,10 +7,10 @@ contract Permissions is Validee {
     mapping (address => uint8) public perms;
 
     function setPermission(address addr, uint8 perm) returns (bool) {
-    if (!validate()){
-      return false;
-    }
-    perms[addr] = perm;
+      if (!validate()){
+        return false;
+      }
+      perms[addr] = perm;
     }
 
 }

@@ -30,7 +30,7 @@ var actionManagerContract = contractsManager.newContractFactory(actionManagerAbi
 
 
 /*Log handling*/
-//actionManagerContract.ShoutLog(startCallback, ActionManagerLogCallback);
+actionManagerContract.ShoutLog(startCallback, ActionManagerLogCallback);
 
 function startCallback(error, eventSub){
     if(error){
@@ -53,7 +53,7 @@ var actionDbAbi = JSON.parse(fs.readFileSync("./abi/" + actionDbContractAdress))
 
 var actionDbContract = contractsManager.newContractFactory(actionDbAbi).at(actionDbContractAdress);
 
-//actionDbContract.ShoutLog(startCallback, logActionDbCallback);
+actionDbContract.ShoutLog(startCallback, logActionDbCallback);
 
 /*Log handling*/
 function logActionDbCallback(error, event){
@@ -99,31 +99,26 @@ function getActionContractAddress(contractName, callback){
 
 
 
-function addUser(_address, _pseudo, _perm){
-    let address = _address;
-    let pseudo = _pseudo;
+function addUser(address, pseudo, perm, data){
     let stringAddr = utils.hexToString(address);
-    let perm = _perm;
 
-    //let params = "test()";
-    let params = "execute(bytes20,bytes32,uint8) " + stringAddr + " " + pseudo + " " + perm;
+    let params = "execute(address,bytes20,bytes32,uint8)";// + stringAddr + " " + pseudo + " " + perm;
 
     actionManagerContract.execute( "adduser", 
-                          params,
+                          params, stringAddr, pseudo, perm, data,
                           (error, result)=>{
                             if(error) console.error(error);
                             console.log(result);
                           })
 }
 
-function removeUser(_address){
-    let address = _address;
+function removeUser(address){
     let stringAddress = utils.hexToString(address);
 
-    let params = "execute(bytes20) " + stringAddress;
+    let params = "execute(address,bytes20)";
 
     actionManagerContract.execute( "removeuser", 
-                                    params, 
+                                    params, stringAddress, 
                                     (error, result)=>{
                                         if(error) console.error(error);
                                         console.log(result);

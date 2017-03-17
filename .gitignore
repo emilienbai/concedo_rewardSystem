@@ -1,0 +1,9 @@
+#Editor
+.vscode/
+
+#bin  Chain output
+abi/
+jobs_output.json
+
+#node
+node_modules/

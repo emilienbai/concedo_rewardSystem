@@ -1,0 +1,3 @@
+rm abi/*
+eris pkgs do -c concedo_chain -a $1
+

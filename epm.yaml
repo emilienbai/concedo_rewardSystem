@@ -1,0 +1,138 @@
+jobs:
+
+- name: deployDoug
+  job:
+    deploy:
+      contract: Doug/Doug.sol
+      instance: all
+      wait: true
+
+- name: deployActionDb
+  job: 
+    deploy:
+      contract: Actions/ActionDb.sol
+      instance: all
+      wait: true   
+
+- name: storeActionDb
+  job:
+    call:
+      destination: $deployDoug
+      abi: Doug
+      function: addContract
+      data:
+        - "actiondb"
+        - $deployActionDb
+      wait: true 
+
+- name: deployActionManager
+  job:
+    deploy:
+      contract: Actions/ActionManager.sol
+      instance: all
+      wait: true
+      
+- name: storeActionManager
+  job:
+    call:
+      destination: $deployDoug
+      abi: Doug
+      function: addContract
+      data:
+        - "actions"
+        - $deployActionManager
+      wait: true
+
+- name: deployBank
+  job:
+    deploy: 
+      contract: Bank.sol
+      instance: all
+      wait: true
+
+- name: storeBank
+  job:
+    call:
+      destination: $deployDoug
+      abi: Doug
+      function: addContract
+      data:
+        - "bank"
+        - $deployBank
+      wait: true
+
+- name: deployPermissions
+  job:
+    deploy: 
+      contract: Permissions.sol
+      instance: all
+      wait: true   
+
+- name: storePermissions
+  job:
+    call:
+      destination: $deployDoug
+      abi: Doug
+      function: addContract
+      data:
+        - "perms"
+        - $deployPermissions
+      wait: true
+
+- name: deployUsers
+  job:
+    deploy:
+      contract: UserDb.sol
+      instance: all
+      wait: true
+
+- name: storeUsers
+  job:
+    call:
+      destination: $deployDoug
+      abi: Doug
+      function: addContract
+      data:
+        - "users"
+        - $deployUsers
+      wait: true
+
+- name: deployOffers
+  job:
+    deploy: 
+      contract: OfferDb.sol
+      install: all
+      wait: true
+
+- name: storeOffers
+  job:
+    call: 
+      destination: $deployDoug
+      abi: Doug
+      function: addContract
+      data: 
+        - "offers"
+        - $deployOffers
+      wait: true
+
+#Deploy Actions
+- name: deployActionRemoveAction
+  job:
+    deploy:
+      contract: Actions/ActionRemoveAction.sol
+      instance: all
+      wait: true
+
+- name: deployActionAddUser
+  job: 
+    deploy: 
+      contract: Actions/ActionAddUser.sol
+      instance: all
+      wait: true
+
+- name: deployActionRemoveUser
+  job:
+    deploy:
+      contract: Actions/ActionRemoveUser.sol
+      instance: all
+      wait: true

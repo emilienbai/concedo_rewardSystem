@@ -82,7 +82,7 @@ jobs:
 - name: deployUsers
   job:
     deploy:
-      contract: UserDb.sol
+      contract: Users/UserDb.sol
       instance: all
       wait: true
 
@@ -95,6 +95,14 @@ jobs:
       data:
         - "users"
         - $deployUsers
+      wait: true
+
+#Deploy user for access to abi; ->TODO just write ABI manually later
+- name: deployUser
+  job:
+    deploy:
+      contract: Users/User.sol
+      instance: all
       wait: true
 
 - name: deployOffers

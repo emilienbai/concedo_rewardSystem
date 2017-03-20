@@ -36,14 +36,5 @@ contract ActionRemoveUser is Action {
     //todoClean
     function test(address sender){
         ShoutLog("  Hello remove1", this);
-        ContractProvider dg = ContractProvider(DOUG);
-        address udb = dg.contracts("users");
-        if(udb == 0x0){
-            ShoutLog("  PasUdb", this);
-            return;
-        }
-        ShoutLog("  Hello remove2", udb);
-        var userDb = Users(udb);
-        userDb.test();
     }
 }

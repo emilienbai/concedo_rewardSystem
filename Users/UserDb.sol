@@ -1,24 +1,5 @@
-import "./Validee.sol";
-
-contract User{
-    
-    address owner;
-    bytes32 pseudo;
-    bytes encryptedData;
-    
-    function User(address _owner, bytes32 _pseudo){
-        owner = _owner;
-        pseudo = _pseudo;
-    }
-    
-    function setData (bytes _encryptedData){
-        encryptedData = _encryptedData;
-    }
-    
-    function remove(){
-        selfdestruct(owner);
-    }
-}
+import "../Validee.sol";
+import "./User.sol";
 
 contract UserDb is Validee {
     mapping (address => User) public users;
@@ -31,7 +12,9 @@ contract UserDb is Validee {
             return 0x0;
         }
         address newUser = address(new User(userAddress, pseudo));
-        users[userAddress] = User(newUser);
+        if(newUser != 0x0){
+            users[userAddress] = User(newUser);
+        }
         return newUser;
     }
     

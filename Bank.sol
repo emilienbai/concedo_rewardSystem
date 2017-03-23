@@ -6,6 +6,9 @@ contract Bank is Validee {
 
   // Issue coins for an address.
   function issue(address addr, uint amount) returns (bool) {
+    if(!validate("confirmoffer")){
+      return false;
+    }
     balance[addr] += amount;
     return true;
   }

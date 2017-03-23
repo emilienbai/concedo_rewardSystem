@@ -4,15 +4,10 @@ contract User{
     bytes32 pseudo;
     bytes encryptedData;
     
-    function User(address _owner, bytes32 _pseudo){
+    function User(address _owner, bytes32 _pseudo, bytes _encryptedData){
         owner = _owner;
         pseudo = _pseudo;
-    }
-    
-    function setData (bytes _encryptedData){
-        if(msg.sender == owner){
-            encryptedData = _encryptedData;
-        }
+        encryptedData = _encryptedData;
     }
 
     function get() returns(address _owner, bytes32 _pseudo, bytes _encryptedData){

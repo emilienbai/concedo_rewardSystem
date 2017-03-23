@@ -4,7 +4,7 @@ import "../Interfaces/ContractProvider.sol";
 // Unlock actions. Makes it possible for everyone to run actions.
 contract ActionUnlockActions is Action {
 
-    function execute() returns (bool) {
+    function execute(address sender, address addr, bytes32 str, uint intVal, bytes data) returns (bool) {
         if(!isActionManager()){
             return false;
         }

@@ -94,23 +94,14 @@ jobs:
       function: addContract
       data:
         - "users"
-        - $deployUsers
-      wait: true
-
-#Deploy user for access to abi; ->TODO just write ABI manually later
-- name: deployUser
-  job:
-    deploy:
-      contract: Users/User.sol
-      instance: all
-      wait: true
+        - $deployUsers        
 
 - name: deployOffers
   job:
     deploy: 
-      contract: OfferDb.sol
-      install: all
-      wait: true
+      contract: Offer/OfferDb.sol
+      instance: all
+      wait: true      
 
 - name: storeOffers
   job:
@@ -123,7 +114,25 @@ jobs:
         - $deployOffers
       wait: true
 
-#Deploy Actions
+- name: deployActiveAction 
+  job:
+    deploy:
+      contract: Actions/ActiveAction.sol
+      instance: all
+      wait: true
+
+- name: storeActiveAction
+  job: 
+    call:
+      destination: $deployDoug
+      abi: Doug
+      function: addContract
+      data:
+        - "activeaction"
+        - $deployActiveAction
+      wait: true
+
+ #Deploy Actions
 - name: deployActionRemoveAction
   job:
     deploy:
@@ -138,9 +147,46 @@ jobs:
       instance: all
       wait: true
 
+
 - name: deployActionRemoveUser
   job:
     deploy:
       contract: Actions/ActionRemoveUser.sol
       instance: all
       wait: true
+
+- name: deployActionAddOffer
+  job:
+    deploy:
+      contract: Actions/ActionAddOffer.sol
+      instance: all
+      wait: true
+
+- name: deployActionRemoveOffer
+  job:
+    deploy:
+      contract: Actions/ActionRemoveOffer.sol
+      instance: all
+      wait: true
+
+- name: deployActionCommitToOffer
+  job: 
+    deploy:
+      contract: Actions/ActionCommitToOffer.sol
+      instance: all
+      wait: true
+
+- name: deployActionClaimOffer
+  job:
+    deploy: 
+      contract: Actions/ActionClaimOffer.sol
+      instance: all
+      wait: true
+
+- name: deployActionConfirmOffer
+  job:
+    deploy:
+      contract: Actions/ActionConfirmOffer.sol
+      instance: all      
+      wait: true
+

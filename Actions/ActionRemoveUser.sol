@@ -6,8 +6,7 @@ import "../Interfaces/ContractProvider.sol";
 contract ActionRemoveUser is Action {
     event ShoutLog(bytes32 message, address addr);
 
-    function execute(address sender, bytes20 bytesAddress) returns (bool){
-        address userAddress = address(bytesAddress);
+    function execute(address sender, address userAddress, bytes32 str, uint intVal, bytes data) returns (bool){
         if(!isActionManager()){
             return false;
         }

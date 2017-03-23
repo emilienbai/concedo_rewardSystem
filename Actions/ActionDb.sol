@@ -69,7 +69,7 @@ contract ActionAddAction is Action {
 
     event ShoutLog(address indexed addr, bytes32 indexed message);
 
-    function execute(address sender, bytes32 name, bytes20 byteAddr) returns (bool) {
+    function execute(address sender, address addr, bytes32 name, uint intVal, bytes data) returns (bool) {
         ShoutLog(this, "  Hello World");
 
         if(!isActionManager()){
@@ -81,7 +81,7 @@ contract ActionAddAction is Action {
             ShoutLog(DOUG, " No ActionDB");
             return false;
         }
-        address addr = address(byteAddr);
+
         return ActionDb(adb).addAction(name, addr);
     }
 

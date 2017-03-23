@@ -1,5 +1,7 @@
 // requires
-var addAction = require('./addAction');
+var ActionManager = require('./ActionManager');
+var UserManager = require('./UserManager');
+var OfferManager = require('./OfferManager');
 var fs = require ('fs');
 var erisC = require('eris-contracts');
 var utils = require('./Utils');
@@ -18,19 +20,20 @@ var contractData = require('./jobs_output.json');
 var actionManagerContractAddress = contractData["deployActionManager"];
 var actionManagerAbi = JSON.parse(fs.readFileSync("./abi/" + actionManagerContractAddress));
 
-// properly instantiate the contract objects manager using the erisdb URL
+// properly instantiate the contract objects manager using the )erisdb URL
 // and the account data (which is a temporary hack)
 var accountData = require('../../chains/concedo_chain/accounts.json');
-var contractsManager = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_full_000);
+var contractsManagerFull = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_full_000);
+var contractManagerPart = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_000);
 
 // properly instantiate the contract objects using the abi and address
 
 /***************************** Action Manager *********************************/
-var actionManagerContract = contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
+var actionManagerContract = contractsManagerFull.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
 
 
 /*Log handling*/
-actionManagerContract.ShoutLog(startCallback, ActionManagerLogCallback);
+//actionManagerContract.ShoutLog(startCallback, ActionManagerLogCallback);
 
 function startCallback(error, eventSub){
     if(error){
@@ -51,9 +54,9 @@ function ActionManagerLogCallback(error, event){
 var actionDbContractAdress = contractData["deployActionDb"];
 var actionDbAbi = JSON.parse(fs.readFileSync("./abi/" + actionDbContractAdress));
 
-var actionDbContract = contractsManager.newContractFactory(actionDbAbi).at(actionDbContractAdress);
+var actionDbContract = contractsManagerFull.newContractFactory(actionDbAbi).at(actionDbContractAdress);
 
-actionDbContract.ShoutLog(startCallback, logActionDbCallback);
+//actionDbContract.ShoutLog(startCallback, logActionDbCallback);
 
 /*Log handling*/
 function logActionDbCallback(error, event){
@@ -62,11 +65,11 @@ function logActionDbCallback(error, event){
 }
 
 /******************************ActionAddUser***********************************/
-var AddUserActionContractAddress = contractData["deployActionAddUser"];
+/*var AddUserActionContractAddress = contractData["deployActionAddUser"];
 var AddUserActionAbi = JSON.parse(fs.readFileSync("./abi/" + AddUserActionContractAddress));
-var AddUserActionContract = contractsManager.newContractFactory(AddUserActionAbi).at(AddUserActionContractAddress);
+var AddUserActionContract = contractsManagerFull.newContractFactory(AddUserActionAbi).at(AddUserActionContractAddress);*/
 
-AddUserActionContract.ShoutLog(startCallback, logAddUserActionCallback);
+//AddUserActionContract.ShoutLog(startCallback, logAddUserActionCallback);
 
 /*Log handling*/
 function logAddUserActionCallback(error, event){
@@ -74,22 +77,22 @@ function logAddUserActionCallback(error, event){
 }
 
 /****************************ActionRemoveUser**********************************/
-var RemoveUserActionContractAddress = contractData["deployActionRemoveUser"];
+/*var RemoveUserActionContractAddress = contractData["deployActionRemoveUser"];
 var RemoveUserActionAbi = JSON.parse(fs.readFileSync("./abi/" + RemoveUserActionContractAddress));
-var RemoveUserActionContract = contractsManager.newContractFactory(RemoveUserActionAbi).at(RemoveUserActionContractAddress);
+var RemoveUserActionContract = contractsManagerFull.newContractFactory(RemoveUserActionAbi).at(RemoveUserActionContractAddress);*/
 
-RemoveUserActionContract.ShoutLog(startCallback, logRemoveUserActionCallback);
+//RemoveUserActionContract.ShoutLog(startCallback, logRemoveUserActionCallback);
 /*Log handling*/
 function logRemoveUserActionCallback(error, event){
     console.log("RemoveUserActionLog:: Addr:" + event.args.addr + " Message: " + utils.hexToString(event.args.message));
 }
 
 /***********************************UserDb************************************/
-var UserDbContractAddress = contractData["deployUsers"];
+/*var UserDbContractAddress = contractData["deployUsers"];
 var UserDbAbi = JSON.parse(fs.readFileSync("./abi/" + UserDbContractAddress));
-var UserDbContract = contractsManager.newContractFactory(UserDbAbi).at(UserDbContractAddress);
+var UserDbContract = contractsManagerFull.newContractFactory(UserDbAbi).at(UserDbContractAddress);*/
 
-UserDbContract.ShoutLog(startCallback, logUserDbCallback);
+//UserDbContract.ShoutLog(startCallback, logUserDbCallback);
 
 /*Log handling*/
 function logUserDbCallback(error, event){
@@ -97,83 +100,47 @@ function logUserDbCallback(error, event){
 }
 
 /********************************User*****************************************/
-var UserContractAddress = contractData["deployUser"];
-var UserAbi = JSON.parse(fs.readFileSync("./abi/" + UserContractAddress));
-//var UserContract = contractsManager.newContractFactory(UserAbi).at(UserContractAddress);
+//var UserContractAddress = contractData["deployUser"];
+//var UserAbi = JSON.parse(fs.readFileSync("./abi/" + UserContractAddress));
+//var UserContract = contractsManagerFull.newContractFactory(UserAbi).at(UserContractAddress);
 
+/********************************OfferDB**************************************/
+var OfferDbcontractAddress = contractData["deployOffers"];
+var offerDbAbi = JSON.parse(fs.readFileSync("./abi/" + OfferDbcontractAddress));
+var OfferDbContract = contractsManagerFull.newContractFactory(offerDbAbi).at(OfferDbcontractAddress);
 
-/*************************** Add Actions **************************************/
+OfferDbContract.ShoutLog(startCallback, logOfferDbCallback);
 
-function getActionContractAddress(contractName, callback){
-  actionDbContract.actions(contractName, 
-    function(error, result){
-      if(error)
-        console.error(error);
-      callback(result);
-  });
+/*Log handling*/
+function logOfferDbCallback(error, event){
+    console.log("offerDBLog:: Addr: " + event.args.addr + " Message: " + utils.hexToString(event.args.msg) );
 }
 
 
+/****************************ActionAddOffer**********************************/
+var AddOfferActionContractAddress = contractData["deployActionAddOffer"];
+var AddOfferActionAbi = JSON.parse(fs.readFileSync("./abi/" + AddOfferActionContractAddress));
+var AddOfferActionContract = contractsManagerFull.newContractFactory(AddOfferActionAbi).at(AddOfferActionContractAddress);
 
-function addUser(address, pseudo, callback){
-    let stringAddr = utils.hexToString(address);
+//AddOfferActionContract.ShoutLog(startCallback, logAddOfferActionCallback);
 
-    let params = "execute(address,bytes20,bytes32)";
-
-    actionManagerContract.execute( "adduser", 
-                          params, stringAddr, pseudo,
-                          (error, result)=>{
-                            if(error) console.error(error);
-                            console.log(result);
-                            callback(result);
-                          })
+/*Log handling*/
+function logAddOfferActionCallback(error, event){
+    console.log("AddOfferActionLog:: Addr:" + event.args.addr + " Message: " + utils.hexToString(event.args.message));
 }
 
-function removeUser(address){
-    let stringAddress = utils.hexToString(address);
+/***************************ActionCommitToOffer****************************/
+var CommitToOfferActionContractAddress = contractData["deployActionCommitToOffer"];
+var CommitToOfferActionAbi = JSON.parse(fs.readFileSync("./abi/" + CommitToOfferActionContractAddress));
+var CommitToOfferActionContract = contractsManagerFull.newContractFactory(CommitToOfferActionAbi).at(CommitToOfferActionContractAddress);
 
-    let params = "execute(address,bytes20)";
+//CommitToOfferActionContract.ShoutLog(startCallback, logCommitToOfferActionCallback);
 
-    actionManagerContract.execute( "removeuser", 
-                                    params, stringAddress, 
-                                    (error, result)=>{
-                                        if(error) console.error(error);
-                                        console.log(result);
-                                    })
+/*Log handling*/
+function logCommitToOfferActionCallback(error, event){
+    console.log("CommitToOfferActionLog:: Addr:" + event.args.addr + " Message: " + utils.hexToString(event.args.msg));
 }
 
-function setUserData(address, data, callback){
-    getUserAddress(address, (result)=>{
-        let UserContract = contractsManager.newContractFactory(UserAbi).at(result);
-        UserContract.setData(data, (err, res)=>{
-            if(err) console.error(err);
-            console.log(result);
-            UserContract.get((error, res2)=>{
-                if(error) console.error(error)
-                console.log(res2);
-                callback(res2)
-            })
-        })
-        
-    })
-
-}
-
-function test(){
-   addUser(accountData.concedo_chain_full_000.address, "mimilleFull", (result)=>{
-       getUserAddress(accountData.concedo_chain_full_000.address, (res)=>{
-           setUserData(accountData.concedo_chain_full_000.address, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.", (r)=>{});
-       });
-   });
-
-}
-
-
-function test2(){
-    UserDbContract.test(()=>{
-
-    })
-}
 
 function getUserAddress(address, callback){
     UserDbContract.users(address, function(error, result){
@@ -184,24 +151,56 @@ function getUserAddress(address, callback){
     })
 }
 
-//addAction.addAll(actionDbContract, actionManagerContract, contractData);
+var full = accountData.concedo_chain_full_000;
+var part0 = accountData.concedo_chain_participant_000;
+var part1 = accountData.concedo_chain_participant_001;
 
-//addUser(accountData.concedo_chain_full_000.address, "mimilleFull");//
-//addUser(accountData.concedo_chain_participant_000.address, "mimillePart");
 
-//getUserAddress(accountData.concedo_chain_full_000.address, function(res){});
-//getUserAddress(accountData.concedo_chain_participant_000.address);
-
-//setUserData(accountData.concedo_chain_full_000.address, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
-
-//removeUser(accountData.concedo_chain_full_000.address);
+/*Actions*/
 
 /*
-getActionContractAddress("adduser", function(res){
-    console.log(res);
-});*/
+var actionManager = new ActionManager.ActionManager(contractsManagerFull);
+actionManager.addAllAction();
+*/
+
+/*
+
+var userManager = new UserManager.UserManager(contractsManagerFull);
+let user1 = new UserManager.User("Name", "Surname", "Address", "Phone", "Email");
+
+userManager.addUser(full.address, "ful l01", user1.encrypt(), UserManager.logAddUser);
+userManager.getUserAddress(full.address, UserManager.logGetUserAddress);
+userManager.removeUser(full.address, UserManager.logRemoveUser);
+userManager.getUserAddress(full.address, UserManager.logGetUserAddress);
+*/
 
 
-//addUser();
-test();
-//test2();
+/*
+var offerManagerFull = new OfferManager.OfferManager(contractsManagerFull);
+//var offerManagerPart0 = new OfferManager.OfferManager(erisdbURL, part0);
+let aaaOffer =  new OfferManager.Offer("aaaOffer", "18/04/2017", "50", "gardening", "description...", {});
+
+offerManagerFull.addOffer(aaaOffer.findId(), 125, aaaOffer.toString(), OfferManager.logOffer);
+offerManagerFull.commitToOffer(aaaOffer.findId(), OfferManager.logOffer); // -> Should return false
+//offerManagerPart0.commitToOffer(aaaOffer.findId(), OfferManager.logOffer); // -> Should return true
+*/
+
+/*
+var offerManagerFull = new OfferManager.OfferManager(contractsManagerFull);
+var offerManagerPart00 = new OfferManager.OfferManager(contractManagerPart);
+let aaaOffer =  new OfferManager.Offer("aaaOffer", "18/04/2017", "50", "gardening", "description...", {});
+
+//offerManagerFull.commitToOffer(aaaOffer.findId(), OfferManager.logOffer); // -> Should return false
+
+var actionManager = new ActionManager.ActionManager(contractsManagerFull);
+//actionManager.addAllAction();
+//offerManagerFull.addOffer(aaaOffer.findId(), 125, aaaOffer.toString(), OfferManager.logOffer);
+//offerManagerPart00.commitToOffer(aaaOffer.findId(), OfferManager.logOffer);
+//offerManagerFull.commitToOffer(aaaOffer.findId(), OfferManager.logOffer); // -> Should return false
+
+//offerManagerFull.claimOffer(aaaOffer.findId(), OfferManager.logOffer);
+//offerManagerPart00.claimOffer(aaaOffer.findId(), OfferManager.logOffer);
+
+//offerManagerPart00.confirmOffer(aaaOffer.findId(), OfferManager.logOffer);
+offerManagerFull.confirmOffer(aaaOffer.findId(), OfferManager.logOffer);
+*/

@@ -6,7 +6,7 @@ import "../Interfaces/ContractProvider.sol";
 // for example.
 contract ActionLockActions is Action {
 
-    function execute(address sender) returns (bool) {
+    function execute(address sender, address addr, bytes32 str, uint intval, bytes data) returns (bool) {
         if(!isActionManager()){
             return false;
         }

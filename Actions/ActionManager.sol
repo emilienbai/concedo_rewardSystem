@@ -2,6 +2,8 @@ import "../Doug/DougEnabled.sol";
 import "../Interfaces/ContractProvider.sol";
 import "../Interfaces/Permissionner.sol";
 import "./ActionDb.sol";
+import "./ActiveAction.sol";
+
 
 contract ActionManager is DougEnabled {
 
@@ -24,7 +26,7 @@ contract ActionManager is DougEnabled {
   // careful. Does it revert the tx entirely now, or does it come with some sort
   // of recovery mechanism? Otherwise it is still super dangerous and should never
   // ever be used. Ever.
-  address activeAction;
+  //address public activeAction;
 
   uint8 permToLock = 255; // Current max.
   bool locked;
@@ -38,20 +40,29 @@ contract ActionManager is DougEnabled {
     permToLock = 255;    
   }
 
-  function execute(bytes32 actionName, bytes data0, bytes data1, bytes data2, bytes data3, bytes data4) returns (bool) {
-
+  function execute(bytes32 actionName, address addr, bytes32 str, uint intVal, bytes data) returns (bool result, address retAddr) {
+    result = false;
+    retAddr = this;
+    ShoutLog(retAddr, "  actionManager", false);
     address actionDb = ContractProvider(DOUG).contracts("actiondb");
+    ShoutLog(actionDb, "  actionDb", false);
     if (actionDb == 0x0){
       _log(actionName,false);
-      return false;
+      result = false;
+      return;
     }
+    
     address actn = ActionDb(actionDb).actions(actionName);
+    ShoutLog(actn, "  actionAddress", false);
     // If no action with the given name exists - cancel.
     if (actn == 0x0){
       _log(actionName,false);
-      return false;
+      result = false;
+      return;
     }
 
+    
+    /*
       // Permissions stuff
     address pAddr = ContractProvider(DOUG).contracts("perms");
     // Only check permissions if there is a permissions contract.
@@ -65,7 +76,8 @@ contract ActionManager is DougEnabled {
       // permissions is needed.
       if(locked && perm < permToLock){
         _log(actionName,false);
-        return false;
+        result = false;
+        return;
       }
 
       // Now we check the permission that is required to execute the action.
@@ -74,32 +86,44 @@ contract ActionManager is DougEnabled {
       // Very simple system.
       if (perm < permReq){
         _log(actionName,false);
-        return false;
+        result = false;
+        return;
       }
-    }
-
-    // Set this as the currently active action.
-    activeAction = actn;
-
-   bool result = true; 
+    }*/
     
-    if(data4.length != 0){
-        result = actn.call(bytes4(sha3(data0)), msg.sender, data1, data2, data3, data4);
-    } else if(data3.length != 0){
-        result = actn.call(bytes4(sha3(data0)), msg.sender, data1, data2, data3);
-    } else if(data2.length != 0){
-        result = actn.call(bytes4(sha3(data0)), msg.sender, data1, data2);
-    } else if(data1.length != 0){
-        result = actn.call(bytes4(sha3(data0)), msg.sender, data1);
-    } else if(data0.length != 0){
-        result = actn.call(bytes4(sha3(data0)), msg.sender);
-    }
+    // Set this as the currently active action.
+    //activeAction = actn;
+    setActive(actn);
+    
 
-    activeAction = 0x0;
-    _log(actionName,result);
-    return result;
+    Action toEx = Action(actn);
+
+    result = toEx.execute(msg.sender, addr, str, intVal, data);
+    if(result) ShoutLog(retAddr, "  ThisIsTrue", true);
+    else ShoutLog(retAddr, "  ThisIsFalse", false);
+
+
+    //activeAction = 0x0;
+    setActive(0x0);
+    //_log(actionName,result);
+
+    return;
   }
 
+  function getActive() returns (address){
+    address activeActionContract = ContractProvider(DOUG).contracts("activeaction");
+    if(activeActionContract == 0x0) return 0x0;
+    ActiveAction aa = ActiveAction(activeActionContract);
+    return aa.get();
+  }
+
+  function setActive(address newActive) returns (address){
+    address activeActionContract = ContractProvider(DOUG).contracts("activeaction");
+    if(activeActionContract == 0x0) return 0x0;
+    ActiveAction aa = ActiveAction(activeActionContract);
+    return aa.set(newActive);
+  }
+/*
   function lock() returns (bool) {
     if(msg.sender != activeAction){
       return false;
@@ -126,11 +150,13 @@ contract ActionManager is DougEnabled {
     return addr == activeAction;
   }
 
+  function getActiveAction() constant returns (address){
+    return activeAction;
+  }*/
+
   function _log(bytes32 actionName, bool success) internal {
     // TODO check if this is really necessary in an internal function.
-    /*if(msg.sender != address(this)){
-      return;
-    }*/
+
     ActionLogEntry le = logEntries[nextEntry++];
     le.caller = msg.sender;
     le.action = actionName;

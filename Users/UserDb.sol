@@ -6,13 +6,13 @@ contract UserDb is Validee {
 
     event ShoutLog(bytes32 indexed message);
     
-    function addUser(address userAddress, bytes32 pseudo) returns (address){
+    function addUser(address userAddress, bytes32 pseudo, bytes encryptedData) returns (address){
         ShoutLog("  Calling adduser");
-        if(!validate()){
+        if(!validate("adduser")){
             return 0x0;
         }
-        address newUser = address(new User(userAddress, pseudo));
-        if(newUser != 0x0){
+        address newUser = address(new User(userAddress, pseudo, encryptedData));
+        if(newUser != 0x0 && users[userAddress]==User(0x0)){
             users[userAddress] = User(newUser);
         }
         return newUser;
@@ -20,7 +20,7 @@ contract UserDb is Validee {
     
     function removeUser(address userAddress) returns (bool){
         ShoutLog("  Calling removeUser");
-        if(!validate()){
+        if(!validate("removeuser")){
             return false;
         }
         users[userAddress].remove();

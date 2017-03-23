@@ -33,7 +33,7 @@ contract Doug is LinkedList {
     function addContract(bytes32 name, address addr) returns (bool result) {
        // Only the owner may add, and the contract has to be DougEnabled and
        // return true when setting the Doug address.
-    if(msg.sender != owner){
+    if(msg.sender != owner){ //TODO add support for actionAddContract
       // Access denied.
       AddContract(msg.sender, name, 403);
       return false;

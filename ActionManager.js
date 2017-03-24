@@ -1,8 +1,8 @@
 var erisC = require('eris-contracts');
 var fs = require ('fs');
 
-function logAddActionResult(actionName, res){
-        console.log("AddAction : " + actionName + " -> " + res);
+function logResult(action, actionName, res){
+        console.log(action + " : " + actionName + " -> " + res);
     }
 
 function ActionManager(contractsManager) {
@@ -15,7 +15,7 @@ function ActionManager(contractsManager) {
     let actionManagerAbi = JSON.parse(fs.readFileSync("./abi/" + actionManagerContractAddress));
     this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
 
-    /*Get ActionDb*/
+/*Get ActionDb*/
     let actionDbContractAdress = this.contractData["deployActionDb"];
     let actionDbAbi = JSON.parse(fs.readFileSync("./abi/" + actionDbContractAdress));
     this.actionDbContract = this.contractsManager.newContractFactory(actionDbAbi).at(actionDbContractAdress);
@@ -29,20 +29,21 @@ function ActionManager(contractsManager) {
                 actionAddress, actionName, 0, "",
                 (error, result) => {
                     if (error) console.error(error);
-                    if (!result) callback(actionName, false)
-                    else {
-                        //Check equality
-                        this.getActionContractAddress(actionName, (chainAddress) => {
-                            if (chainAddress != actionAddress)
-                                callback(actionName, false);
-                            else
-                                callback(actionName, true);
-                        })
-                    }
+                    callback("AddAction", actionName, result);
                 })
     }
 
-    /*Get contract address*/
+    this.removeAction = function(actionName, callback) {
+        this.actionManagerContract
+            .execute("removeaction", 
+            0x0, actionName, 0, "", 
+            (error, result) => {
+                if(error) console.error(error);
+                callback("RemoveAction", actionName, result);
+            })
+    }
+
+/*Get contract address*/
     this.getActionContractAddress = function(contractName, callback) {
         this.actionDbContract.actions(contractName,
             function(error, result) {
@@ -53,16 +54,18 @@ function ActionManager(contractsManager) {
     }
 
     this.addAllAction = function(){
-      //this.addAction("adduser", "deployActionAddUser", logAddActionResult);
-      //this.addAction("removeuser", "deployActionRemoveUser", logAddActionResult);
-      this.addAction("addoffer", "deployActionAddOffer", logAddActionResult);
-      //this.addAction("removeoffer", "deployActionRemoveOffer", logAddActionResult); 
-      this.addAction("committooffer", "deployActionCommitToOffer", logAddActionResult);
-      this.addAction("claimoffer", "deployActionClaimOffer", logAddActionResult);
-      this.addAction("confirmoffer", "deployActionConfirmOffer", logAddActionResult);  
+      this.addAction("removeaction", "deployActionRemoveAction", logResult);  
+      this.addAction("adduser", "deployActionAddUser", logResult);
+      this.addAction("removeuser", "deployActionRemoveUser", logResult);
+      this.addAction("addoffer", "deployActionAddOffer", logResult);
+      this.addAction("removeoffer", "deployActionRemoveOffer", logResult); 
+      this.addAction("committooffer", "deployActionCommitToOffer", logResult);
+      this.addAction("claimoffer", "deployActionClaimOffer", logResult);
+      this.addAction("confirmoffer", "deployActionConfirmOffer", logResult);
     }
 }
 
 module.exports = {
-    ActionManager: ActionManager
+    ActionManager: ActionManager,
+    logResult : logResult
 }

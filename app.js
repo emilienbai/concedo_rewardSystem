@@ -33,7 +33,7 @@ var actionManagerContract = contractsManagerFull.newContractFactory(actionManage
 
 
 /*Log handling*/
-//actionManagerContract.ShoutLog(startCallback, ActionManagerLogCallback);
+actionManagerContract.ShoutLog(startCallback, ActionManagerLogCallback);
 
 function startCallback(error, eventSub){
     if(error){
@@ -56,7 +56,7 @@ var actionDbAbi = JSON.parse(fs.readFileSync("./abi/" + actionDbContractAdress))
 
 var actionDbContract = contractsManagerFull.newContractFactory(actionDbAbi).at(actionDbContractAdress);
 
-//actionDbContract.ShoutLog(startCallback, logActionDbCallback);
+actionDbContract.ShoutLog(startCallback, logActionDbCallback);
 
 /*Log handling*/
 function logActionDbCallback(error, event){
@@ -158,13 +158,13 @@ var part1 = accountData.concedo_chain_participant_001;
 
 /*Actions*/
 
-/*
+
 var actionManager = new ActionManager.ActionManager(contractsManagerFull);
 actionManager.addAllAction();
-*/
+actionManager.removeAction("adduser", ActionManager.logResult);
 
-/*
 
+/* User */
 var userManager = new UserManager.UserManager(contractsManagerFull);
 let user1 = new UserManager.User("Name", "Surname", "Address", "Phone", "Email");
 
@@ -172,7 +172,7 @@ userManager.addUser(full.address, "ful l01", user1.encrypt(), UserManager.logAdd
 userManager.getUserAddress(full.address, UserManager.logGetUserAddress);
 userManager.removeUser(full.address, UserManager.logRemoveUser);
 userManager.getUserAddress(full.address, UserManager.logGetUserAddress);
-*/
+
 
 
 /*
@@ -191,16 +191,4 @@ var offerManagerPart00 = new OfferManager.OfferManager(contractManagerPart);
 let aaaOffer =  new OfferManager.Offer("aaaOffer", "18/04/2017", "50", "gardening", "description...", {});
 
 //offerManagerFull.commitToOffer(aaaOffer.findId(), OfferManager.logOffer); // -> Should return false
-
-var actionManager = new ActionManager.ActionManager(contractsManagerFull);
-//actionManager.addAllAction();
-//offerManagerFull.addOffer(aaaOffer.findId(), 125, aaaOffer.toString(), OfferManager.logOffer);
-//offerManagerPart00.commitToOffer(aaaOffer.findId(), OfferManager.logOffer);
-//offerManagerFull.commitToOffer(aaaOffer.findId(), OfferManager.logOffer); // -> Should return false
-
-//offerManagerFull.claimOffer(aaaOffer.findId(), OfferManager.logOffer);
-//offerManagerPart00.claimOffer(aaaOffer.findId(), OfferManager.logOffer);
-
-//offerManagerPart00.confirmOffer(aaaOffer.findId(), OfferManager.logOffer);
-offerManagerFull.confirmOffer(aaaOffer.findId(), OfferManager.logOffer);
 */

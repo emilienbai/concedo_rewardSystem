@@ -22,7 +22,6 @@ contract OfferDb is LinkedList, Validee{
         if(!validate("removeoffer")){
             return false;
         }
-        //todo check that no-one commited
         address offerAddress = list[offerName].contractAddress;
         Offer o = Offer(offerAddress);
         if(o.volunteer() != 0x0) return false;

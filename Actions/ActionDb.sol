@@ -28,7 +28,6 @@ contract ActionDb is ActionManagerEnabled {
     }
 
     function addAction(bytes32 name, address addr) returns (bool) {
-        //TODO check action manager : should we use callcode instead of call
         if(msg.sender != actions["addaction"]){
             ShoutLog(this, name, false);
             return false;
@@ -51,7 +50,8 @@ contract ActionDb is ActionManagerEnabled {
         if (actions[name] == 0x0){
             return false;
         }
-        if(!isActionManager()){
+        if(msg.sender != actions["removeaction"]){
+            ShoutLog(this, name, false);
             return false;
         }
         actions[name] = 0x0;
@@ -83,15 +83,5 @@ contract ActionAddAction is Action {
         }
 
         return ActionDb(adb).addAction(name, addr);
-    }
-
-    function test(){
-        ContractProvider dg = ContractProvider(DOUG);
-        address adb = dg.contracts("actiondb");
-        if(adb == 0x0){
-            ShoutLog(DOUG, " No ActionDB");
-            return;
-        }
-        ActionDb(adb).log(this, "  oklm", true);
     }
 }

@@ -42,7 +42,7 @@ contract ActionManager is DougEnabled {
 
   function execute(bytes32 actionName, address addr, bytes32 str, uint intVal, bytes data) returns (bool result, address retAddr) {
     result = false;
-    retAddr = this;
+    retAddr = this; //This return address is kept because if there is an exception here, it will be null
     ShoutLog(retAddr, "  actionManager", false);
     address actionDb = ContractProvider(DOUG).contracts("actiondb");
     ShoutLog(actionDb, "  actionDb", false);
@@ -62,7 +62,7 @@ contract ActionManager is DougEnabled {
     }
 
     
-    /*
+    
       // Permissions stuff
     address pAddr = ContractProvider(DOUG).contracts("perms");
     // Only check permissions if there is a permissions contract.
@@ -89,12 +89,10 @@ contract ActionManager is DougEnabled {
         result = false;
         return;
       }
-    }*/
+    }
     
     // Set this as the currently active action.
-    //activeAction = actn;
     setActive(actn);
-    
 
     Action toEx = Action(actn);
 
@@ -102,10 +100,8 @@ contract ActionManager is DougEnabled {
     if(result) ShoutLog(retAddr, "  ThisIsTrue", true);
     else ShoutLog(retAddr, "  ThisIsFalse", false);
 
-
-    //activeAction = 0x0;
     setActive(0x0);
-    //_log(actionName,result);
+    _log(actionName,result);
 
     return;
   }

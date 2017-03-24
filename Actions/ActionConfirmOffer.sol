@@ -18,8 +18,23 @@ contract ActionConfirmOffer is Action {
 
         address contractAddress =  offerDb.getAddress(offerName);
 
-        //TODO Send tokens according
+        uint offerReward;
+        address offerVolunteer;
 
-        return offerDb.confirm(offerName, sender);
+        (offerReward, offerVolunteer) = offerDb.confirm(offerName, sender);
+        if (offerReward > 0 && offerVolunteer != 0x0){
+            //send tokens
+            Issuer bank = Issuer(bdb);
+            bool issueRes = bank.issue(offerVolunteer, offerReward);
+            if (!issueRes){
+                offerDb.unConfirm(offerName);
+                return false;
+            } else{
+                return true;
+            }
+
+        } else{
+            return false;
+        }
     }
 }

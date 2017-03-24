@@ -41,8 +41,6 @@ contract OfferDb is LinkedList, Validee{
         if(offerAddress == 0x0) return false;
         Offer o = Offer(offerAddress);
         result = o.commitTo(volunteer);
-        if(result) ShoutLog(volunteer, " Yesyesyes");
-        else ShoutLog(volunteer, " nonono");
     }
 
     function claim(bytes32 offerName, address volunteer) returns (bool){
@@ -53,14 +51,24 @@ contract OfferDb is LinkedList, Validee{
         return o.claim(volunteer);
     } 
 
-    function confirm(bytes32 offerName, address beneficiary) returns (bool){
-        ShoutLog(beneficiary, "  confirmOffer");
+    function confirm(bytes32 offerName, address beneficiary) returns (uint, address){
         if(!validate("confirmoffer")){
-            return false;
+            return (0, 0x0);
         }
-        ShoutLog(beneficiary, "  valid");
         Offer o = Offer(list[offerName].contractAddress);
-        return o.confirm(beneficiary);
+        if (o.confirm(beneficiary)){
+            return (o.reward(), o.volunteer());
+        } else {
+            return (0, 0x0);
+        }
+    }
+
+    function unConfirm(offerName) returns bool{
+        if(!validate("confirmoffer")){
+           return false;
+        }
+        Offer o = Offer(list[offerName].contractAddress);
+        return o.unConfirm();
     }
 
     function getAddress(bytes32 offerName) constant returns (address){

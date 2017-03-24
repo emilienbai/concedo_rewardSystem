@@ -13,7 +13,6 @@ contract ActionRemoveOffer is Action{
         if(odb == 0x0){
             return false;
         }
-//Todo empty account before removing offer
         var offerDb = Offers(odb);
         return offerDb.removeOffer(offerName);
     }

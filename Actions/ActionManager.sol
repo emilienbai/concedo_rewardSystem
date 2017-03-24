@@ -151,8 +151,6 @@ contract ActionManager is DougEnabled {
   }*/
 
   function _log(bytes32 actionName, bool success) internal {
-    // TODO check if this is really necessary in an internal function.
-
     ActionLogEntry le = logEntries[nextEntry++];
     le.caller = msg.sender;
     le.action = actionName;

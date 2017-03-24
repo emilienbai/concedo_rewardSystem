@@ -7,7 +7,7 @@ function getAllElements(){
     var currentKey = tail;
 
     function finished(){
-      console.log(list);//TODO callback
+      console.log(list);
     }
 
     function getElems(key){

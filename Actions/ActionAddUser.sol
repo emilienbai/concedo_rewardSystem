@@ -21,9 +21,4 @@ contract ActionAddUser is Action {
         address newAddr = userDb.addUser(userAddress, pseudo, userData);
         return true;
     }
-
-//todoClean
-    function test(address sender, bytes zob){
-        ShoutLog("  Hello world", this, 101);
-    }
 }

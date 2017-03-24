@@ -1,6 +1,7 @@
 import "./ActionManager.sol";
 import "../Interfaces/ContractProvider.sol";
 import "../Interfaces/Offers.sol";
+import "../Interfaces/Issuer.sol";
 
 contract ActionConfirmOffer is Action {
 
@@ -16,8 +17,6 @@ contract ActionConfirmOffer is Action {
 
         var offerDb = Offers(odb);
 
-        address contractAddress =  offerDb.getAddress(offerName);
-
         uint offerReward;
         address offerVolunteer;
 
@@ -25,8 +24,7 @@ contract ActionConfirmOffer is Action {
         if (offerReward > 0 && offerVolunteer != 0x0){
             //send tokens
             Issuer bank = Issuer(bdb);
-            bool issueRes = bank.issue(offerVolunteer, offerReward);
-            if (!issueRes){
+            if (bank.issue(offerVolunteer, offerReward)){
                 offerDb.unConfirm(offerName);
                 return false;
             } else{

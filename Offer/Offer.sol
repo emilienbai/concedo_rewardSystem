@@ -10,12 +10,6 @@ contract Offer{
     bool claimed = false;
     bool confirmed = false;
     
-    modifier onlyOwner {
-        if(msg.sender != owner)
-            throw;
-        _;
-    }
-
     function Offer(address _beneficiary, bytes32 _offerName, uint _reward, bytes _data){
         owner = msg.sender;
         beneficiary = _beneficiary;
@@ -25,7 +19,8 @@ contract Offer{
     }
     
     
-    function commitTo(address _volunteer) returns (bool result) onlyOwner{
+    function commitTo(address _volunteer) returns (bool result) {
+        if(msg.sender != owner) return false;
         if(volunteer != 0x0){ //Someone already commited
             result = false;
         } else if (_volunteer == beneficiary){ //A beneficiary cannot commit to its own offer
@@ -36,14 +31,16 @@ contract Offer{
         }
     }
     
-    function claim(address sender) returns (bool) onlyOwner{
+    function claim(address sender) returns (bool){
+        if(msg.sender != owner) return false;
         if(sender == volunteer){
             claimed = true;
         }
         return claimed;
     }
     
-    function confirm(address sender) returns (bool) onlyOwner{
+    function confirm(address sender) returns (bool){
+        if(msg.sender != owner) return false;
         if(volunteer != 0x0 && claimed && sender == beneficiary && !confirmed){
             confirmed = true;
             return true;
@@ -51,7 +48,8 @@ contract Offer{
         return false;
     }
 
-    function unconfirm() returns(bool) onlyOwner{
+    function unConfirm() returns(bool){
+        if(msg.sender != owner) return false;
         confirmed = false;
         return true;
     }

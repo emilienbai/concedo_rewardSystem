@@ -8,7 +8,9 @@ contract Offers {
 
     function claim(bytes32 offerName, address volunteer) returns (bool);
 
-    function confirm(bytes32 offerName, address beneficiary) returns (bool);
+    function confirm(bytes32 offerName, address beneficiary) returns (uint, address);
+
+    function unConfirm(bytes32 offerName) returns (bool);
 
     function getAddress(bytes32 offerName) returns (address);
 }

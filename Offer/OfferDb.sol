@@ -63,7 +63,7 @@ contract OfferDb is LinkedList, Validee{
         }
     }
 
-    function unConfirm(offerName) returns bool{
+    function unConfirm(bytes32 offerName) returns (bool){
         if(!validate("confirmoffer")){
            return false;
         }

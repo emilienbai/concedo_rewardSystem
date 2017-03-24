@@ -1,10 +1,10 @@
 // requires
-var ActionManager = require('./ActionManager');
-var UserManager = require('./UserManager');
-var OfferManager = require('./OfferManager');
+var ActionManager = require('./JSManager/ActionManager');
+var UserManager = require('./JSManager/UserManager');
+var OfferManager = require('./JSManager/OfferManager');
 var fs = require ('fs');
 var erisC = require('eris-contracts');
-var utils = require('./Utils');
+var utils = require('./JSManager/Utils');
 
 
 // NOTE. On Windows/OSX do not use localhost. find the

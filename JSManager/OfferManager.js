@@ -1,7 +1,5 @@
 var erisC = require('eris-contracts');
 var fs = require ('fs');
-var utils = require('./Utils');
-
 
 function Offer(offerName, period, duration, type, description, option){
     this.offerName = offerName;

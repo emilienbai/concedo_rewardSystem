@@ -1,5 +1,4 @@
 import "../LinkedList.sol";
-import "../Doug/DougEnabled.sol";
 import "./Offer.sol";
 import "../Validee.sol";
 
@@ -26,9 +25,7 @@ contract OfferDb is LinkedList, Validee{
         Offer o = Offer(offerAddress);
         if(o.volunteer() != 0x0) return false;
         
-        bool result = _removeElement(offerName);
-        
-        return result;
+        return _removeElement(offerName);        
     }
     
 

@@ -1,7 +1,6 @@
 import "./ActionManager.sol";
 import "../Interfaces/Offers.sol";
 
-
 contract ActionRemoveOffer is Action{
 
     function execute(address sender, address addr, bytes32 offerName, uint intVal, bytes data)returns (bool){

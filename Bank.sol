@@ -2,7 +2,7 @@ import "./Validee.sol";
 
 contract Bank is Validee {
 
-  mapping(address => uint) balance;
+  mapping(address => uint) public balance;
 
   // Issue coins for an address.
   function issue(address addr, uint amount) returns (bool) {

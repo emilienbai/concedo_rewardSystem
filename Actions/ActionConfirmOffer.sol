@@ -24,7 +24,7 @@ contract ActionConfirmOffer is Action {
         if (offerReward > 0 && offerVolunteer != 0x0){
             //send tokens
             Issuer bank = Issuer(bdb);
-            if (bank.issue(offerVolunteer, offerReward)){
+            if (!bank.issue(offerVolunteer, offerReward)){
                 offerDb.unConfirm(offerName);
                 return false;
             } else{

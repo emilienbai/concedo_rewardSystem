@@ -5,35 +5,30 @@ jobs:
     deploy:
       contract: Doug/Doug.sol
       instance: all
-      wait: true
 
 - name: deployActionDb
   job: 
     deploy:
       contract: Actions/ActionDb.sol
       instance: all
-      wait: true
 
 - name: deployActionManager
   job:
     deploy:
       contract: Actions/ActionManager.sol
       instance: all
-      wait: true
 
 - name: deployBank
   job:
     deploy: 
       contract: Bank.sol
       instance: all
-      wait: true
 
 - name: deployPermissions
   job:
     deploy: 
       contract: Permissions.sol
       instance: all
-      wait: true
     
 
 - name: deployUsers
@@ -41,7 +36,6 @@ jobs:
     deploy:
       contract: Users/UserDb.sol
       instance: all
-      wait: true
 
 
 - name: deployOffers
@@ -49,7 +43,12 @@ jobs:
     deploy: 
       contract: Offer/OfferDb.sol
       instance: all
-      wait: true
+
+- name: deployRewards
+  job:
+    deploy:
+      contract: Reward/RewardDb.sol
+      instance: all
       
 - name: deployActiveAction 
   job:
@@ -120,6 +119,16 @@ jobs:
         - "offers"
         - $deployOffers
 
+- name: storeRewards
+  job:
+    call:
+      destination: $deployDoug
+      abi: Doug
+      function: addContract
+      data :
+        - "rewards"
+        - $deployRewards
+
 - name: storeActiveAction
   job: 
     call:
@@ -131,59 +140,31 @@ jobs:
         - $deployActiveAction
       wait: true
 
- #Deploy Actions
-- name: deployActionRemoveAction
+#Deploy Actions
+- name: deployActionAddReward
   job:
     deploy:
-      contract: Actions/ActionRemoveAction.sol
+      contract: Actions/ActionAddReward.sol
       instance: all
       wait: true
 
-- name: deployActionAddUser
-  job: 
-    deploy: 
-      contract: Actions/ActionAddUser.sol
-      instance: all
-      wait: true
-
-- name: deployActionRemoveUser
+- name: deployActionRemoveReward
   job:
     deploy:
-      contract: Actions/ActionRemoveUser.sol
+      contract: Actions/ActionRemoveReward.sol
       instance: all
       wait: true
 
-- name: deployActionAddOffer
+- name: deployActionBuyReward
   job:
     deploy:
-      contract: Actions/ActionAddOffer.sol
+      contract: Actions/ActionBuyReward.sol
       instance: all
       wait: true
 
-- name: deployActionRemoveOffer
+- name: deployActionSpendReward
   job:
     deploy:
-      contract: Actions/ActionRemoveOffer.sol
+      contract: Actions/ActionSpendReward.sol
       instance: all
-      wait: true
-
-- name: deployActionCommitToOffer
-  job: 
-    deploy:
-      contract: Actions/ActionCommitToOffer.sol
-      instance: all
-      wait: true
-
-- name: deployActionClaimOffer
-  job:
-    deploy: 
-      contract: Actions/ActionClaimOffer.sol
-      instance: all
-      wait: true
-
-- name: deployActionConfirmOffer
-  job:
-    deploy:
-      contract: Actions/ActionConfirmOffer.sol
-      instance: all      
       wait: true

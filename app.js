@@ -56,7 +56,7 @@ var actionDbAbi = JSON.parse(fs.readFileSync("./abi/" + actionDbContractAdress))
 
 var actionDbContract = contractsManagerFull.newContractFactory(actionDbAbi).at(actionDbContractAdress);
 
-actionDbContract.ShoutLog(startCallback, logActionDbCallback);
+//actionDbContract.ShoutLog(startCallback, logActionDbCallback);
 
 /*Log handling*/
 function logActionDbCallback(error, event){
@@ -109,7 +109,7 @@ var OfferDbcontractAddress = contractData["deployOffers"];
 var offerDbAbi = JSON.parse(fs.readFileSync("./abi/" + OfferDbcontractAddress));
 var OfferDbContract = contractsManagerFull.newContractFactory(offerDbAbi).at(OfferDbcontractAddress);
 
-OfferDbContract.ShoutLog(startCallback, logOfferDbCallback);
+//OfferDbContract.ShoutLog(startCallback, logOfferDbCallback);
 
 /*Log handling*/
 function logOfferDbCallback(error, event){
@@ -165,14 +165,14 @@ actionManager.removeAction("adduser", ActionManager.logResult);
 
 
 /* User */
-var userManager = new UserManager.UserManager(contractsManagerFull);
+/*var userManager = new UserManager.UserManager(contractsManagerFull);
 let user1 = new UserManager.User("Name", "Surname", "Address", "Phone", "Email");
 
 userManager.addUser(full.address, "ful l01", user1.encrypt(), UserManager.logAddUser);
 userManager.getUserAddress(full.address, UserManager.logGetUserAddress);
 userManager.removeUser(full.address, UserManager.logRemoveUser);
 userManager.getUserAddress(full.address, UserManager.logGetUserAddress);
-
+*/
 
 
 /*

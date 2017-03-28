@@ -15,7 +15,7 @@ User.prototype.encrypt = function(){
 
 function UserManager(contractsManager) {
     /*Get data from deployement*/
-    this.contractData = require('./jobs_output.json');
+    this.contractData = require('../jobs_output.json');
 
     this.contractsManager = contractsManager
     /*Get action manager*/

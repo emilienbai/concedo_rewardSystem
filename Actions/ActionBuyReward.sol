@@ -27,9 +27,8 @@ contract ActionBuyReward is Action {
         address rewarder;
         address buyer;
         (rewarder, buyer, price) = rewardDb.getData(rewardName);
-
+        
         if(rewarder == 0 || buyer != 0x0 || price == 0) return false;
-
 
         if(!bank.send(sender, rewarder, price)) return false;
 

@@ -64,7 +64,6 @@ contract LinkedList {
       return true;
   }
 
-  // Should be safe to update to returning 'Element' instead
   function getElement(bytes32 name) constant returns (bytes32 prev, bytes32 next, bytes32 contractName, address contractAddress) {
 
       Element elem = list[name];

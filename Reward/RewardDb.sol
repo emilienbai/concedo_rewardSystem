@@ -37,16 +37,6 @@ contract RewardDb is LinkedList, Validee{
         return r.buy(buyer);
     }
 
-    function spend(bytes32 rewardName, address sender) returns (bool){
-        if(!validate("spendreward")) return false;
-
-        address rewardAddress = list[rewardName].contractAddress;
-        if(rewardAddress == 0x0) return false;
-
-        Reward r = Reward(rewardAddress);
-        return r.spend(sender);
-    }
-
     function getData(bytes32 rewardName) constant returns(address rewarder, address buyer, uint price){
         
         address rewardAddress = list[rewardName].contractAddress;

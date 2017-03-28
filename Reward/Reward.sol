@@ -7,8 +7,6 @@ contract Reward {
     uint public price;
     bytes data;
 
-    bool spent = false;
-
     function Reward(address _rewarder, bytes32 _rewardName, uint _price, bytes _data){
         owner = msg.sender;
         rewarder = _rewarder;
@@ -23,13 +21,6 @@ contract Reward {
             return false;
         }
         buyer = _buyer;
-        return true;
-    }
-
-    function spend(address sender) returns (bool){
-        if(msg.sender != owner) return false;
-        if(spent || sender != buyer) return false;
-        spent = true;
         return true;
     }
 }

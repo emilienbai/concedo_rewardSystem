@@ -7,7 +7,7 @@ function logResult(action, actionName, res){
 
 function ActionManager(contractsManager) {
     /*Get data from deployement*/
-    this.contractData = require('./jobs_output.json');
+    this.contractData = require('../jobs_output.json');
 
     this.contractsManager = contractsManager;
     /*Get action manager*/
@@ -54,14 +54,24 @@ function ActionManager(contractsManager) {
     }
 
     this.addAllAction = function(){
+    /*Action*/
       this.addAction("removeaction", "deployActionRemoveAction", logResult);  
+      /*Users*/
       this.addAction("adduser", "deployActionAddUser", logResult);
       this.addAction("removeuser", "deployActionRemoveUser", logResult);
+      /*Offers*/
       this.addAction("addoffer", "deployActionAddOffer", logResult);
       this.addAction("removeoffer", "deployActionRemoveOffer", logResult); 
       this.addAction("committooffer", "deployActionCommitToOffer", logResult);
       this.addAction("claimoffer", "deployActionClaimOffer", logResult);
       this.addAction("confirmoffer", "deployActionConfirmOffer", logResult);
+      /*Rewards*/
+      this.addAction("addreward", "deployActionAddReward", logResult);
+      this.addAction("removereward", "deployActionRemoveReward", logResult);
+      this.addAction("buyreward", "deployActionBuyReward", logResult);      
+      /*Permissions*/
+
+      /*LockUnlock*/
     }
 }
 

@@ -139,17 +139,7 @@ contract ActionManager is DougEnabled {
     }
     locked = false;
   }
-
-  // Validate can be called by a contract like the bank to check if the
-  // contract calling it has permissions to do so.
-  function validate(address addr) constant returns (bool) {
-    return addr == activeAction;
-  }
-
-  function getActiveAction() constant returns (address){
-    return activeAction;
-  }*/
-
+*/
   function _log(bytes32 actionName, bool success) internal {
     ActionLogEntry le = logEntries[nextEntry++];
     le.caller = msg.sender;

@@ -9,6 +9,7 @@ contract Offer{
     address public volunteer = 0x0;
     bool claimed = false;
     bool confirmed = false;
+    uint confirmedOn;
     
     function Offer(address _beneficiary, bytes32 _offerName, uint _reward, bytes _data){
         owner = msg.sender;
@@ -43,6 +44,7 @@ contract Offer{
         if(msg.sender != owner) return false;
         if(volunteer != 0x0 && claimed && sender == beneficiary && !confirmed){
             confirmed = true;
+            confirmedOn = block.number;
             return true;
         }
         return false;
@@ -55,7 +57,7 @@ contract Offer{
     }
 
     function getData() constant returns (address _beneficiary, bytes32 _offerName, uint _reward, 
-                    bytes _data, address _volunteer, bool _claimed, bool _confirmed ){
+                    bytes _data, address _volunteer, bool _claimed, bool _confirmed, uint _confirmedOn ){
         _beneficiary = beneficiary;
         _offerName = offerName;
         _reward = reward;
@@ -63,6 +65,7 @@ contract Offer{
         _volunteer = volunteer;
         _claimed = claimed;
         _confirmed = confirmed;
+        _confirmedOn = confirmedOn;
         return;
     }
 }

@@ -31,8 +31,9 @@ function Offer(offerName, period, duration, location, type, description, option)
  * @param {Address} volunteer 
  * @param {bool} claimed 
  * @param {bool} confirmed 
+ * @param {int} confirmedOn
  */
-function OfferObject(beneficiary, offerName, reward, data, volunteer, claimed, confirmed){
+function OfferObject(beneficiary, offerName, reward, data, volunteer, claimed, confirmed, confirmedOn){
     this.beneficiary = beneficiary;
     this.offerName = utils.hexToString(offerName);
     this.reward = reward.toNumber();
@@ -41,6 +42,7 @@ function OfferObject(beneficiary, offerName, reward, data, volunteer, claimed, c
     this.volunteer = volunteer;
     this.claimed = claimed;
     this.confirmed = confirmed;
+    this.confirmedOn = confirmedOn;
 }
 
 /**
@@ -139,7 +141,7 @@ function OfferManager(contractsManager) {
             let contract = contractsManager.newContractFactory(offerAbi).at(offer.address);
 
             contract.getData((error, res)=>{
-                let oo = new OfferObject(res[0], res[1], res[2], res[3], res[4], res[5], res[6]);
+                let oo = new OfferObject(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
                 offerList.push(oo);
                 if(offerList.length == size){
                     callback(offerList);
@@ -204,9 +206,6 @@ function OfferManager(contractsManager) {
 }
 
     
-
-
-
 function logOffer(actionName, offerName, result){
     console.log(actionName + ":: OfferName: " + offerName + "-> Result: " + result);
 }

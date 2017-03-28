@@ -78,7 +78,7 @@ var bankManager = new BankManager.BankManager(contractsManagerFull, ()=>{
 var offerManagerFull = new OfferManager.OfferManager(contractsManagerFull);
 //var offerManagerPart0 = new OfferManager.OfferManager(contractsManagerPart);
 
-
+/*
 let aaaOffer =  new OfferManager.Offer("aaaOffer", "18/04/2017", "20", "Lulea", "gardening", "description...", {});
 let bbbOffer =  new OfferManager.Offer("bbbOffer", "18/05/2017", "40", "Luleb", "shopping", "description...", {});
 let cccOffer =  new OfferManager.Offer("cccOffer", "18/06/2017", "60", "Lulec", "driving", "description...", {});
@@ -88,7 +88,7 @@ let cccOffer =  new OfferManager.Offer("cccOffer", "18/06/2017", "60", "Lulec", 
 offerManagerFull.addOffer(aaaOffer, OfferManager.logOffer);
 offerManagerFull.addOffer(bbbOffer, OfferManager.logOffer);
 offerManagerFull.addOffer(cccOffer, OfferManager.logOffer);
-
+*/
 
 offerManagerFull.getOffers((resultList)=>{
     console.log(resultList);

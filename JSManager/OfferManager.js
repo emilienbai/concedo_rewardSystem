@@ -165,7 +165,7 @@ function OfferManager(contractsManager) {
 
         /*Compile offers in list*/
         let list = [];
-        
+        //todo consider current key == null
         offerContract.tail(function(error, result){
             var currentKey = result;
 
@@ -179,7 +179,7 @@ function OfferManager(contractsManager) {
                     list.push(elem);
                     currentKey = elem.next;
                     let head = list[0];
-                    if (currentKey != head.current && currentKey != 0){
+                    if (currentKey != head.current && currentKey != ""){
                         getElems(currentKey);
                     } else {
                         finished();

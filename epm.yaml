@@ -154,6 +154,13 @@ jobs:
       instance: all
       wait: true
 
+- name: Reward
+  job: 
+    deploy:
+      contract: Reward/Reward.sol
+      instance: all
+      wait: true
+
 #Deploy Actions
 - name: deployActionRemoveAction
   job:

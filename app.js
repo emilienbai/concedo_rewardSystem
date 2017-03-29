@@ -90,31 +90,43 @@ offerManagerFull.addOffer(bbbOffer, OfferManager.logOffer);
 offerManagerFull.addOffer(cccOffer, OfferManager.logOffer);
 */
 
+
+
+/*
 offerManagerFull.getOffers((resultList)=>{
     console.log(resultList);
 });
-
+*/
 
 /*offerManagerPart0.commitToOffer(aaaOffer.findId(), OfferManager.logOffer);
 offerManagerPart0.claimOffer(aaaOffer.findId(), OfferManager.logOffer);
 offerManagerFull.confirmOffer(aaaOffer.findId(), OfferManager.logOffer);*/
 
-/*
 
+/*
 var rewardManagerFull = new RewardManager.RewardManager(contractsManagerFull);
 var rewardManagerPart = new RewardManager.RewardManager(contractsManagerPart);
 
-let reward1 = new RewardManager.Reward("aaaReward", 10, 20170324, "description du lolaaa...", "paaassword");
-let reward2 = new RewardManager.Reward("bbbReward", 20, 20170324, "description du lolaaa...", "pbbbssword");
-let reward3 = new RewardManager.Reward("cccReward", 30, 20170324, "description du lolaaa...", "pcccssword");
+let reward1 = new RewardManager.Reward("aaaReward", 50, 10, 20170324, "description du lolaaa...", "paaassword");
+let reward2 = new RewardManager.Reward("bbbReward", 50, 20, 20170324, "description du lolbbb...", "pbbbssword");
+let reward3 = new RewardManager.Reward("cccReward", 50, 30, 20170324, "description du lolccc...", "pcccssword");
 */
 /*
-rewardManagerFull.addReward(reward1.findID(), 50, reward1.toString(), RewardManager.logReward);
-rewardManagerFull.addReward(reward2.findID(), 50, reward1.toString(), RewardManager.logReward);
-rewardManagerFull.addReward(reward3.findID(), 50, reward1.toString(), RewardManager.logReward);
+rewardManagerFull.addReward(reward1, RewardManager.logReward);
+rewardManagerFull.addReward(reward2, RewardManager.logReward);
+rewardManagerFull.addReward(reward3, RewardManager.logReward);
 */
 
-//rewardManagerFull.removeReward(reward1.findID(), RewardManager.logReward);
+/*
+rewardManagerFull.getRewards((resultList)=>{
+    console.log(resultList);
+})
+*/
+
+
+
+
+//rewardManagerFull.removeReward(reward3.findID(), RewardManager.logReward);
 //rewardManagerPart.buyReward(reward1.findID(), RewardManager.logReward);
 
 

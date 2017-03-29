@@ -23,4 +23,15 @@ contract Reward {
         buyer = _buyer;
         return true;
     }
+
+    function getData() constant returns (address _owner, bytes32 _rewardName, address _rewarder,
+                    address _buyer, uint _price, bytes _data){
+        _owner = owner;
+        _rewardName = rewardName;
+        _rewarder = rewarder;
+        _buyer = _buyer;
+        _price = price;
+        _data = data;
+        return;
+    }
 }

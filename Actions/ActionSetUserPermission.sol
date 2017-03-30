@@ -5,7 +5,7 @@ import "../Interfaces/Permissionner.sol";
 // The set user permission action.
 contract ActionSetUserPermission is Action {
 
-    function execute(address sender, address addr, bytes32 str, uint8 perm, bytes data) returns (bool) {
+    function execute(address sender, address addr, bytes32 str, uint perm, bytes data) returns (bool) {
         if(!isActionManager()){
             return false;
         }

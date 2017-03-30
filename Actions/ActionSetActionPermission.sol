@@ -5,7 +5,7 @@ import "../Interfaces/ContractProvider.sol";
 // The set action permission. This is the permission level required to run the action.
 contract ActionSetActionPermission is Action {
 
-    function execute(address sender, address addr, bytes32 name, uint8 perm, bytes data) returns (bool) {
+    function execute(address sender, address addr, bytes32 name, uint perm, bytes data) returns (bool) {
         if(!isActionManager()){
             return false;
         }
@@ -15,7 +15,10 @@ contract ActionSetActionPermission is Action {
             return false;
         }
         var action = ActionDb(adb).actions(name);
-        Action(action).setPermission(perm);
+        if(action == 0x0){
+            return false;
+        }
+        return Action(action).setPermission(perm);
     }
 
 }

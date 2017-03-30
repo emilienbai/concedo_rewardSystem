@@ -205,7 +205,12 @@ function OfferManager(contractsManager) {
     }
 }
 
-    
+/**
+ * Log result of offer action
+ * @param {String} actionName - Name of the executed action 
+ * @param {String} offerName - Name / ID of the offer
+ * @param {Boolean} result - Result of the operation 
+ */    
 function logOffer(actionName, offerName, result){
     console.log(actionName + ":: OfferName: " + offerName + "-> Result: " + result);
 }

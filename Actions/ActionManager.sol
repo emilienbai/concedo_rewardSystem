@@ -15,7 +15,7 @@ contract ActionManager is DougEnabled {
   }
 
 
-  event ShoutLog(address indexed addr, bytes32 indexed action, bool indexed success);
+  event ShoutLog(address indexed addr, bytes32 indexed action, uint indexed intVal);
 
   bool LOGGING = true;
 
@@ -28,7 +28,7 @@ contract ActionManager is DougEnabled {
   // ever be used. Ever.
   //address public activeAction;
 
-  uint8 permToLock = 255; // Current max.
+  uint permToLock = 40; // Current max.
   bool locked;
 
   // Adding a logger here, and not in a separate contract. This is wrong.
@@ -40,12 +40,9 @@ contract ActionManager is DougEnabled {
     permToLock = 255;    
   }
 
-  function execute(bytes32 actionName, address addr, bytes32 str, uint intVal, bytes data) returns (bool result, address retAddr) {
+  function execute(bytes32 actionName, address addr, bytes32 str, uint intVal, bytes data) returns (bool result) {
     result = false;
-    retAddr = this; //This return address is kept because if there is an exception here, it will be null
-    ShoutLog(retAddr, "  actionManager", false);
     address actionDb = ContractProvider(DOUG).contracts("actiondb");
-    ShoutLog(actionDb, "  actionDb", false);
     if (actionDb == 0x0){
       _log(actionName,false);
       result = false;
@@ -53,7 +50,6 @@ contract ActionManager is DougEnabled {
     }
     
     address actn = ActionDb(actionDb).actions(actionName);
-    ShoutLog(actn, "  actionAddress", false);
     // If no action with the given name exists - cancel.
     if (actn == 0x0){
       _log(actionName,false);
@@ -70,7 +66,7 @@ contract ActionManager is DougEnabled {
       Permissionner p = Permissionner(pAddr);
 
       // First we check the permissions of the account that's trying to execute the action.
-      uint8 perm = p.perms(msg.sender);
+      uint perm = p.perms(msg.sender);
 
       // Now we check that the action manager isn't locked down. In that case, special
       // permissions is needed.
@@ -81,10 +77,13 @@ contract ActionManager is DougEnabled {
       }
 
       // Now we check the permission that is required to execute the action.
-      uint8 permReq = Action(actn).permission();
+      uint permReq = Action(actn).permission();
 
-      // Very simple system.
-      if (perm < permReq){
+      ShoutLog(this, "  UserPerm", perm);
+      ShoutLog(actn, "  ReqPerm", permReq);
+
+      // Either authorized user or Admin
+      if (perm != permReq && perm < permToLock){
         _log(actionName,false);
         result = false;
         return;
@@ -93,12 +92,8 @@ contract ActionManager is DougEnabled {
     
     // Set this as the currently active action.
     setActive(actn);
-
-    Action toEx = Action(actn);
-
-    result = toEx.execute(msg.sender, addr, str, intVal, data);
-    if(result) ShoutLog(retAddr, "  ThisIsTrue", true);
-    else ShoutLog(retAddr, "  ThisIsFalse", false);
+    ShoutLog(actn, "  Execute action", 125);
+    result = Action(actn).execute(msg.sender, addr, str, intVal, data);
 
     setActive(0x0);
     _log(actionName,result);
@@ -119,9 +114,15 @@ contract ActionManager is DougEnabled {
     ActiveAction aa = ActiveAction(activeActionContract);
     return aa.set(newActive);
   }
-/*
+
   function lock() returns (bool) {
-    if(msg.sender != activeAction){
+    address activeAction = getActive();
+    address actionDb = ContractProvider(DOUG).contracts("actiondb");
+    if (actionDb == 0x0){
+      return false;
+    }
+    address lockAction = ActionDb(actionDb).actions("lock");
+    if(activeAction != lockAction){
       return false;
     }
     if(locked){
@@ -130,8 +131,15 @@ contract ActionManager is DougEnabled {
     locked = true;
   }
 
+/*
   function unlock() returns (bool) {
-    if(msg.sender != activeAction){
+    address activeAction = getActive();
+    address actionDb = ContractProvider(DOUG).contracts("actiondb");
+    if (actionDb == 0x0){
+      return false;
+    }
+    address unLockAction = ActionDb(actionDb).actions("unlock");
+    if(activeAction != unLockAction){
       return false;
     }
     if(!locked){
@@ -139,14 +147,15 @@ contract ActionManager is DougEnabled {
     }
     locked = false;
   }
-*/
+*/  
+
   function _log(bytes32 actionName, bool success) internal {
     ActionLogEntry le = logEntries[nextEntry++];
     le.caller = msg.sender;
     le.action = actionName;
     le.success = success;
     le.blockNumber = block.number;
-    ShoutLog(le.caller, le.action, success);
+    ShoutLog(le.caller, le.action, 0);
   }
 
 }

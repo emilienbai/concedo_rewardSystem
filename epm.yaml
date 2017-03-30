@@ -238,3 +238,17 @@ jobs:
       contract: Actions/ActionBuyReward.sol
       instance: all
       wait: true
+
+- name: deployActionSetUsermPerm
+  job:
+    deploy:
+      contract: Actions/ActionSetUserPermission.sol
+      instance: all
+      wait: true
+
+- name: deployActionSetActionPerm
+  job:
+    deploy:
+      contract: Actions/ActionSetActionPermission.sol
+      instance: all
+      wait: true

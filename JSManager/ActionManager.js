@@ -59,17 +59,19 @@ function ActionManager(contractsManager) {
       /*Users*/
       this.addAction("adduser", "deployActionAddUser", logResult);
       this.addAction("removeuser", "deployActionRemoveUser", logResult);
-      /*Offers*/
+      //Offers
       this.addAction("addoffer", "deployActionAddOffer", logResult);
       this.addAction("removeoffer", "deployActionRemoveOffer", logResult); 
       this.addAction("committooffer", "deployActionCommitToOffer", logResult);
       this.addAction("claimoffer", "deployActionClaimOffer", logResult);
       this.addAction("confirmoffer", "deployActionConfirmOffer", logResult);
-      /*Rewards*/
+      //Rewards
       this.addAction("addreward", "deployActionAddReward", logResult);
       this.addAction("removereward", "deployActionRemoveReward", logResult);
       this.addAction("buyreward", "deployActionBuyReward", logResult);      
-      /*Permissions*/
+      //Permissions
+      this.addAction("setuserpermission", "deployActionSetUsermPerm", logResult);
+      this.addAction("setactionpermission", "deployActionSetActionPerm", logResult);
 
       /*LockUnlock*/
     }

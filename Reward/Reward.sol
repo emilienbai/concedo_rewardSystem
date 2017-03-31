@@ -29,7 +29,7 @@ contract Reward {
         _owner = owner;
         _rewardName = rewardName;
         _rewarder = rewarder;
-        _buyer = _buyer;
+        _buyer = buyer;
         _price = price;
         _data = data;
         return;

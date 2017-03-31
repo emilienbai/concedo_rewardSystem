@@ -1,5 +1,8 @@
-module.exports = {
-    hexToString: function(hex){
+/**
+ * Convert hexadecimal to readable string
+ * @param {String} hex - String to convert
+ */
+function hexToString(hex){
         if(hex == 0) 
             return "";
         var str = "";
@@ -14,4 +17,7 @@ module.exports = {
         }
         return str;
     }
+
+module.exports = {
+    hexToString:  hexToString
 };

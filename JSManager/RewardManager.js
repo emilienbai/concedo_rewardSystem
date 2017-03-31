@@ -1,8 +1,8 @@
 var erisC = require('eris-contracts');
-var fs = require ('fs');
+var fs = require('fs');
 var utils = require('./Utils');
 
-function encrypt(toEncrypt){
+function encrypt(toEncrypt) {
     return toEncrypt; //TODO true encryption -> see if code does not depend on count ?
 }
 
@@ -14,7 +14,7 @@ function encrypt(toEncrypt){
  * @param {JSON} description 
  * @param {string} code 
  */
-function Reward(rewardName, price, count, timestamp, description, code){
+function Reward(rewardName, price, count, timestamp, description, code) {
     this.rewardName = rewardName;
     this.price = price;
     this.count = count;
@@ -23,15 +23,15 @@ function Reward(rewardName, price, count, timestamp, description, code){
     this.encryptedCode = encrypt(code);
 }
 
-Reward.prototype.toString = function(){
+Reward.prototype.toString = function () {
     return JSON.stringify(this);
 }
 
-Reward.prototype.findID = function(){
+Reward.prototype.findId = function () {
     return this.rewardName; //TODO hash with count and timestamp
 }
 
-function RewardObject(owner, rewardName, rewarder, buyer, price, data){
+function RewardObject(owner, rewardName, rewarder, buyer, price, data) {
     this.owner = owner;
     this.rewardName = utils.hexToString(rewardName);
     this.rewarder = rewarder;
@@ -48,7 +48,7 @@ function RewardObject(owner, rewardName, rewarder, buyer, price, data){
  * @param {HexString} current 
  * @param {Address} address 
  */
-function Element(prev, next, current, address){
+function Element(prev, next, current, address) {
     this.prev = utils.hexToString(prev);
     this.next = utils.hexToString(next);
     this.current = utils.hexToString(current);
@@ -66,36 +66,40 @@ function RewardManager(contractManager) {
     this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
 
 
-    this.executeAction = function (actionName, address, str, intVal, data, callback){
-        this.actionManagerContract
-            .execute(actionName,
-            address, str, intVal, data, 
-            (error, result) => {
-                if(error) console.error(error);
-                callback(str, actionName, result);
-            })
+    this.executeAction = function (actionName, address, str, intVal, data, callback) {
+        var amc = this.actionManagerContract;
+        if (callback) {
+            return amc.execute(actionName, address, str, intVal, data, callback);
+        }
+        return new Promise((resolve, reject) => {
+            amc.execute(actionName, address, str, intVal, data,
+                (error, result) => {
+                    if (error) reject(error);
+                    resolve(result);
+                })
+        })
     }
 
-    
-    this.addReward = function(reward, callback){
 
-        this.executeAction("addreward", "0x0", reward.findID(), reward.price, reward.toString(), callback);
+    this.addReward = function (reward, callback) {
+        return this.executeAction("addreward", "0x0", reward.findId(), reward.price, reward.toString(), callback);
     };
 
-    this.removeReward = function(rewardName, callback){
-        this.executeAction("removereward", "0x0", rewardName, 0, "", callback);
+    this.removeReward = function (rewardName, callback) {
+        return this.executeAction("removereward", "0x0", rewardName, 0, "", callback);
     }
 
-    this.buyReward = function(rewardName, callback){
-        this.executeAction("buyreward", 0x0, rewardName, 0, "", callback);
+    this.buyReward = function (rewardName, callback) {
+        return this.executeAction("buyreward", 0x0, rewardName, 0, "", callback);
     }
 
     let dougContractAddress = this.contractData["deployDoug"];
     let dougAbi = JSON.parse(fs.readFileSync("./abi/" + dougContractAddress));
     this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
-    function getRewardData (contractData, contractsManager, list, callback) {
-        /*Get Offer ABI*/
+
+    function getRewardData(contractData, contractsManager, list, callback) {
+        /*Get Reward ABI*/
         let offerContractAddress = contractData["Reward"];
         let offerAbi = JSON.parse(fs.readFileSync("./abi/" + offerContractAddress));
 
@@ -105,41 +109,47 @@ function RewardManager(contractManager) {
         list.forEach((reward) => {
             let contract = contractsManager.newContractFactory(offerAbi).at(reward.address);
 
-            contract.getData((error, res)=>{
+            contract.getData((error, res) => {
                 let ro = new RewardObject(res[0], res[1], res[2], res[3], res[4], res[5]);
                 rewardList.push(ro);
-                if(rewardList.length == size){
-                    callback(rewardList);
+                if (rewardList.length == size) {
+                    callback(null, rewardList);
                 }
             })
         })
     }
 
 
-    function onRewardDbFound(rewardDbAddress, contractData, contractsManager, callback){
-        /*Get OfferDB ABI */
+    function onRewardDbFound(rewardDbAddress, contractData, contractsManager, callback) {
+        /*Get RewardDb ABI */
         let rewardsContractAddress = contractData["deployRewards"];
         let rewardsAbi = JSON.parse(fs.readFileSync("./abi/" + rewardsContractAddress));
         let rewardContract = contractsManager.newContractFactory(rewardsAbi).at(rewardDbAddress);
 
         /*Compile offers in list*/
         let list = [];
-        
-        rewardContract.tail(function(error, result){
+
+        rewardContract.tail(function (error, result) {
+            if (error) {
+                callback(error, null);
+            }
             var currentKey = result;
 
-            function finished (){
+            function finished() {
                 getRewardData(contractData, contractsManager, list, callback);
             }
 
-            function getElems (key){
-                rewardContract.getElement(key, function(err, res){
+            function getElems(key) {
+                rewardContract.getElement(key, function (err, res) {
+                    if (err) {
+                        callback(err, null);
+                    }
                     let elem = new Element(res[0], res[1], res[2], res[3]);
                     list.push(elem);
                     currentKey = elem.next;
                     let head = list[0];
-                    if (currentKey != head.current && currentKey != ""){
-                        getElems(currentKey);//<todo for tomorrow
+                    if (currentKey != head.current && currentKey != "") {
+                        getElems(currentKey);
                     } else {
                         finished();
                     }
@@ -150,26 +160,35 @@ function RewardManager(contractManager) {
     }
 
     /*Get rewards*/
-    this.getRewards = function(callback){
+    this.getRewards = function (callback) {
         let contractData = this.contractData;
-            let contractsManager = this.contractsManager;
+        let contractsManager = this.contractsManager;
+        let dougContract = this.dougContract;
 
-            this.dougContract.contracts("rewards", (error, rewardAddress)=>{
-                if(error){
-                    return null;
+        if (callback) {
+            dougContract.contracts("rewards", (error, rewardAddress) => {
+                if (error) {
+                    return callback(error, null);
                 }
-                onRewardDbFound(rewardAddress, contractData, contractsManager, callback);
+                return onRewardDbFound(rewardAddress, contractData, contractsManager, callback);
             })
+        }
+        else {
+            return new Promise((resolve, reject) => {
+                dougContract.contracts("rewards", (error, rewardAddress) => {
+                    if (error) return reject(error);
+                    onRewardDbFound(rewardAddress, contractData, contractsManager, (error, result) => {
+                        if (error) reject(error);
+                        resolve(result);
+                    });
+                })
+            })
+        }
     }
 
 }
 
-function logReward(actionName, offerName, result){
-    console.log(actionName + ":: OfferName: " + offerName + "-> Result: " + result);
-}
-
 module.exports = {
-    Reward : Reward,
-    RewardManager : RewardManager,
-    logReward: logReward
+    Reward: Reward,
+    RewardManager: RewardManager,
 }

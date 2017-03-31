@@ -3,8 +3,6 @@ import "./Offer.sol";
 import "../Validee.sol";
 
 contract OfferDb is LinkedList, Validee{
-
-    event ShoutLog(address addr, bytes32 msg);
         
     function addOffer(bytes32 offerName, address beneficiary, uint reward, bytes data) returns (address){
         if(!validate("addoffer")){
@@ -37,7 +35,7 @@ contract OfferDb is LinkedList, Validee{
         
         if(offerAddress == 0x0) return false;
         Offer o = Offer(offerAddress);
-        result = o.commitTo(volunteer);
+        return result = o.commitTo(volunteer);
     }
 
     function claim(bytes32 offerName, address volunteer) returns (bool){
@@ -52,7 +50,8 @@ contract OfferDb is LinkedList, Validee{
         if(!validate("confirmoffer")){
             return (0, 0x0);
         }
-        Offer o = Offer(list[offerName].contractAddress);
+        address offerAddress = list[offerName].contractAddress;
+        Offer o = Offer(offerAddress);
         if (o.confirm(beneficiary)){
             return (o.reward(), o.volunteer());
         } else {

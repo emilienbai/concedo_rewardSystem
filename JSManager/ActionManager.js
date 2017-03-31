@@ -1,9 +1,5 @@
 var erisC = require('eris-contracts');
-var fs = require ('fs');
-
-function logResult(action, actionName, res){
-        console.log(action + " : " + actionName + " -> " + res);
-    }
+var fs = require('fs');
 
 function ActionManager(contractsManager) {
     /*Get data from deployement*/
@@ -15,69 +11,110 @@ function ActionManager(contractsManager) {
     let actionManagerAbi = JSON.parse(fs.readFileSync("./abi/" + actionManagerContractAddress));
     this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
 
-/*Get ActionDb*/
+    /*Get ActionDb*/
     let actionDbContractAdress = this.contractData["deployActionDb"];
     let actionDbAbi = JSON.parse(fs.readFileSync("./abi/" + actionDbContractAdress));
     this.actionDbContract = this.contractsManager.newContractFactory(actionDbAbi).at(actionDbContractAdress);
 
-    /*AddAction Method*/
-    this.addAction = function(actionName, deployName, callback) {
-        let actionAddress = this.contractData[deployName];
 
-        this.actionManagerContract
-            .execute("addaction",
-                actionAddress, actionName, 0, "",
+    this.executeAction = function (actionName, address, str, intVal, data, callback) {
+        if (callback) {
+            return this.actionManagerContract
+                .execute(actionName, address, str, intVal, data, callback)
+        }
+        let amc = this.actionManagerContract;
+        return new Promise((resolve, reject) => {
+            amc.execute(actionName,
+                address, str, intVal, data,
                 (error, result) => {
-                    if (error) console.error(error);
-                    callback("AddAction", actionName, result);
+                    if (error) reject(error);
+                    resolve(result);
                 })
+        })
+
     }
 
-    this.removeAction = function(actionName, callback) {
-        this.actionManagerContract
-            .execute("removeaction", 
-            0x0, actionName, 0, "", 
-            (error, result) => {
-                if(error) console.error(error);
-                callback("RemoveAction", actionName, result);
-            })
+    /*AddAction Method*/
+    this.addAction = function (actionName, deployName, callback) {
+        let actionAddress = this.contractData[deployName];
+        return this.executeAction("addaction", actionAddress, actionName, 0, "", callback);
     }
 
-/*Get contract address*/
-    this.getActionContractAddress = function(contractName, callback) {
+    this.removeAction = function (actionName, callback) {
+        return this.executeAction("removeaction", 0x0, actionName, 0, "", callback);
+    }
+
+    /*Get contract address*/
+    this.getActionContractAddress = function (contractName, callback) {
         this.actionDbContract.actions(contractName,
-            function(error, result) {
+            function (error, result) {
                 if (error)
                     console.error(error);
                 callback(result);
             });
     }
 
-    this.addAllAction = function(){
-    /*Action*/
-      this.addAction("removeaction", "deployActionRemoveAction", logResult);  
-      /*Users*/
-      this.addAction("adduser", "deployActionAddUser", logResult);
-      this.addAction("removeuser", "deployActionRemoveUser", logResult);
-      //Offers
-      this.addAction("addoffer", "deployActionAddOffer", logResult);
-      this.addAction("removeoffer", "deployActionRemoveOffer", logResult); 
-      this.addAction("committooffer", "deployActionCommitToOffer", logResult);
-      this.addAction("claimoffer", "deployActionClaimOffer", logResult);
-      this.addAction("confirmoffer", "deployActionConfirmOffer", logResult);
-      //Rewards
-      this.addAction("addreward", "deployActionAddReward", logResult);
-      this.addAction("removereward", "deployActionRemoveReward", logResult);
-      this.addAction("buyreward", "deployActionBuyReward", logResult);      
-      //Permissions
-      this.addAction("setuserpermission", "deployActionSetUsermPerm", logResult);
-      this.addAction("setactionpermission", "deployActionSetActionPerm", logResult);
-
-      /*LockUnlock*/
+    this.addAllAction = function () {
+        return new Promise((resolve, reject) => {
+            //Action
+            this.addAction("removeaction", "deployActionRemoveAction")
+                .then((result) => {
+                    console.log("AddAction :: Remove Action -> " + result);
+                    return this.addAction("adduser", "deployActionAddUser")
+                })
+                .then((result) => {
+                    console.log("AddAction :: Add User -> " + result);
+                    return this.addAction("removeuser", "deployActionRemoveUser")
+                })
+                .then((result) => {
+                    console.log("AddAction :: Remove User -> " + result);
+                    return this.addAction("addoffer", "deployActionAddOffer");
+                })
+                .then((result) => {
+                    console.log("AddAction :: Add Offer -> " + result);
+                    return this.addAction("removeoffer", "deployActionRemoveOffer");
+                })
+                .then((result) => {
+                    console.log("AddAction :: Remove Offer -> " + result);
+                    return this.addAction("committooffer", "deployActionCommitToOffer");
+                })
+                .then((result) => {
+                    console.log("AddAction :: Commit to Offer -> " + result);
+                    return this.addAction("claimoffer", "deployActionClaimOffer");
+                })
+                .then((result) => {
+                    console.log("AddAction :: Claim Offer -> " + result);
+                    return this.addAction("confirmoffer", "deployActionConfirmOffer");
+                })
+                .then((result) => {
+                    console.log("AddAction :: Confirm Offer -> " + result);
+                    return this.addAction("addreward", "deployActionAddReward");
+                })
+                .then((result) => {
+                    console.log("AddAction :: Add Reward -> " + result);
+                    return this.addAction("removereward", "deployActionRemoveReward");
+                })
+                .then((result) => {
+                    console.log("AddAction :: Remove Reward -> " + result);
+                    return this.addAction("buyreward", "deployActionBuyReward");
+                })
+                .then((result) => {
+                    console.log("AddAction :: Buy Reward -> " + result);
+                    return this.addAction("setuserpermission", "deployActionSetUsermPerm");
+                })
+                .then((result) => {
+                    console.log("AddAction :: Set User Permission -> " + result);
+                    return this.addAction("setactionpermission", "deployActionSetActionPerm");
+                })
+                .then((result) => {
+                    console.log("AddAction :: Set Action Permission -> " + result);
+                    return resolve();
+                }),
+                (undefined, reject);
+        })
     }
 }
 
 module.exports = {
     ActionManager: ActionManager,
-    logResult : logResult
 }

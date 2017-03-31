@@ -1,5 +1,5 @@
 var erisC = require('eris-contracts');
-var fs = require ('fs');
+var fs = require('fs');
 var utils = require('./Utils');
 
 /**
@@ -12,7 +12,7 @@ var utils = require('./Utils');
  * @param {String} description 
  * @param {JSON} option 
  */
-function Offer(offerName, period, duration, location, type, description, option){
+function Offer(offerName, period, duration, location, type, description, option) {
     this.offerName = offerName;
     this.period = period;
     this.duration = duration;
@@ -33,7 +33,7 @@ function Offer(offerName, period, duration, location, type, description, option)
  * @param {bool} confirmed 
  * @param {int} confirmedOn
  */
-function OfferObject(beneficiary, offerName, reward, data, volunteer, claimed, confirmed, confirmedOn){
+function OfferObject(beneficiary, offerName, reward, data, volunteer, claimed, confirmed, confirmedOn) {
     this.beneficiary = beneficiary;
     this.offerName = utils.hexToString(offerName);
     this.reward = reward.toNumber();
@@ -42,7 +42,7 @@ function OfferObject(beneficiary, offerName, reward, data, volunteer, claimed, c
     this.volunteer = volunteer;
     this.claimed = claimed;
     this.confirmed = confirmed;
-    this.confirmedOn = confirmedOn;
+    this.confirmedOn = confirmedOn.toNumber();
 }
 
 /**
@@ -52,22 +52,22 @@ function OfferObject(beneficiary, offerName, reward, data, volunteer, claimed, c
  * @param {HexString} current 
  * @param {Address} address 
  */
-function Element(prev, next, current, address){
+function Element(prev, next, current, address) {
     this.prev = utils.hexToString(prev);
     this.next = utils.hexToString(next);
     this.current = utils.hexToString(current);
     this.address = address;
 }
 
-Offer.prototype.toString = function(){
+Offer.prototype.toString = function () {
     return JSON.stringify(this);
 }
 
-Offer.prototype.findId = function(){
+Offer.prototype.findId = function () {
     return this.offerName; //TODO make hash with offerName+time
 }
 
-Offer.prototype.computeReward = function(){
+Offer.prototype.computeReward = function () {
     return this.duration; //TODO consider options
 }
 
@@ -86,35 +86,38 @@ function OfferManager(contractsManager) {
     this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
 
 
-    this.executeAction = function (actionName, address, str, intVal, data, callback){
-        this.actionManagerContract
-            .execute(actionName,
-            address, str, intVal, data, 
-            (error, result) => {
-                if(error) console.error(error);
-                callback(str, actionName, result);
-            })
+    this.executeAction = function (actionName, address, str, intVal, data, callback) {
+        var amc = this.actionManagerContract;
+        if (callback) {
+            return amc.execute(actionName, address, str, intVal, data, callback);
+        }
+        return new Promise((resolve, reject) => {
+            amc.execute(actionName, address, str, intVal, data,
+                (error, result) => {
+                    if (error) reject(error);
+                    resolve(result);
+                })
+        })
     }
 
-
-    this.addOffer = function(offer, callback){
-        this.executeAction("addoffer", "0x0", offer.findId(), offer.computeReward(), offer.toString(), callback);
+    this.addOffer = function (offer, callback) {
+        return this.executeAction("addoffer", "0x0", offer.findId(), offer.computeReward(), offer.toString(), callback);
     };
 
-    this.removeOffer = function(offerName, callback){
-        this.executeAction("removeoffer", "0x0", offerName, 0, "", callback);
+    this.removeOffer = function (offerName, callback) {
+        return this.executeAction("removeoffer", "0x0", offerName, 0, "", callback);
     }
 
-    this.commitToOffer = function(offerName, callback){
-        this.executeAction("committooffer", "0x0", offerName, 0, "", callback);
+    this.commitToOffer = function (offerName, callback) {
+        return this.executeAction("committooffer", "0x0", offerName, 0, "", callback);
     }
 
-    this.claimOffer = function(offerName, callback){
-        this.executeAction("claimoffer", "0x0", offerName, 0, "", callback);
+    this.claimOffer = function (offerName, callback) {
+        return this.executeAction("claimoffer", "0x0", offerName, 0, "", callback);
     }
 
-    this.confirmOffer = function(offerName, callback){
-        this.executeAction("confirmoffer", 0x0, offerName, 0, "", callback);
+    this.confirmOffer = function (offerName, callback) {
+        return this.executeAction("confirmoffer", 0x0, offerName, 0, "", callback);
     }
 
 
@@ -129,7 +132,7 @@ function OfferManager(contractsManager) {
      * @param {Array} list - List of 'Element'
      * @param {function} callback 
      */
-    function getOfferData (contractData, contractsManager, list, callback) {
+    function getOfferData(contractData, contractsManager, list, callback) {
         /*Get Offer ABI*/
         let offerContractAddress = contractData["Offer"];
         let offerAbi = JSON.parse(fs.readFileSync("./abi/" + offerContractAddress));
@@ -140,10 +143,10 @@ function OfferManager(contractsManager) {
         list.forEach((offer) => {
             let contract = contractsManager.newContractFactory(offerAbi).at(offer.address);
 
-            contract.getData((error, res)=>{
+            contract.getData((error, res) => {
                 let oo = new OfferObject(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
                 offerList.push(oo);
-                if(offerList.length == size){
+                if (offerList.length == size) {
                     callback(offerList);
                 }
             })
@@ -157,7 +160,7 @@ function OfferManager(contractsManager) {
      * @param {Object} contractsManager 
      * @param {function} callback 
      */
-    function onOfferDbFound(offerDbAddress, contractData, contractsManager, callback){
+    function onOfferDbFound(offerDbAddress, contractData, contractsManager, callback) {
         /*Get OfferDB ABI */
         let offersContractAddress = contractData["deployOffers"];
         let offersAbi = JSON.parse(fs.readFileSync("./abi/" + offersContractAddress));
@@ -166,20 +169,20 @@ function OfferManager(contractsManager) {
         /*Compile offers in list*/
         let list = [];
         //todo consider current key == null
-        offerContract.tail(function(error, result){
+        offerContract.tail(function (error, result) {
             var currentKey = result;
 
-            function finished (){
+            function finished() {
                 getOfferData(contractData, contractsManager, list, callback);
             }
 
-            function getElems (key){
-                offerContract.getElement(key, function(err, res){
+            function getElems(key) {
+                offerContract.getElement(key, function (err, res) {
                     let elem = new Element(res[0], res[1], res[2], res[3]);
                     list.push(elem);
                     currentKey = elem.next;
                     let head = list[0];
-                    if (currentKey != head.current && currentKey != ""){
+                    if (currentKey != head.current && currentKey != "") {
                         getElems(currentKey);
                     } else {
                         finished();
@@ -192,32 +195,31 @@ function OfferManager(contractsManager) {
 
 
     /*Get offers*/
-    this.getOffers = function(callback){
+    this.getOffers = function (callback) {
         let contractData = this.contractData;
         let contractsManager = this.contractsManager;
+        let dougContract = this.dougContract;
 
-        this.dougContract.contracts("offers", (error, offerAddress)=>{
-            if(error){
-                return null;
-            }
-            onOfferDbFound(offerAddress, contractData, contractsManager, callback);
-        })
+        if (callback) {
+            dougContract.contracts("offers", (error, offerAddress) => {
+                if (error) callback(error, null);
+                return onOfferDbFound(offerAddress, contractData, contractsManager, callback);
+            });
+        } else {
+            return new Promise((resolve, reject) => {
+                dougContract.contracts("offers", (error, offerAddress) => {
+                    if (error) reject(error);
+                    onOfferDbFound(offerAddress, contractData, contractsManager, (error, result)=>{
+                        if(error) reject(error)
+                        resolve(result);
+                    })
+                })
+            })
+        }
     }
 }
 
-/**
- * Log result of offer action
- * @param {String} actionName - Name of the executed action 
- * @param {String} offerName - Name / ID of the offer
- * @param {Boolean} result - Result of the operation 
- */    
-function logOffer(actionName, offerName, result){
-    console.log(actionName + ":: OfferName: " + offerName + "-> Result: " + result);
-}
-
-
 module.exports = {
     Offer: Offer,
-    OfferManager: OfferManager, 
-    logOffer: logOffer
+    OfferManager: OfferManager
 }

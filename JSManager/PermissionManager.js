@@ -1,19 +1,16 @@
 var erisC = require('eris-contracts');
-var fs = require ('fs');
+var fs = require('fs');
 
 var perms = {
-    VOLUNTEER : 10, 
-    ELDERLY : 20,
-    REWARDER : 30,
-    ADMIN : 40,
-    FULL : 255
+    ALL: 0,
+    VOLUNTEER: 10,
+    ELDERLY: 20,
+    REWARDER: 30,
+    ADMIN: 40,
+    FULL: 255
 }
 
-function logResult(action, actionOrUser, permValue, res){
-        console.log(action + " : PermValue: " + permValue + ", "+ actionOrUser + " -> " + res);
-    }
-
-function PermissionManager(contractsManager){
+function PermissionManager(contractsManager) {
     /*GetData from deployment*/
     this.contractData = require("../jobs_output.json");
 
@@ -23,57 +20,96 @@ function PermissionManager(contractsManager){
     let actionManagerAbi = JSON.parse(fs.readFileSync("./abi/" + actionManagerContractAddress));
     this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
 
+    this.executeAction = function (actionName, address, str, intVal, data, callback) {
+        if (callback) {
+            return this.actionManagerContract
+                .execute(actionName, address, str, intVal, data, callback)
+        }
+        let amc = this.actionManagerContract;
+        return new Promise((resolve, reject) => {
+            amc.execute(actionName,
+                address, str, intVal, data,
+                (error, result) => {
+                    if (error) reject(error);
+                    resolve(result);
+                })
+        })
 
-    this.setUserPermission = function(userAddress, permission, callback){
-        this.actionManagerContract
-            .execute("setuserpermission", userAddress, "", permission, "", 
-            (error, result)=>{
-                if(error) console.error(error);
-                callback("SetUserPerm", userAddress, permission, result);
-            })
     }
 
-    this.setActionPermission = function(actionName, permission, callback){
-        this.actionManagerContract
-            .execute("setactionpermission", 0x0, actionName, permission, "", 
-            (error, result)=>{
-                if(error) console.error(error);
-                callback("SetActionPerm", actionName, permission, result);
-            })
+    this.setUserPermission = function (userAddress, permission, callback) {
+        return this.executeAction("setuserpermission", userAddress, "", permission, "", callback);
     }
 
-    this.setAllActionPerm = function(){
-        //Actions
-        this.setActionPermission("addAction", perms.ADMIN, logResult);        
-        this.setActionPermission("removeaction", perms.ADMIN, logResult);
-
-        //Users
-        this.setActionPermission("adduser", perms.ADMIN, logResult);
-        this.setActionPermission("removeuser", perms.ADMIN, logResult);
-        //Offers
-        this.setActionPermission("addoffer", perms.ELDERLY, logResult);
-        this.setActionPermission("removeoffer", perms.ELDERLY, logResult);
-        this.setActionPermission("committooffer", perms.VOLUNTEER, logResult);
-        this.setActionPermission("claimoffer", perms.VOLUNTEER, logResult);
-        this.setActionPermission("confirmoffer", perms.ELDERLY, logResult);
-
-        //Rewards
-        this.setActionPermission("addreward", perms.REWARDER, logResult);
-        this.setActionPermission("removereward", perms.REWARDER, logResult);
-        this.setActionPermission("buyreward", perms.VOLUNTEER, logResult);
-
-        //Permissions
-        this.setActionPermission("setuserpermission", perms.ADMIN, logResult);
-        this.setActionPermission("setactionpermission", perms.ADMIN, logResult);
+    this.setActionPermission = function (actionName, permission, callback) {
+        return this.executeAction("setactionpermission", 0x0, actionName, permission, "", callback);
     }
 
-
-
-
+    this.setAllActionPerm = function () {
+        return new Promise((resolve, reject) => {
+            this.setActionPermission("addaction", perms.ADMIN)
+                .then((result) => {
+                    console.log("Set Action Perm :: addaction " + perms.ADMIN + " -> " + result);
+                    return this.setActionPermission("removeaction", perms.ADMIN);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: removeaction " + perms.ADMIN + " -> " + result);
+                    return this.setActionPermission("adduser", perms.ALL);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: adduser " + perms.ALL + " -> " + result);
+                    return this.setActionPermission("removeuser", perms.ADMIN);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: removeuser " + perms.ADMIN + " -> " + result);
+                    return this.setActionPermission("addoffer", perms.ELDERLY);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: addoffer " + perms.ELDERLY + " -> " + result);
+                    return this.setActionPermission("removeoffer", perms.ELDERLY);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: removeoffer " + perms.ELDERLY + " -> " + result);
+                    return this.setActionPermission("committooffer", perms.VOLUNTEER);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: committooffer " + perms.VOLUNTEER + " -> " + result);
+                    return this.setActionPermission("claimoffer", perms.VOLUNTEER);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: claimoffer " + perms.VOLUNTEER + " -> " + result);
+                    return this.setActionPermission("confirmoffer", perms.ELDERLY);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: confirmoffer " + perms.ELDERLY + " -> " + result);
+                    return this.setActionPermission("addreward", perms.REWARDER);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: addreward " + perms.REWARDER + " -> " + result);
+                    return this.setActionPermission("removereward", perms.REWARDER);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: removereward " + perms.REWARDER + " -> " + result);
+                    return this.setActionPermission("buyreward", perms.VOLUNTEER);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: buyreward " + perms.VOLUNTEER + " -> " + result);
+                    return this.setActionPermission("setuserpermission", perms.ADMIN);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: setuserpermission " + perms.ADMIN + " -> " + result);
+                    return this.setActionPermission("setactionpermission", perms.ADMIN);
+                })
+                .then((result) => {
+                    console.log("Set Action Perm :: setactionpermission " + perms.ADMIN + " -> " + result);
+                    return resolve();
+                }),
+                (undefined, reject);
+        })
+    }
 }
 
 module.exports = {
-    perms : perms,
-    PermisssionManager : PermissionManager, 
-    logResult: logResult
+    perms: perms,
+    PermisssionManager: PermissionManager,
 }

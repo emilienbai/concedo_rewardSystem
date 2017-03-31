@@ -28,56 +28,30 @@ function UserManager(contractsManager) {
     let userDbAbi = JSON.parse(fs.readFileSync("./abi/" + userDbContractAddress));
     this.userDbContract = this.contractsManager.newContractFactory(userDbAbi).at(userDbContractAddress);
 
-
+    this.executeAction = function (actionName, address, str, intVal, data, callback) {
+        var amc = this.actionManagerContract;
+        if (callback) {
+            return amc.execute(actionName, address, str, intVal, data, callback);
+        }
+        return new Promise((resolve, reject) => {
+            amc.execute(actionName, address, str, intVal, data,
+                (error, result) => {
+                    if (error) reject(error);
+                    resolve(result);
+                })
+        })
+    }
 
     this.addUser = function(userAddress, pseudo, userData, callback){
-        this.actionManagerContract
-            .execute("adduser",
-            userAddress, pseudo, 0, userData, 
-            (error, result) => {
-                if(error) console.error(error);
-                callback(pseudo, result);
-            }
-        )
+        return this.executeAction("adduser", userAddress, pseudo, 0, userData, callback);
     }
 
     this.removeUser =  function(userAddress, callback){
-        this.actionManagerContract
-            .execute("removeuser",
-            userAddress, "", 0, "",
-            (error, result) => {
-                if(error) console.error(error);
-                callback(userAddress, result);
-            })
-    }
-
-//TODO A true get for user using constant methods
-    this.getUserAddress = function(address, callback){
-        this.userDbContract.users(address, function(error, result){
-            if(error)
-                console.log(error);
-            callback(address, result);
-        })
+        return this.executeAction("removeuser", userAddress, "", 0, callback);
     }
 }
-
-function logAddUser(pseudo, result){
-    console.log("AddUser:: Pseudo: " + pseudo + "-> Result: " + result);
-}
-
-function logRemoveUser(userAddress, result){
-    console.log("RemoveUser:: Address: " + userAddress + "-> Result: " + result);
-}
-
-function logGetUserAddress(userAddress, result){
-    console.log("GetUserAddress:: Address: " + userAddress + "-> Result: "+ result);
-}
-
 
 module.exports = {
     User: User,
-    UserManager: UserManager, 
-    logAddUser: logAddUser, 
-    logRemoveUser: logRemoveUser,
-    logGetUserAddress: logGetUserAddress
+    UserManager: UserManager
 }

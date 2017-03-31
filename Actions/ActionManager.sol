@@ -79,11 +79,8 @@ contract ActionManager is DougEnabled {
       // Now we check the permission that is required to execute the action.
       uint permReq = Action(actn).permission();
 
-      ShoutLog(this, "  UserPerm", perm);
-      ShoutLog(actn, "  ReqPerm", permReq);
-
       // Either authorized user or Admin
-      if (perm != permReq && perm < permToLock){
+      if (perm != permReq && perm < permToLock && permReq != 0){
         _log(actionName,false);
         result = false;
         return;
@@ -92,7 +89,6 @@ contract ActionManager is DougEnabled {
     
     // Set this as the currently active action.
     setActive(actn);
-    ShoutLog(actn, "  Execute action", 125);
     result = Action(actn).execute(msg.sender, addr, str, intVal, data);
 
     setActive(0x0);

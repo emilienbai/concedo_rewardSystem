@@ -60,7 +60,7 @@ contract ActionManager is DougEnabled {
     
     
       // Permissions stuff
-    address pAddr = ContractProvider(DOUG).contracts("perms");
+    address pAddr = ContractProvider(DOUG).contracts("users");
     // Only check permissions if there is a permissions contract.
     if(pAddr != 0x0){
       Permissionner p = Permissionner(pAddr);

@@ -28,13 +28,6 @@ jobs:
       instance: all
       wait: true
 
-- name: deployPermissions
-  job:
-    deploy: 
-      contract: Permissions.sol
-      instance: all
-      wait: true   
-
 - name: deployUsers
   job:
     deploy:
@@ -94,16 +87,6 @@ jobs:
       data:
         - "bank"
         - $deployBank
-
-- name: storePermissions
-  job:
-    call:
-      destination: $deployDoug
-      abi: Doug
-      function: addContract
-      data:
-        - "perms"
-        - $deployPermissions
 
 - name: storeUsers
   job:

@@ -23,9 +23,10 @@ User.prototype.encrypt = function(){
     return JSON.stringify(this); //TODO true encryption
 }
 
-function UserObject(owner, pseudo, encryptedData){
+function UserObject(owner, pseudo, perm, encryptedData){
     this.owner = owner;
     this.pseudo = utils.hexToString(pseudo);
+    this.perm = perm.toNumber();
     this.encryptedData = utils.hexToString(encryptedData);
 }
 
@@ -90,7 +91,7 @@ function UserManager(contractsManager) {
             let contract = contractsManager.newContractFactory(userAbi).at(user.address);
 
             contract.getData((error, res)=>{
-                let uo = new UserObject(res[0], res[1], res[2]);
+                let uo = new UserObject(res[0], res[1], res[2], res[3]);
                 userList.push(uo);
                 if(userList.length == size){
                     callback(null, userList);

@@ -65,6 +65,7 @@ var partRewarder = accountData.concedo_chain_participant_002;
 
 //Actions
 var actionManager = new ActionManager.ActionManager(contractsManagerFull);
+var userManager = new UserManager.UserManager(contractsManagerFull);
 
 var permManagerFull = new PermissionManager.PermisssionManager(contractsManagerFull);
 var permManagerVolunteer = new PermissionManager.PermisssionManager(contractsManagerVolunteer);
@@ -74,11 +75,18 @@ var perms = PermissionManager.perms;
 function AddActionAndSetPermission() {
     actionManager.addAllAction()
         .then(() => {
+            var userFull = new UserManager.User("Mouse", "Mickey", "DisneyCity", "0333334455", "mickey@mouse.com");
+            return userManager.addUser(full.address, "Full", userFull.encrypt());
+        })
+        .then((result) => {
+            console.log("Add user Mickey Mouse -> " + result);
             return permManagerFull.setUserPermission(full.address, perms.FULL);
         })
         .then((result) => {
-            console.log("Set full perm -> " + true);
-            return permManagerFull.setAllActionPerm();
+            console.log("Set full perm -> " + result);
+            if (result)
+                return permManagerFull.setAllActionPerm();
+            else throw ("permission not set");
         })
         .then(() => {
             return permManagerFull.setUserPermission(partVolunteer.address, perms.VOLUNTEER);
@@ -112,12 +120,12 @@ var bankManager = new BankManager.BankManager(contractsManagerFull, ()=>{
 */
 
 //*********************************Users***************************************/
-var userManager = new UserManager.UserManager(contractsManagerFull);
 
-function testUserDb() {
-    userVolunteer = new UserManager.User("Doe", "John Volunteer", "Luleå", "0123456789", "john@doe.se");
-    userElderly = new UserManager.User("Mamene", "Lorenzo Elderly", "0312456789", "lorenzo@mamene.sal");
-    userRewarder = new UserManager.User("Potter", "Harry Rewarder", "0312456789", "harry@potter.fr");
+function addUsersAndSetPerms() {
+    let userVolunteer = new UserManager.User("Doe", "John Volunteer", "Luleå", "0123456789", "john@doe.se");
+    let userElderly = new UserManager.User("Mamene", "Lorenzo Elderly", "0312456789", "lorenzo@mamene.sal");
+    let userRewarder = new UserManager.User("Potter", "Harry Rewarder", "0312456789", "harry@potter.fr");
+
     userManager.addUser(partVolunteer.address, "volunteer", userVolunteer.encrypt())
         .then((result) => {
             console.log("Add user John Doe -> " + result);
@@ -129,18 +137,30 @@ function testUserDb() {
         })
         .then((result) => {
             console.log("Add user Harry Potter -> " + result);
-            console.log("Add user finished !");
+            return permManagerFull.setUserPermission(partVolunteer.address, perms.VOLUNTEER);
         })
-        .catch(console.error);
+        .then((result) => {
+            console.log("Set user perm : " + perms.VOLUNTEER + " : " + partVolunteer.address + " -> " + result);
+            return permManagerFull.setUserPermission(partElderly.address, perms.ELDERLY);
+        })
+        .then((result) => {
+            console.log("Set user perm : " + perms.ELDERLY + " : " + partElderly.address + " -> " + result);
+            return permManagerFull.setUserPermission(partRewarder.address, perms.REWARDER);
+        })
+        .then((result) => {
+            console.log("Set user perm : " + perms.REWARDER + " : " + partRewarder.address + " -> " + result);
+            console.log("Actions deployed and permissions set !");
+        }).catch(console.error);
 }
 
-//testUserDb();
+//addUsersAndSetPerms();
 
+/*
 userManager.getUsers()
     .then((result) => {
         console.log(result);
     }).catch(console.error)
-
+*/
 //***************************************Offer*********************************/
 
 var offerManagerFull = new OfferManager.OfferManager(contractsManagerFull);

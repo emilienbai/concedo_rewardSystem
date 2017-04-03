@@ -19,4 +19,26 @@ contract UserDb is UserList, Validee {
 
         return _removeElement(userAddress);
     }
+
+    function setPermission(address addr, uint perm) returns (bool){
+        if (!validate("setuserpermission")) return false;
+        
+        address userAddress = list[addr].contractAddress;
+
+        if(userAddress == 0x0) return false;
+
+        User u = User(userAddress);
+
+        return u.setPermission(perm);
+    }
+
+    function perms(address userAddr) constant returns (uint){
+        address contractAddress = list[userAddr].contractAddress;
+
+        if(contractAddress == 0x0) return 0;
+
+        User u = User(contractAddress);
+
+        return u.perm();
+    }
 }

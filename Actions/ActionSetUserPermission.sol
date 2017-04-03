@@ -10,7 +10,7 @@ contract ActionSetUserPermission is Action {
             return false;
         }
         ContractProvider dg = ContractProvider(DOUG);
-        address perms = dg.contracts("perms");
+        address perms = dg.contracts("users");
         if(perms == 0x0){
             return false;
         }

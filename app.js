@@ -111,6 +111,35 @@ var bankManager = new BankManager.BankManager(contractsManagerFull, ()=>{
 });
 */
 
+//*********************************Users***************************************/
+var userManager = new UserManager.UserManager(contractsManagerFull);
+
+function testUserDb() {
+    userVolunteer = new UserManager.User("Doe", "John Volunteer", "Luleå", "0123456789", "john@doe.se");
+    userElderly = new UserManager.User("Mamene", "Lorenzo Elderly", "0312456789", "lorenzo@mamene.sal");
+    userRewarder = new UserManager.User("Potter", "Harry Rewarder", "0312456789", "harry@potter.fr");
+    userManager.addUser(partVolunteer.address, "volunteer", userVolunteer.encrypt())
+        .then((result) => {
+            console.log("Add user John Doe -> " + result);
+            return userManager.addUser(partElderly.address, "elderly", userElderly.encrypt());
+        })
+        .then((result) => {
+            console.log("Add user Lorenzo Mamene -> " + result);
+            return userManager.addUser(partRewarder.address, "rewarder", userRewarder.encrypt());
+        })
+        .then((result) => {
+            console.log("Add user Harry Potter -> " + result);
+            console.log("Add user finished !");
+        })
+        .catch(console.error);
+}
+
+//testUserDb();
+
+userManager.getUsers()
+    .then((result) => {
+        console.log(result);
+    }).catch(console.error)
 
 //***************************************Offer*********************************/
 
@@ -125,30 +154,30 @@ let cccOffer = new OfferManager.Offer("cccOffer", "18/06/2017", 100, "Lulec", "d
 
 function testOffers() {
     offerManagerElderly.addOffer(aaaOffer)
-    .then((result)=>{ //Expected true
-        console.log("Elderly adds aaaOffer : " + result);
-        return offerManagerVolunteer.addOffer(bbbOffer);
-    })
-    .then((result) => { //Expected false
-        console.log("Volunteer adds bbbOffer : " + result);
-        return offerManagerRewarder.addOffer(cccOffer);
-    })
-    .then((result)=>{ //Expected false
-        console.log("Rewarder adds cccOffer : " + result);
-        return offerManagerVolunteer.commitToOffer(aaaOffer.findId());
-    })
-    .then((result)=>{ //Expected true
-        console.log("Volunteer commits : " + result);
-        return offerManagerVolunteer.claimOffer(aaaOffer.findId());
-    })
-    .then((result)=>{ //Expected true
-        console.log("Volunteer claims : " + result);
-        return offerManagerElderly.confirmOffer(aaaOffer.findId());
-    })
-    .then((result)=> { //Expected true
-        console.log("Elderly confirms : " + result);
-    })
-    .catch(console.error);
+        .then((result) => { //Expected true
+            console.log("Elderly adds aaaOffer : " + result);
+            return offerManagerVolunteer.addOffer(bbbOffer);
+        })
+        .then((result) => { //Expected false
+            console.log("Volunteer adds bbbOffer : " + result);
+            return offerManagerRewarder.addOffer(cccOffer);
+        })
+        .then((result) => { //Expected false
+            console.log("Rewarder adds cccOffer : " + result);
+            return offerManagerVolunteer.commitToOffer(aaaOffer.findId());
+        })
+        .then((result) => { //Expected true
+            console.log("Volunteer commits : " + result);
+            return offerManagerVolunteer.claimOffer(aaaOffer.findId());
+        })
+        .then((result) => { //Expected true
+            console.log("Volunteer claims : " + result);
+            return offerManagerElderly.confirmOffer(aaaOffer.findId());
+        })
+        .then((result) => { //Expected true
+            console.log("Elderly confirms : " + result);
+        })
+        .catch(console.error);
 }
 
 //testOffers();
@@ -161,11 +190,6 @@ offerManagerFull.getOffers()
 */
 
 //***************************Rewards*******************************************/
-
-
-
-
-
 var rewardManagerFull = new RewardManager.RewardManager(contractsManagerFull);
 var rewardManagerVolunteer = new RewardManager.RewardManager(contractsManagerVolunteer);
 var rewardManagerElderly = new RewardManager.RewardManager(contractsManagerElderly);
@@ -176,23 +200,23 @@ let bbbreward = new RewardManager.Reward("bbbReward", 50, 20, 20170324, "descrip
 let cccreward = new RewardManager.Reward("cccReward", 50, 30, 20170324, "description du lolccc...", "pcccssword");
 
 
-function testRewards(){
+function testRewards() {
     rewardManagerRewarder.addReward(aaareward)
-    .then((result)=>{ //Expected true
-        console.log("Rewarder adds aaaReward ->" + result);
-        return rewardManagerVolunteer.addReward(bbbreward);
-    })
-    .then((result)=>{//Expected false
-        console.log("Volunteer adds bbbReward -> " + result);
-        return rewardManagerElderly.addReward(cccreward);
-    })
-    .then((result)=>{//Expected false
-        console.log("Elderly adds cccReward -> " + result);
-        return rewardManagerVolunteer.buyReward(aaareward.findId());
-    }).then((result)=>{//Depends on User balance
-        console.log("Volunteer buys aaaReward -> " + result);
-    })
-    .catch(console.error);
+        .then((result) => { //Expected true
+            console.log("Rewarder adds aaaReward ->" + result);
+            return rewardManagerVolunteer.addReward(bbbreward);
+        })
+        .then((result) => {//Expected false
+            console.log("Volunteer adds bbbReward -> " + result);
+            return rewardManagerElderly.addReward(cccreward);
+        })
+        .then((result) => {//Expected false
+            console.log("Elderly adds cccReward -> " + result);
+            return rewardManagerVolunteer.buyReward(aaareward.findId());
+        }).then((result) => {//Depends on User balance
+            console.log("Volunteer buys aaaReward -> " + result);
+        })
+        .catch(console.error);
 }
 
 //testRewards();

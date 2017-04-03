@@ -1,34 +1,22 @@
+import "./UserList.sol";
 import "../Validee.sol";
 import "./User.sol";
 
-contract UserDb is Validee {
-    mapping (address => User) public users;
-
-    event ShoutLog(bytes32 indexed message);
-    
+contract UserDb is UserList, Validee {
+   
     function addUser(address userAddress, bytes32 pseudo, bytes encryptedData) returns (address){
-        ShoutLog("  Calling adduser");
-        if(!validate("adduser")){
-            return 0x0;
-        }
+        if(!validate("adduser")) return 0x0;
         address newUser = address(new User(userAddress, pseudo, encryptedData));
-        if(newUser != 0x0 && users[userAddress]==User(0x0)){
-            users[userAddress] = User(newUser);
+        
+        if(newUser != 0x0){
+            _addElement(userAddress, newUser);
         }
-        return newUser;
+        return list[userAddress].contractAddress;
     }
     
     function removeUser(address userAddress) returns (bool){
-        ShoutLog("  Calling removeUser");
-        if(!validate("removeuser")){
-            return false;
-        }
-        users[userAddress].remove();
-        users[userAddress] = User(0x0);
-        return true;
-    }
+        if(!validate("removeuser")) return false;
 
-    function test(){
-        ShoutLog("  Hello World");
+        return _removeElement(userAddress);
     }
 }

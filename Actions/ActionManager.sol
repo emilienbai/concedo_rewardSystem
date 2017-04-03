@@ -127,7 +127,6 @@ contract ActionManager is DougEnabled {
     locked = true;
   }
 
-/*
   function unlock() returns (bool) {
     address activeAction = getActive();
     address actionDb = ContractProvider(DOUG).contracts("actiondb");
@@ -143,7 +142,6 @@ contract ActionManager is DougEnabled {
     }
     locked = false;
   }
-*/  
 
   function _log(bytes32 actionName, bool success) internal {
     ActionLogEntry le = logEntries[nextEntry++];

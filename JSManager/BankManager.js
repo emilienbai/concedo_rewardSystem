@@ -1,5 +1,5 @@
 var erisC = require('eris-contracts');
-var fs = require ('fs');
+var fs = require('fs');
 
 function BankManager(contractManager, callback) {
 
@@ -11,12 +11,12 @@ function BankManager(contractManager, callback) {
     let dougAbi = JSON.parse(fs.readFileSync("./abi/" + dougContractAddress));
     this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
-    this.dougContract.contracts("bank",(error, bankAddress)=>{
-        if(error){
+    this.dougContract.contracts("bank", (error, bankAddress) => {
+        if (error) {
             return null;
         }
         let bankCurrentAddress = bankAddress;
-        /*Get ABI */        
+        /*Get ABI */
         let bankContractAddress = this.contractData["deployBank"];
         let bankAbi = JSON.parse(fs.readFileSync("./abi/" + bankContractAddress)); //TODO check if works
 
@@ -24,16 +24,13 @@ function BankManager(contractManager, callback) {
         callback();
     });
 
-    
-
-    this.getBalance = function(userAddress, callback){
-        this.bankContract.balance(userAddress, (error, result)=>{
-            if(error) console.error(error);
+    this.getBalance = function (userAddress, callback) {
+        this.bankContract.balance(userAddress, (error, result) => {
+            if (error) console.error(error);
             //console.log(result);
             callback(result);
         })
     }
-
 }
 
 module.exports = {

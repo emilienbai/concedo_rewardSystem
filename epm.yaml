@@ -161,6 +161,13 @@ jobs:
       instance: all
       wait: true
 
+- name: User
+  job:
+    deploy:
+      contract: Users/User.sol
+      instance: all
+      wait: true
+
 #Deploy Actions
 - name: deployActionRemoveAction
   job:

@@ -16,8 +16,6 @@ contract ActionAddOffer is Action{
         }
 
         var offerDb = Offers(odb);
-        address offerAddress = offerDb.addOffer(offerName, sender, reward, offerData);
-        if(offerAddress != 0x0) return true;
-        return false;
+        return  offerDb.addOffer(offerName, sender, reward, offerData);
     }
 }

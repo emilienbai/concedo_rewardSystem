@@ -1,6 +1,6 @@
 contract Offers {
 
-    function addOffer(bytes32 offerName, address beneficiary, uint reward, bytes data) returns (address);
+    function addOffer(bytes32 offerName, address beneficiary, uint reward, bytes data) returns (bool);
     
     function removeOffer(bytes32 offerName) returns (bool);
     

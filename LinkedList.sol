@@ -17,9 +17,13 @@ contract LinkedList {
 
   // Add a new contract. This will overwrite an existing contract. 'internal' modifier means
   // it has to be called by an implementing class.
-  function _addElement(bytes32 name, address addr) internal returns (bool result) {
-       Element elem = list[name];
+  function _addElement(bytes32 name, address addr, bool overwrite) internal returns (bool result) {
+      Element elem = list[name];
 
+      if(elem.contractAddress != 0x0 && !overwrite){
+        return false;
+      }
+      
       elem.contractName = name;
       elem.contractAddress = addr;
 

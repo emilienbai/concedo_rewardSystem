@@ -4,15 +4,14 @@ import "../Validee.sol";
 
 contract OfferDb is LinkedList, Validee{
         
-    function addOffer(bytes32 offerName, address beneficiary, uint reward, bytes data) returns (address){
+    function addOffer(bytes32 offerName, address beneficiary, uint reward, bytes data) returns (bool){
         if(!validate("addoffer")){
-            return 0x0;
+            return false;
         }
   
         address newOffer = address(new Offer(beneficiary, offerName, reward, data));
 
-        _addElement(offerName, newOffer);
-        return list[offerName].contractAddress;
+        return _addElement(offerName, newOffer, false);
     }
     
     function removeOffer(bytes32 offerName) returns (bool){

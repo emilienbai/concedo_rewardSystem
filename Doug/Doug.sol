@@ -46,7 +46,7 @@ contract Doug is LinkedList {
     }
 
        // Add to contract.
-       bool ae = _addElement(name, addr);
+       bool ae = _addElement(name, addr, true);
        if (ae) {
           AddContract(msg.sender, name, 201);
        } else {

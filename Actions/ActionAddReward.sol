@@ -12,8 +12,6 @@ contract ActionAddReward is Action{
         if (rdb == 0x0) return false;
 
         var rewardDb = Rewards(rdb);
-        address rewardAddress = rewardDb.addReward(rewardName, sender, price, rewardData);
-        if(rewardAddress != 0x0) return true;
-        return false;
+        return rewardDb.addReward(rewardName, sender, price, rewardData);
     }
 }

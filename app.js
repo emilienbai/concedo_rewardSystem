@@ -89,18 +89,6 @@ function AddActionAndSetPermission() {
             else throw ("permission not set");
         })
         .then(() => {
-            return permManagerFull.setUserPermission(partVolunteer.address, perms.VOLUNTEER);
-        })
-        .then((result) => {
-            console.log("Set user perm : " + perms.VOLUNTEER + " : " + partVolunteer.address + " -> " + result);
-            return permManagerFull.setUserPermission(partElderly.address, perms.ELDERLY);
-        })
-        .then((result) => {
-            console.log("Set user perm : " + perms.ELDERLY + " : " + partElderly.address + " -> " + result);
-            return permManagerFull.setUserPermission(partRewarder.address, perms.REWARDER);
-        })
-        .then((result) => {
-            console.log("Set user perm : " + perms.REWARDER + " : " + partRewarder.address + " -> " + result);
             console.log("Actions deployed and permissions set !");
         }).catch(console.error);
 }

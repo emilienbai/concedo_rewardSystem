@@ -20,6 +20,10 @@ contract UserList {
   function _addElement(address userAddress, address contractAddr) internal returns (bool result) {
         Element elem = list[userAddress];
 
+        if(elem.contractAddress != 0x0){//does not allow to overwrite user
+            return false;
+        }
+
         elem.userAddress = userAddress;
         elem.contractAddress = contractAddr;
 

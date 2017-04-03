@@ -1,6 +1,6 @@
 contract Rewards{
 
-    function addReward(bytes32 rewardName, address rewarder, uint price, bytes data) returns (address);
+    function addReward(bytes32 rewardName, address rewarder, uint price, bytes data) returns (bool);
 
     function removeReward(bytes32 rewardName) returns (bool);
 

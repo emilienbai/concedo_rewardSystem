@@ -6,13 +6,12 @@ contract RewardDb is LinkedList, Validee{
 
     event ShoutLog(address addr, bytes32 msg);
 
-    function addReward(bytes32 rewardName, address rewarder, uint price, bytes data) returns (address){
-        if(!validate("addreward")) return 0x0;
+    function addReward(bytes32 rewardName, address rewarder, uint price, bytes data) returns (bool){
+        if(!validate("addreward")) return false;
 
         address newReward = address(new Reward(rewarder, rewardName, price, data));
 
-        _addElement(rewardName, newReward);
-        return list[rewardName].contractAddress;
+        return _addElement(rewardName, newReward, false);
     }
 
     function removeReward(bytes32 rewardName) returns (bool){

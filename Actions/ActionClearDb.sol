@@ -19,11 +19,6 @@ contract ActionClearDb is Action {
         dbi = DbInterface(db);
         dbi.clearDb();
 
-        //Clear users
-        db = d.contracts("users");
-        dbi = DbInterface(db);
-        dbi.clearDb();
-
         return true;    
     }
 

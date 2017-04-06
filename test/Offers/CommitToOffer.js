@@ -36,8 +36,17 @@ describe('Test commit to Offer', function () {
             })
     })
 
-    beforeEach(function () {
-        return common.managers.full.actionManager.clear();
+    afterEach(function () {
+        return common.managers.full.actionManager.clear()
+            .then(() => {
+                return common.managers.full.userManager.removeUser(common.address.elderly.address);
+            })
+            .then(() => {
+                return common.managers.full.userManager.removeUser(common.address.volunteer.address);
+            })
+            .then(() => {
+                return common.managers.full.userManager.removeUser(common.address.rewarder.address);
+            })
     })
 
 
@@ -48,10 +57,10 @@ describe('Test commit to Offer', function () {
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER)
                 })
                 .then(() => {
@@ -75,16 +84,16 @@ describe('Test commit to Offer', function () {
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER)
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.userManager.addUser(common.address.rewarder.address, "Volunteer2", common.users.rewarder.encrypt())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.VOLUNTEER)
                 })
                 .then(() => {
@@ -93,7 +102,7 @@ describe('Test commit to Offer', function () {
                 .then(() => {
                     return common.managers.volunteer.offerManager.commitToOffer(common.offers.aaaOffer.findId())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.rewarder.offerManager.commitToOffer(common.offers.aaaOffer.findId())
                 })
                 .then(() => {
@@ -111,10 +120,10 @@ describe('Test commit to Offer', function () {
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.ELDERLY)
                 })
                 .then(() => {
@@ -138,10 +147,10 @@ describe('Test commit to Offer', function () {
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder.encrypt())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.REWARDER)
                 })
                 .then(() => {

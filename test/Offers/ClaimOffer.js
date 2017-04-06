@@ -48,21 +48,33 @@ describe('Test Claim Offer with perms', function () {
             })
     })
 
-    beforeEach(function () {
-        return common.managers.full.actionManager.clear();
+    afterEach(function () {
+        return common.managers.full.actionManager.clear()
+            .then(() => {
+                return common.managers.full.userManager.removeUser(common.address.elderly.address);
+
+            })
+            .then(() => {
+                return common.managers.full.userManager.removeUser(common.address.volunteer.address);
+
+            })
+            .then(() => {
+                return common.managers.full.userManager.removeUser(common.address.rewarder.address);
+
+            })
     })
 
 
-     describe('Volunteer claims an Offer he commited to', function () {
+    describe('Volunteer claims an Offer he commited to', function () {
         it('Should accept the claim action', function () {
             return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER)
                 })
                 .then(() => {
@@ -71,7 +83,7 @@ describe('Test Claim Offer with perms', function () {
                 .then(() => {
                     return common.managers.volunteer.offerManager.commitToOffer(common.offers.aaaOffer.findId())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.volunteer.offerManager.claimOffer(common.offers.aaaOffer.findId());
                 })
                 .then(() => {
@@ -82,23 +94,23 @@ describe('Test Claim Offer with perms', function () {
                 })
         })
     })
-    
+
     describe('Volunteer claims an Offer without commit', function () {
         it('Should not accept the claim action', function () {
             return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER)
                 })
                 .then(() => {
                     return common.managers.elderly.offerManager.addOffer(common.offers.aaaOffer)
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.volunteer.offerManager.claimOffer(common.offers.aaaOffer.findId());
                 })
                 .then(() => {
@@ -110,22 +122,22 @@ describe('Test Claim Offer with perms', function () {
         })
     })
 
-     describe('Volunteer claims an offer commited by someone else', function () {
+    describe('Volunteer claims an offer commited by someone else', function () {
         it('Should not accept the claim', function () {
             return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER)
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.userManager.addUser(common.address.rewarder.address, "Volunteer2", common.users.rewarder.encrypt())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.VOLUNTEER)
                 })
                 .then(() => {
@@ -134,7 +146,7 @@ describe('Test Claim Offer with perms', function () {
                 .then(() => {
                     return common.managers.volunteer.offerManager.commitToOffer(common.offers.aaaOffer.findId())
                 })
-                .then(()=>{
+                .then(() => {
                     return common.managers.rewarder.offerManager.claimOffer(common.offers.aaaOffer.findId())
                 })
                 .then(() => {
@@ -147,10 +159,7 @@ describe('Test Claim Offer with perms', function () {
     })
 
     after(function () {
-        return common.managers.full.userManager.removeUser(common.address.full.address)
-            .then(() => {
-                return common.managers.full.actionManager.addAction("removeaction", "deployActionRemoveAction")
-            })
+        return common.managers.full.actionManager.addAction("removeaction", "deployActionRemoveAction")
             .then((result) => {
                 return common.managers.full.actionManager.clear();
             })
@@ -159,9 +168,6 @@ describe('Test Claim Offer with perms', function () {
             })
             .then((result) => {
                 return common.managers.full.actionManager.removeAction("adduser")
-            })
-            .then(() => {
-                return common.managers.full.actionManager.removeAction("removeuser");
             })
             .then(() => {
                 return common.managers.full.actionManager.removeAction("setuserpermission");
@@ -180,6 +186,12 @@ describe('Test Claim Offer with perms', function () {
             })
             .then(() => {
                 return common.managers.full.actionManager.removeAction("claimoffer");
+            })
+            .then(() => {
+                return common.managers.full.userManager.removeUser(common.address.full.address);
+            })
+            .then(() => {
+                return common.managers.full.actionManager.removeAction("removeuser");
             })
             .then(() => {
                 return common.managers.full.actionManager.removeAction("removeaction");

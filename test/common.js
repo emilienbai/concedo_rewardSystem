@@ -77,6 +77,11 @@ let aaaOffer = new OfferManager.Offer("aaaOffer", "18/04/2017", 60, "Lulea", "ga
 let bbbOffer = new OfferManager.Offer("bbbOffer", "18/05/2017", 80, "Luleb", "shopping", "description...", {});
 let cccOffer = new OfferManager.Offer("cccOffer", "18/06/2017", 100, "Lulec", "driving", "description...", {});
 
+//****************************************Rewards***************************************************
+let aaaReward = new RewardManager.Reward("aaaReward", 50, 10, 20170324, "description du lolaaa...", "paaassword");
+let bbbReward = new RewardManager.Reward("bbbReward", 50, 20, 20170324, "description du lolbbb...", "pbbbssword");
+let cccReward = new RewardManager.Reward("cccReward", 50, 30, 20170324, "description du lolccc...", "pcccssword");
+
 
 
 module.exports = {
@@ -110,6 +115,11 @@ module.exports = {
         aaaOffer: aaaOffer,
         bbbOffer: bbbOffer,
         cccOffer: cccOffer
+    },
+    rewards : {
+        aaaReward : aaaReward,
+        bbbReward : bbbReward,
+        cccReward : cccReward
     },
     address: {
         full: full,

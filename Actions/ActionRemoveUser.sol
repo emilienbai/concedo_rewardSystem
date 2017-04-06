@@ -2,6 +2,7 @@ import "../Interfaces/Users.sol";
 import "../Interfaces//Permissionner.sol";
 import "./ActionManager.sol";
 import "../Interfaces/ContractProvider.sol";
+import "../Interfaces/Cleaner.sol";
 
 contract ActionRemoveUser is Action {
 
@@ -16,8 +17,14 @@ contract ActionRemoveUser is Action {
         }
 
         var userDb = Users(udb);
-        return userDb.removeUser(userAddress);
-
-        
+        if(userDb.removeUser(userAddress)){
+            address bdb = dg.contracts("bank");
+            if(bdb == 0x0){
+                return false;
+            }
+            Cleaner cl = Cleaner(bdb);
+            return cl.clean(userAddress);
+        }
+        return false;        
     }
 }

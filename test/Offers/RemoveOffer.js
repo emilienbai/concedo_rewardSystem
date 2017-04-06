@@ -39,8 +39,20 @@ describe('Test Remove Offer with perms', function () {
             })
     })
 
-    beforeEach(function () {
-        return common.managers.full.actionManager.clear();
+    afterEach(function () {
+        return common.managers.full.actionManager.clear()
+            .then(() => {
+                return common.managers.full.userManager.removeUser(common.address.elderly.address);
+
+            })
+            .then(() => {
+                return common.managers.full.userManager.removeUser(common.address.volunteer.address);
+
+            })
+            .then(() => {
+                return common.managers.full.userManager.removeUser(common.address.rewarder.address);
+
+            })
     })
 
 

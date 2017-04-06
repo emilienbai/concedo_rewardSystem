@@ -1,0 +1,9 @@
+echo "Are you sure ? - 3"
+sleep 1
+echo "2"
+sleep 1
+echo "1"
+sleep 1
+rm abi/*
+eris pkgs do -c concedo_chain -a $1 -b ../abi
+

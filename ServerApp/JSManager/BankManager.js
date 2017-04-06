@@ -3,7 +3,7 @@ var fs = require('fs');
 
 function BankManager(contractManager, callback) {
 
-    this.contractData = require('../jobs_output.json');
+    this.contractData = require('../../jobs_output.json');
 
     this.contractsManager = contractManager;
     /*Get DOUG*/

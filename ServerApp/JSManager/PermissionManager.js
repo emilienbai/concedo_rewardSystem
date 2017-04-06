@@ -12,7 +12,7 @@ var perms = {
 
 function PermissionManager(contractsManager) {
     /*GetData from deployment*/
-    this.contractData = require("../jobs_output.json");
+    this.contractData = require("../../jobs_output.json");
 
     this.contractsManager = contractsManager;
     /*Get action manager*/

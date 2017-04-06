@@ -57,7 +57,7 @@ function Element(prev, next, current, address) {
 
 function RewardManager(contractManager) {
     /*Get data from deployement*/
-    this.contractData = require('../jobs_output.json');
+    this.contractData = require('../../jobs_output.json');
 
     this.contractsManager = contractManager;
     /*Get ActionManager*/

@@ -1,18 +1,18 @@
 // requires
-var ActionManager = require('./JSManager/ActionManager');
-var UserManager = require('./JSManager/UserManager');
-var OfferManager = require('./JSManager/OfferManager');
-var RewardManager = require('./JSManager/RewardManager');
-var BankManager = require('./JSManager/BankManager');
-var PermissionManager = require('./JSManager/PermissionManager');
+var ActionManager = require('./ServerApp/JSManager/ActionManager');
+var UserManager = require('./ServerApp/JSManager/UserManager');
+var OfferManager = require('./ServerApp/JSManager/OfferManager');
+var RewardManager = require('./ServerApp/JSManager/RewardManager');
+var BankManager = require('./ServerApp/JSManager/BankManager');
+var PermissionManager = require('./ServerApp/JSManager/PermissionManager');
 var fs = require('fs');
 var erisC = require('eris-contracts');
-var utils = require('./JSManager/Utils');
+var utils = require('./ServerApp/JSManager/Utils');
 
 
 // NOTE. On Windows/OSX do not use localhost. find the
 // url of your chain with:
-// docker-machine ls
+// docker-machine lsnode 
 // and find the docker machine name you are using (usually default or eris).
 // for example, if the URL returned by docker-machine is tcp://192.168.99.100:2376
 // then your erisdbURL should be http://192.168.99.100:1337/rpc

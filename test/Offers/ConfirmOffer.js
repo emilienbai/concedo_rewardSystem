@@ -9,61 +9,45 @@ describe('Test Confirm Offer with perms', function () {
     before(function () {
         return common.managers.full.actionManager.addAction("adduser", "deployActionAddUser")
             .then((res) => {
-                console.log(res);
-                //Add action remove user
                 return common.managers.full.actionManager.addAction("removeuser", "deployActionRemoveUser");
             })
             .then((res) => {
-                //Add action set user permission
-                console.log(res);
                 return common.managers.full.actionManager.addAction("setuserpermission", "deployActionSetUsermPerm");
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.actionManager.addAction("setactionpermission", "deployActionSetActionPerm");
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.actionManager.addAction("clear", "deployActionClearDb");
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.actionManager.addAction("addoffer", "deployActionAddOffer");
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.permManager.setActionPermission("addoffer", common.permLevels.ELDERLY)
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.actionManager.addAction("removeoffer", "deployActionRemoveOffer");
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.permManager.setActionPermission("removeoffer", common.permLevels.ELDERLY)
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.actionManager.addAction("committooffer", "deployActionCommitToOffer");
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.permManager.setActionPermission("committooffer", common.permLevels.VOLUNTEER)
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.actionManager.addAction("claimoffer", "deployActionClaimOffer");
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.permManager.setActionPermission("claimoffer", common.permLevels.VOLUNTEER)
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.actionManager.addAction("confirmoffer", "deployActionConfirmOffer");
             })
             .then((res) => {
-                console.log(res);
                 return common.managers.full.permManager.setActionPermission("confirmoffer", common.permLevels.ELDERLY)
             })
     })

@@ -58,6 +58,14 @@ contract ActionDb is ActionManagerEnabled {
         return true;
     }
 
+    function getPermission(bytes32 name) returns (uint){
+        if (actions[name] == 0x0){
+            return 0;
+        }
+        Action a = Action(actions[name]);
+        return a.permission();
+    }
+
     function log(address addr, bytes32 text, bool sucess){
         ShoutLog(addr, text, sucess);
     }

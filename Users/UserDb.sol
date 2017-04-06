@@ -41,4 +41,11 @@ contract UserDb is UserList, Validee {
 
         return u.perm();
     }
+
+    function clearDb(){
+        if(!validate("clear")){
+           return;
+        }
+        _clear();
+    }
 }

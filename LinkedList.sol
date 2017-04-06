@@ -79,4 +79,10 @@ contract LinkedList {
       contractName = elem.contractName;
       contractAddress = elem.contractAddress;
   }
+
+  function _clear() internal {
+    while(tail != ""){
+      _removeElement(tail);
+    }
+  }
 }

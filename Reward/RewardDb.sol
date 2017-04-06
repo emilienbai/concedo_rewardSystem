@@ -14,7 +14,7 @@ contract RewardDb is LinkedList, Validee{
         return _addElement(rewardName, newReward, false);
     }
 
-    function removeReward(bytes32 rewardName) returns (bool){
+    function removeReward(bytes32 rewardName, address sender) returns (bool){
         if(!validate("removereward")) return false;
 
         address rewardAddress = list[rewardName].contractAddress;
@@ -22,8 +22,10 @@ contract RewardDb is LinkedList, Validee{
 
         Reward r = Reward(rewardAddress);
         if(r.buyer() != 0x0) return false;
-
-        return _removeElement(rewardName);
+        if(sender == r.rewarder()){
+            return _removeElement(rewardName);
+        }
+        return false;
     }
 
     function buy(bytes32 rewardName, address buyer) returns (bool){
@@ -45,6 +47,13 @@ contract RewardDb is LinkedList, Validee{
         price = r.price();
         rewarder = r.rewarder();
         buyer = r.buyer();
+    }
+
+    function clearDb(){
+        if(!validate("clear")){
+           return;
+        }
+        _clear();
     }
 
 }

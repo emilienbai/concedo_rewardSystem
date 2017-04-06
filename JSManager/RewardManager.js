@@ -107,15 +107,22 @@ function RewardManager(contractManager) {
         let size = list.length;
 
         list.forEach((reward) => {
-            let contract = contractsManager.newContractFactory(offerAbi).at(reward.address);
+            if(reward.address != 0x0){
+                let contract = contractsManager.newContractFactory(offerAbi).at(reward.address);
 
-            contract.getData((error, res) => {
-                let ro = new RewardObject(res[0], res[1], res[2], res[3], res[4], res[5]);
-                rewardList.push(ro);
+                contract.getData((error, res) => {
+                    let ro = new RewardObject(res[0], res[1], res[2], res[3], res[4], res[5]);
+                    rewardList.push(ro);
+                    if (rewardList.length == size) {
+                        callback(null, rewardList);
+                    }
+                })
+            } else {
+                size--;
                 if (rewardList.length == size) {
                     callback(null, rewardList);
                 }
-            })
+            }
         })
     }
 

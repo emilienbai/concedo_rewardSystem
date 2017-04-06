@@ -1,5 +1,4 @@
 import "../Interfaces/Users.sol";
-import "../Interfaces/Permissionner.sol";
 import "./ActionManager.sol";
 import "../Interfaces/ContractProvider.sol";
 

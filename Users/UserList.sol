@@ -79,4 +79,10 @@ contract UserList {
       userAddr = elem.userAddress;
       contractAddress = elem.contractAddress;
   }
+
+  function _clear(){
+      while(tail != 0x0){
+          _removeElement(tail);
+      }
+  }
 }

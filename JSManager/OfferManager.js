@@ -141,15 +141,22 @@ function OfferManager(contractsManager) {
         let size = list.length;
 
         list.forEach((offer) => {
-            let contract = contractsManager.newContractFactory(offerAbi).at(offer.address);
+            if (offer.address != 0x0) {
+                let contract = contractsManager.newContractFactory(offerAbi).at(offer.address);
 
-            contract.getData((error, res) => {
-                let oo = new OfferObject(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
-                offerList.push(oo);
+                contract.getData((error, res) => {
+                    let oo = new OfferObject(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
+                    offerList.push(oo);
+                    if (offerList.length == size) {
+                        callback(null, offerList);
+                    }
+                })
+            } else {
+                size--;
                 if (offerList.length == size) {
-                    callback(offerList);
+                    callback(null, offerList);
                 }
-            })
+            }
         })
     }
 
@@ -209,8 +216,8 @@ function OfferManager(contractsManager) {
             return new Promise((resolve, reject) => {
                 dougContract.contracts("offers", (error, offerAddress) => {
                     if (error) reject(error);
-                    onOfferDbFound(offerAddress, contractData, contractsManager, (error, result)=>{
-                        if(error) reject(error)
+                    onOfferDbFound(offerAddress, contractData, contractsManager, (error, result) => {
+                        if (error) reject(error)
                         resolve(result);
                     })
                 })

@@ -71,8 +71,8 @@ function UserManager(contractsManager) {
         return this.executeAction("adduser", userAddress, pseudo, 0, userData, callback);
     }
 
-    this.removeUser =  function(pseudo, callback){
-        return this.executeAction("removeuser", 0x0, pseudo, 0, callback);
+    this.removeUser =  function(address, callback){
+        return this.executeAction("removeuser", address, "", 0, callback);
     }
 
     let dougContractAddress = this.contractData["deployDoug"];
@@ -88,15 +88,22 @@ function UserManager(contractsManager) {
         let size = list.length;
 
         list.forEach((user)=>{
-            let contract = contractsManager.newContractFactory(userAbi).at(user.address);
+            if(user.address != 0x0){
+                let contract = contractsManager.newContractFactory(userAbi).at(user.address);
 
-            contract.getData((error, res)=>{
-                let uo = new UserObject(res[0], res[1], res[2], res[3]);
-                userList.push(uo);
+                contract.getData((error, res)=>{
+                    let uo = new UserObject(res[0], res[1], res[2], res[3]);
+                    userList.push(uo);
+                    if(userList.length == size){
+                        callback(null, userList);
+                    }
+                })
+            } else {
+                size--;
                 if(userList.length == size){
                     callback(null, userList);
                 }
-            })
+            }   
         })
     }
 

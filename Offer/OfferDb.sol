@@ -14,15 +14,17 @@ contract OfferDb is LinkedList, Validee{
         return _addElement(offerName, newOffer, false);
     }
     
-    function removeOffer(bytes32 offerName) returns (bool){
+    function removeOffer(bytes32 offerName, address sender) returns (bool){
         if(!validate("removeoffer")){
             return false;
         }
         address offerAddress = list[offerName].contractAddress;
         Offer o = Offer(offerAddress);
         if(o.volunteer() != 0x0) return false;
-        
-        return _removeElement(offerName);        
+        if(o.beneficiary() == sender){
+            return _removeElement(offerName);    
+        }
+        return false; 
     }
     
 
@@ -64,6 +66,13 @@ contract OfferDb is LinkedList, Validee{
         }
         Offer o = Offer(list[offerName].contractAddress);
         return o.unConfirm();
+    }
+
+    function clearDb(){
+        if(!validate("clear")){
+           return;
+        }
+        _clear();
     }
 
     function getAddress(bytes32 offerName) constant returns (address){

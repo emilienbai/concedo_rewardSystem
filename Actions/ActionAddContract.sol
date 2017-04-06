@@ -1,5 +1,5 @@
 import "./Action.sol";
-import "../Doug/Doug.sol";
+import "../Interfaces/DougInterface.sol";
 
 // Add contract.
 contract ActionAddContract is Action {
@@ -8,7 +8,7 @@ contract ActionAddContract is Action {
         if(!isActionManager()){
             return false;
         }
-        Doug d = Doug(DOUG);
+        DougInterface d = DougInterface(DOUG);
         return d.addContract(name,addr);
     }
 

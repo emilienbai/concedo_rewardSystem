@@ -11,6 +11,6 @@ contract ActionRemoveReward is Action{
         if(rdb == 0x0) return false;
 
         var rewardDb = Rewards(rdb);
-        return rewardDb.removeReward(rewardName);
+        return rewardDb.removeReward(rewardName, sender);
     }
 }

@@ -13,6 +13,6 @@ contract ActionRemoveOffer is Action{
             return false;
         }
         var offerDb = Offers(odb);
-        return offerDb.removeOffer(offerName);
+        return offerDb.removeOffer(offerName, sender);
     }
 }

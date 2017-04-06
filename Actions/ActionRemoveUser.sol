@@ -16,16 +16,8 @@ contract ActionRemoveUser is Action {
         }
 
         var userDb = Users(udb);
-        bool result = userDb.removeUser(userAddress);
+        return userDb.removeUser(userAddress);
 
-        if(result){
-            address perms = dg.contracts("perms");
-            if(perms == 0x0){
-                return false;
-            }
-            //return Permissionner(perms).setPermission(userAddress, 0);
-            return true; //TODO remove when permission and users are merged
-        }
-        return false;
+        
     }
 }

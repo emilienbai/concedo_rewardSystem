@@ -242,3 +242,11 @@ jobs:
       contract: Actions/ActionSetActionPermission.sol
       instance: all
       wait: true
+
+#TODO REMOVE IN PRODUCTION ENVIRONMENT
+- name: deployActionClearDb
+  job:
+    deploy:
+      contract: Actions/ActionClearDb.sol
+      instance: all
+      wait: true

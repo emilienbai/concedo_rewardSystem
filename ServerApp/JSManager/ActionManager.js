@@ -1,5 +1,6 @@
 var erisC = require('eris-contracts');
 var fs = require('fs');
+var config = require('../config');
 
 function ActionManager(contractsManager) {
     /*Get data from deployement*/
@@ -8,7 +9,7 @@ function ActionManager(contractsManager) {
     this.contractsManager = contractsManager;
     /*Get action manager*/
     let actionManagerContractAddress = this.contractData["deployActionManager"];
-    let actionManagerAbi = JSON.parse(fs.readFileSync("./abi/" + actionManagerContractAddress));
+    let actionManagerAbi = JSON.parse(fs.readFileSync(config.abiDir + actionManagerContractAddress));
     this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
 
     this.executeAction = function (actionName, address, str, intVal, data, callback) {
@@ -43,12 +44,12 @@ function ActionManager(contractsManager) {
     }
 
     let dougContractAddress = this.contractData["deployDoug"];
-    let dougAbi = JSON.parse(fs.readFileSync("./abi/" + dougContractAddress));
+    let dougAbi = JSON.parse(fs.readFileSync(config.abiDir + dougContractAddress));
     this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
     function onActionDbFound(actionName, actionDbAddress, contractData, contractsManager, callback) {
         let actionsContractAddress = contractData["deployActionDb"];
-        let actionsAbi = JSON.parse(fs.readFileSync("./abi/" + actionsContractAddress));
+        let actionsAbi = JSON.parse(fs.readFileSync(config.abiDir + actionsContractAddress));
         let actionsContract = contractsManager.newContractFactory(actionsAbi).at(actionDbAddress);
 
         actionsContract.getPermission(actionName, (error, result)=>{

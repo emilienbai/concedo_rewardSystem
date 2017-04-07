@@ -1,13 +1,14 @@
 // requires
-var ActionManager = require('./ServerApp/JSManager/ActionManager');
-var UserManager = require('./ServerApp/JSManager/UserManager');
-var OfferManager = require('./ServerApp/JSManager/OfferManager');
-var RewardManager = require('./ServerApp/JSManager/RewardManager');
-var BankManager = require('./ServerApp/JSManager/BankManager');
-var PermissionManager = require('./ServerApp/JSManager/PermissionManager');
+var ActionManager = require('./JSManager/ActionManager');
+var UserManager = require('./JSManager/UserManager');
+var OfferManager = require('./JSManager/OfferManager');
+var RewardManager = require('./JSManager/RewardManager');
+var BankManager = require('./JSManager/BankManager');
+var PermissionManager = require('./JSManager/PermissionManager');
 var fs = require('fs');
 var erisC = require('eris-contracts');
-var utils = require('./ServerApp/JSManager/Utils');
+var utils = require('./JSManager/Utils');
+var config = require('./config');
 
 
 // NOTE. On Windows/OSX do not use localhost. find the
@@ -19,13 +20,13 @@ var utils = require('./ServerApp/JSManager/Utils');
 var erisdbURL = "http://localhost:1337/rpc";
 
 // get the abi and deployed data squared away
-var contractData = require('./jobs_output.json');
+var contractData = require('../jobs_output.json');
 var actionManagerContractAddress = contractData["deployActionManager"];
-var actionManagerAbi = JSON.parse(fs.readFileSync("./abi/" + actionManagerContractAddress));
+var actionManagerAbi = JSON.parse(fs.readFileSync(config.abiDir + actionManagerContractAddress));
 
 // properly instantiate the contract objects manager(userAddress) using the )erisdb URL
 // and the account data (which is a temporary hack)
-var accountData = require('../../chains/concedo_chain/accounts.json');
+var accountData = require('../../../chains/concedo_chain/accounts.json');
 var contractsManagerFull = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_full_000);
 var contractsManagerVolunteer = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_000);
 var contractsManagerElderly = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_001);
@@ -92,7 +93,6 @@ function AddActionAndSetPermission() {
             console.log("Actions deployed and permissions set !");
         }).catch(console.error);
 }
-
 //AddActionAndSetPermission();
 
 /*
@@ -141,7 +141,7 @@ function addUsersAndSetPerms() {
         }).catch(console.error);
 }
 
-//addUsersAndSetPerms();
+//node serv addUsersAndSetPerms();
 
 /*
 userManager.getUsers()
@@ -180,7 +180,7 @@ function testOffers() {
         })
         .then((result) => { //Expected true
             console.log("Volunteer claims : " + result);
-            return offerManagerElderly.confirmOffer(aaaOffer.findId());
+            return offerManagerElderly.confirmOffer(bbbOffer.findId());
         })
         .then((result) => { //Expected true
             console.log("Elderly confirms : " + result);

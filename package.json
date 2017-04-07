@@ -2,9 +2,11 @@
   "name": "concedo_app",
   "version": "0.0.1",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha ./ServerApp/test/test.js"
   },
   "dependencies": {
-    "eris-contracts": "^0.15.9"
+    "body-parser": "^1.17.1",
+    "eris-contracts": "^0.15.9",
+    "express": "^4.15.2"
   }
 }

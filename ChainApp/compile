@@ -4,6 +4,7 @@ echo "2"
 sleep 1
 echo "1"
 sleep 1
-rm abi/*
+rm ../abi/*
 eris pkgs do -c concedo_chain -a $1 -b ../abi
 
+cp ./jobs_output.json ../

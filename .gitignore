@@ -7,3 +7,4 @@ jobs_output.json
 
 #node
 node_modules/
+ServerApp/config.json

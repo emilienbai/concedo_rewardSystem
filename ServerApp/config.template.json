@@ -1,0 +1,4 @@
+{
+    "erisdbURL": "Address of the blockchain",
+    "abiDir": "Absolute path to the abi directory"
+}

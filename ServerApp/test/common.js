@@ -12,13 +12,14 @@ var utils = require('../JSManager/Utils');
 
 var erisdbURL = "http://localhost:1337/rpc";
 
-var contractData = require('.../jobs_output.json');
+var contractData = require('../../jobs_output.json');
 var actionManagerContractAddress = contractData["deployActionManager"];
+console.log(process.cwd());
 var actionManagerAbi = JSON.parse(fs.readFileSync("./abi/" + actionManagerContractAddress));
 
 // properly instantiate the contract objects manager(userAddress) using the )erisdb URL
 // and the account data (which is a temporary hack)
-var accountData = require('../../../chains/concedo_chain/accounts.json');
+var accountData = require('../../../../chains/concedo_chain/accounts.json');
 var contractsManagerFull = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_full_000);
 var contractsManagerVolunteer = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_000);
 var contractsManagerElderly = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_001);

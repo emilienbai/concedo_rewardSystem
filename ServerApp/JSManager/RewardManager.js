@@ -1,6 +1,7 @@
 var erisC = require('eris-contracts');
 var fs = require('fs');
 var utils = require('./Utils');
+var config = require('../config');
 
 function encrypt(toEncrypt) {
     return toEncrypt; //TODO true encryption -> see if code does not depend on count ?
@@ -62,7 +63,7 @@ function RewardManager(contractManager) {
     this.contractsManager = contractManager;
     /*Get ActionManager*/
     let actionManagerContractAddress = this.contractData["deployActionManager"];
-    let actionManagerAbi = JSON.parse(fs.readFileSync("./abi/" + actionManagerContractAddress));
+    let actionManagerAbi = JSON.parse(fs.readFileSync(config.abiDir + actionManagerContractAddress));
     this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
 
 
@@ -94,14 +95,14 @@ function RewardManager(contractManager) {
     }
 
     let dougContractAddress = this.contractData["deployDoug"];
-    let dougAbi = JSON.parse(fs.readFileSync("./abi/" + dougContractAddress));
+    let dougAbi = JSON.parse(fs.readFileSync(config.abiDir + dougContractAddress));
     this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
 
     function getRewardData(contractData, contractsManager, list, callback) {
         /*Get Reward ABI*/
         let offerContractAddress = contractData["Reward"];
-        let offerAbi = JSON.parse(fs.readFileSync("./abi/" + offerContractAddress));
+        let offerAbi = JSON.parse(fs.readFileSync(config.abiDir + offerContractAddress));
 
         let rewardList = [];
         let size = list.length;
@@ -130,7 +131,7 @@ function RewardManager(contractManager) {
     function onRewardDbFound(rewardDbAddress, contractData, contractsManager, callback) {
         /*Get RewardDb ABI */
         let rewardsContractAddress = contractData["deployRewards"];
-        let rewardsAbi = JSON.parse(fs.readFileSync("./abi/" + rewardsContractAddress));
+        let rewardsAbi = JSON.parse(fs.readFileSync(config.abiDir + rewardsContractAddress));
         let rewardContract = contractsManager.newContractFactory(rewardsAbi).at(rewardDbAddress);
 
         /*Compile offers in list*/

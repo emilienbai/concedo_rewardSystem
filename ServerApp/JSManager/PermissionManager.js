@@ -1,5 +1,6 @@
 var erisC = require('eris-contracts');
 var fs = require('fs');
+var config = require('../config');
 
 var perms = {
     ALL: 0,
@@ -17,7 +18,7 @@ function PermissionManager(contractsManager) {
     this.contractsManager = contractsManager;
     /*Get action manager*/
     let actionManagerContractAddress = this.contractData["deployActionManager"];
-    let actionManagerAbi = JSON.parse(fs.readFileSync("./abi/" + actionManagerContractAddress));
+    let actionManagerAbi = JSON.parse(fs.readFileSync(config.abiDir + actionManagerContractAddress));
     this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
 
     this.executeAction = function (actionName, address, str, intVal, data, callback) {

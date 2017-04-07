@@ -1,6 +1,7 @@
 var erisC = require('eris-contracts');
 var fs = require ('fs');
 var utils = require('./Utils');
+var config = require('../config');
 
 
 /**
@@ -45,12 +46,12 @@ function UserManager(contractsManager) {
     this.contractsManager = contractsManager
     /*Get action manager*/
     let actionManagerContractAddress = this.contractData["deployActionManager"];
-    let actionManagerAbi = JSON.parse(fs.readFileSync("./abi/" + actionManagerContractAddress));
+    let actionManagerAbi = JSON.parse(fs.readFileSync(config.abiDir + actionManagerContractAddress));
     this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
 
     /*Get UserDb*/
     let userDbContractAddress = this.contractData["deployUsers"];
-    let userDbAbi = JSON.parse(fs.readFileSync("./abi/" + userDbContractAddress));
+    let userDbAbi = JSON.parse(fs.readFileSync(config.abiDir + userDbContractAddress));
     this.userDbContract = this.contractsManager.newContractFactory(userDbAbi).at(userDbContractAddress);
 
     this.executeAction = function (actionName, address, str, intVal, data, callback) {
@@ -76,13 +77,13 @@ function UserManager(contractsManager) {
     }
 
     let dougContractAddress = this.contractData["deployDoug"];
-    let dougAbi = JSON.parse(fs.readFileSync("./abi/" + dougContractAddress));
+    let dougAbi = JSON.parse(fs.readFileSync(config.abiDir + dougContractAddress));
     this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
     function getUserData(contractData, contractsManager, list, callback){
         //Get User ABI 
         let userContractAddress = contractData["User"];
-        let userAbi = JSON.parse(fs.readFileSync("./abi/" + userContractAddress));
+        let userAbi = JSON.parse(fs.readFileSync(config.abiDir + userContractAddress));
 
         let userList = [];
         let size = list.length;
@@ -110,7 +111,7 @@ function UserManager(contractsManager) {
     function onUserDbFound(userDbAddress, contractData, contractsManager, callback){
         //Get UserDb ABI 
         let usersContractAddress = contractData["deployUsers"];
-        let usersABI = JSON.parse(fs.readFileSync("./abi/" + usersContractAddress));
+        let usersABI = JSON.parse(fs.readFileSync(config.abiDir + usersContractAddress));
         let userContract = contractsManager.newContractFactory(userDbAbi).at(usersContractAddress);
 
         /*Compile offers in list*/

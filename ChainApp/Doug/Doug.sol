@@ -78,7 +78,7 @@ contract Doug is LinkedList {
     /// @param name The bytes32 name of the contract.
     /// @return The address of the contract. If no contract with that name exists, it will
     /// return zero.
-    function contracts(bytes32 name) returns (address addr){
+    function contracts(bytes32 name) constant returns (address addr){
       return list[name].contractAddress;
     }
 

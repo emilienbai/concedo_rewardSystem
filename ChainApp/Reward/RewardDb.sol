@@ -38,6 +38,10 @@ contract RewardDb is LinkedList, Validee{
         return r.buy(buyer);
     }
 
+    function getAddress(bytes32 rewardName) constant returns (address){
+        return list[rewardName].contractAddress;
+    }
+
     function getData(bytes32 rewardName) constant returns(address rewarder, address buyer, uint price){
         
         address rewardAddress = list[rewardName].contractAddress;

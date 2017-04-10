@@ -108,7 +108,7 @@ function RewardManager(contractManager) {
         let size = list.length;
 
         list.forEach((reward) => {
-            if(reward.address != 0x0){
+            if (reward.address != 0x0) {
                 let contract = contractsManager.newContractFactory(offerAbi).at(reward.address);
 
                 contract.getData((error, res) => {
@@ -189,6 +189,50 @@ function RewardManager(contractManager) {
                         if (error) reject(error);
                         resolve(result);
                     });
+                })
+            })
+        }
+    }
+
+    this.getReward = function (rewardId, callback) {
+        let contractData = this.contractData;
+        let contractsManager = this.contractsManager;
+        let dougContract = this.dougContract;
+
+        function get(cb) {
+            dougContract.contracts("rewards", (error, rewardAddress) => {
+                if (error) {
+                    cb(error, null);
+                } else {
+                    let rewardsContractAddress = contractData["deployRewards"];
+                    let rewardsAbi = JSON.parse(fs.readFileSync(config.abiDir + rewardsContractAddress));
+                    let rewardsContract = contractsManager.newContractFactory(rewardsAbi).at(rewardAddress);
+
+                    rewardsContract.getAddress(rewardId, (err, addr) => {
+                        if (err) {
+                            cb(err, null);
+                        }
+                        else {
+                            let list = [];
+                            list.push(new Element(0, 0, 0, addr));
+
+                            getRewardData(contractData, contractsManager, list, (e, result) => {
+                                cb(e, result[0]);
+                            })
+                        }
+                    })
+                }
+            })
+        }
+
+        if(callback){
+            get(cb);
+        }
+        else {
+            return new Promise((resolve, reject)=>{
+                get((error, result)=>{
+                    if(error)reject();
+                    resolve(result);
                 })
             })
         }

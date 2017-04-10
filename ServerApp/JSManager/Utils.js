@@ -17,7 +17,23 @@ function hexToString(hex){
         }
         return str;
     }
+ /**
+  * 
+  * @param {Object} headers - Header of a Http request 
+  */
+function credentialFromHeaders(headers) {
+    if (!headers.address || !headers.pubkey || !headers.privkey) {
+        throw ({ error: "missing params in header" });
+        return null
+    }
+    return {
+        "address": headers.address,
+        "pubKey": headers.pubkey,
+        "privKey": headers.privkey
+    }
+}
 
 module.exports = {
-    hexToString:  hexToString
+    hexToString:  hexToString,
+    credentialFromHeaders: credentialFromHeaders
 };

@@ -126,6 +126,118 @@ function OfferManager(contractsManager) {
     let dougAbi = JSON.parse(fs.readFileSync(config.abiDir + dougContractAddress));
     this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
+
+    this.getUserOffers = function (userAddress, callback) {
+        let contractData = this.contractData;
+        let contractsManager = this.contractsManager;
+        let dougContract = this.dougContract;
+
+        return getOfferDbAddress(contractData, contractsManager, dougContract)
+            .then((offerDbAddress) => {
+                return getOfferList(offerDbAddress, contractData, contractsManager, dougContract);
+            })
+            .then((list) => {
+                return new Promise((resolve, reject) => {
+                    getOfferData(contractData, contractsManager, list, userAddress, (error, result) => {
+                        if (callback) callback(error, result);
+                        else {
+                            if (error) reject(error);
+                            resolve(result);
+                        }
+                    });
+                })
+
+            }).catch((error) => {
+                throw (error);
+            })
+    }
+
+    /*Get offers*/
+    this.getOffers = function (callback) {
+        return this.getUserOffers(null, callback);
+    }
+
+    this.getOffer = function (offerId, callback) {
+        let contractData = this.contractData;
+        let contractsManager = this.contractsManager;
+        let dougContract = this.dougContract;
+
+        return getOfferDbAddress(contractData, contractsManager, dougContract)
+            .then((offerDbAddress) => {
+                return getOfferAddress(offerId, offerDbAddress, contractData, contractsManager);
+            })
+            .then((offerAddress) => {
+                var elem = new Element(0, 0, 0, offerAddress);
+                return new Promise((resolve, reject) => {
+                    getOfferData(contractData, contractsManager, [elem], null, (error, result) => {
+                        if (callback) callback(error, result);
+                        else {
+                            if (error) reject(error);
+                            resolve(result[0]);
+                        }
+                    });
+                })
+            }).catch((error) => {
+                throw (error);
+            })
+    }
+
+    function getOfferAddress(offerId, offerDbAddress, contractData, contractsManager) {
+        /*Get OfferDB ABI */
+        let offersContractAddress = contractData["deployOffers"];
+        let offersAbi = JSON.parse(fs.readFileSync(config.abiDir + offersContractAddress));
+        let offerContract = contractsManager.newContractFactory(offersAbi).at(offerDbAddress);
+
+        let list = [];
+        return new Promise((resolve, reject) => {
+            offerContract.getAddress(offerId, function (error, result) {
+                if (error) reject(error);
+                resolve(result);
+            })
+        })
+
+    }
+
+    function getOfferDbAddress(contractData, contractsManager, dougContract) {
+            return new Promise((resolve, reject) => {
+                dougContract.contracts("offers", (error, offerAddress) => {
+                    if (error) reject(error);
+                    resolve(offerAddress);
+                })
+            })
+    }
+
+    function getOfferList(offerDbAddress, contractData, contractsManager, dougContract) {
+        let offersContractAddress = contractData["deployOffers"];
+        let offersAbi = JSON.parse(fs.readFileSync(config.abiDir + offersContractAddress));
+        let offerContract = contractsManager.newContractFactory(offersAbi).at(offerDbAddress);
+
+        return new Promise((resolve, reject) => {
+            /*Compile offers in list*/
+            let list = [];
+            //todo consider current key == null
+            offerContract.tail(function (error, result) {
+                if (error) reject(error);
+
+                var currentKey = result;
+                function getElems(key) {
+                    offerContract.getElement(key, function (err, res) {
+                        let elem = new Element(res[0], res[1], res[2], res[3]);
+                        list.push(elem);
+                        currentKey = elem.next;
+                        let head = list[0];
+                        if (currentKey != head.current && currentKey != "") {
+                            getElems(currentKey);
+                        } else {
+                            resolve(list);
+                        }
+                    })
+                }
+                getElems(currentKey);
+            })
+        })
+    }
+
     /**
      * Get a list of offer from a list of addresses
      * @param {Object} contractData - Data from the output of epm.yaml
@@ -133,7 +245,7 @@ function OfferManager(contractsManager) {
      * @param {Array} list - List of 'Element'
      * @param {function} callback 
      */
-    function getOfferData(contractData, contractsManager, list, callback) {
+    function getOfferData(contractData, contractsManager, list, userAddress, callback) {
         /*Get Offer ABI*/
         let offerContractAddress = contractData["Offer"];
         let offerAbi = JSON.parse(fs.readFileSync(config.abiDir + offerContractAddress));
@@ -147,7 +259,11 @@ function OfferManager(contractsManager) {
 
                 contract.getData((error, res) => {
                     let oo = new OfferObject(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
-                    offerList.push(oo);
+                    if (!userAddress || userAddress == oo.beneficiary || userAddress == oo.volunteer) {
+                        offerList.push(oo);
+                    } else {
+                        size--;
+                    }
                     if (offerList.length == size) {
                         callback(null, offerList);
                     }
@@ -159,110 +275,9 @@ function OfferManager(contractsManager) {
                 }
             }
         })
+
     }
 
-    /**
-     * When offerDb have been found on the chain
-     * @param {Address} offerDbAddress 
-     * @param {Object} contractData 
-     * @param {Object} contractsManager 
-     * @param {function} callback 
-     */
-    function onOfferDbFound(offerDbAddress, contractData, contractsManager, callback) {
-        /*Get OfferDB ABI */
-        let offersContractAddress = contractData["deployOffers"];
-        let offersAbi = JSON.parse(fs.readFileSync(config.abiDir + offersContractAddress));
-        let offerContract = contractsManager.newContractFactory(offersAbi).at(offerDbAddress);
-
-        /*Compile offers in list*/
-        let list = [];
-        //todo consider current key == null
-        offerContract.tail(function (error, result) {
-            var currentKey = result;
-
-            function finished() {
-                getOfferData(contractData, contractsManager, list, callback);
-            }
-
-            function getElems(key) {
-                offerContract.getElement(key, function (err, res) {
-                    let elem = new Element(res[0], res[1], res[2], res[3]);
-                    list.push(elem);
-                    currentKey = elem.next;
-                    let head = list[0];
-                    if (currentKey != head.current && currentKey != "") {
-                        getElems(currentKey);
-                    } else {
-                        finished();
-                    }
-                })
-            }
-            getElems(currentKey);
-        })
-    }
-
-
-    /*Get offers*/
-    this.getOffers = function (callback) {
-        let contractData = this.contractData;
-        let contractsManager = this.contractsManager;
-        let dougContract = this.dougContract;
-
-        if (callback) {
-            dougContract.contracts("offers", (error, offerAddress) => {
-                if (error) callback(error, null);
-                return onOfferDbFound(offerAddress, contractData, contractsManager, callback);
-            });
-        } else {
-            return new Promise((resolve, reject) => {
-                dougContract.contracts("offers", (error, offerAddress) => {
-                    if (error) reject(error);
-                    onOfferDbFound(offerAddress, contractData, contractsManager, (error, result) => {
-                        if (error) reject(error)
-                        resolve(result);
-                    })
-                })
-            })
-        }
-    }
-
-    function onOfferDb(offerId, offerDbAddress, contractData, contractsManager, callback) {
-        /*Get OfferDB ABI */
-        let offersContractAddress = contractData["deployOffers"];
-        let offersAbi = JSON.parse(fs.readFileSync(config.abiDir + offersContractAddress));
-        let offerContract = contractsManager.newContractFactory(offersAbi).at(offerDbAddress);
-        /*Compile offers in list*/
-        let list = [];
-        //todo consider current key == null
-        offerContract.getAddress(offerId, function (error, result) {
-            if (error) callback(error, null);
-            list.push(new Element(0, 0, 0, result));
-            getOfferData(contractData, contractsManager, list, callback);
-        })
-    }
-
-    this.getOffer = function (offerId, callback) {
-        let contractData = this.contractData;
-        let contractsManager = this.contractsManager;
-        let dougContract = this.dougContract;
-
-        if (callback) {
-            dougContract.contracts("offers", (error, offerAddress) => {
-                if (error) callback(error, null);
-                return onOfferDb(offerId, offerDbAddress, contractData, contractsManager, callback);
-            })
-        } else {
-            return new Promise((resolve, reject) => {
-                dougContract.contracts("offers", (error, offerAddress) => {
-                    if (error) reject(error);
-                    onOfferDb(offerId, offerAddress, contractData, contractsManager, (error, result) => {
-                        if (error) reject(error)
-                        resolve(result);
-                    })
-                })
-            })
-        }
-    }
 }
 
 module.exports = {

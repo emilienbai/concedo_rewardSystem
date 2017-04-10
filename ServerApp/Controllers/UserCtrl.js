@@ -1,4 +1,5 @@
 var bankManager = require('../JSManager/BankManager');
+var offerManager = require('../JSManager/OfferManager');
 var utils = require('../JSManager/Utils');
 var config = require('../config');
 var erisC = require('eris-contracts');
@@ -17,6 +18,20 @@ function getBalance(request, response) {
                 });
             })
     } catch (error) {
+        response.status(400).send(error);
+    }
+}
+
+function getUserOffers(request, response){
+    try{
+        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let oManager = new offerManager.OfferManager(contractManager);
+        //TODO : maybe check that credential and params are equals
+        oManager.getUserOffers(request.params.userAddress)
+        .then((result)=>{
+            resposnse.status(200).json(result);
+        })
+    } catch(error){
         response.status(400).send(error);
     }
 }

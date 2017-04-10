@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 
 var offerCtrl = require('./Controllers/OfferCtrl');
 var rewardCtrl = require('./Controllers/RewardCtrl');
+var UserCtrl = require('./Controllers/UserCtrl');
 
 
 
@@ -20,6 +21,8 @@ var router = express.Router();
 router.get('/', function (req, res) {
     res.json({ message: 'hooray! welcome to our api!' });
 });
+
+router.route('/balances/:userAddress').get(UserCtrl.getBalance);
 
 //offers
 router.route('/offers')

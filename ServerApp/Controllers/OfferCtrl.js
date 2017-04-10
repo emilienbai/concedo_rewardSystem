@@ -109,7 +109,7 @@ function getOffer(request, response) {
                 if (result[0]) {
                     response.status(200).json(result[0]);
                 } else {
-                    response.status(200).json(null);
+                    response.status(200).json([]);
                 }
             })
     } catch (error) {
@@ -126,7 +126,7 @@ function getOffers(request, response){ //todo improve
                 if (result[0]) {
                     response.status(200).json(result);
                 } else {
-                    response.status(200).json(null);
+                    response.status(200).json([]);
                 }
             })
     } catch (error) {

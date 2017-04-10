@@ -226,18 +226,17 @@ function RewardManager(contractManager) {
         }
 
         if(callback){
-            get(cb);
+            get(callback);
         }
         else {
             return new Promise((resolve, reject)=>{
                 get((error, result)=>{
                     if(error)reject();
-                    resolve(result);
+                    else resolve(result);
                 })
             })
         }
     }
-
 }
 
 module.exports = {

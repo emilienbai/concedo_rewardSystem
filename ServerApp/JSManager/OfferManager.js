@@ -173,7 +173,11 @@ function OfferManager(contractsManager) {
                         if (callback) callback(error, result);
                         else {
                             if (error) reject(error);
-                            resolve(result[0]);
+                            if (result[0]) {
+                                resolve(result[0]);
+                            } else {
+                                resolve([]);
+                            }
                         }
                     });
                 })
@@ -199,12 +203,12 @@ function OfferManager(contractsManager) {
     }
 
     function getOfferDbAddress(contractData, contractsManager, dougContract) {
-            return new Promise((resolve, reject) => {
-                dougContract.contracts("offers", (error, offerAddress) => {
-                    if (error) reject(error);
-                    resolve(offerAddress);
-                })
+        return new Promise((resolve, reject) => {
+            dougContract.contracts("offers", (error, offerAddress) => {
+                if (error) reject(error);
+                resolve(offerAddress);
             })
+        })
     }
 
     function getOfferList(offerDbAddress, contractData, contractsManager, dougContract) {

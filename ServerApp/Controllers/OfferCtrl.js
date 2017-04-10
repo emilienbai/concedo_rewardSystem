@@ -106,20 +106,16 @@ function getOffer(request, response) {
         if (!request.params.offerId) throw ({ error: "Missing offer ID" })
         omanager.getOffer(request.params.offerId)
             .then((result) => {
-                if (result[0]) {
-                    response.status(200).json(result[0]);
-                } else {
-                    response.status(200).json([]);
-                }
+                response.status(200).json(result);
             })
     } catch (error) {
         response.status(400).send(error);
     }
 }
 
-function getOffers(request, response){ //todo improve
+function getOffers(request, response) { //todo improve
     try {
-    let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let omanager = new offerManager.OfferManager(contractManager);
         omanager.getOffers()
             .then((result) => {
@@ -141,5 +137,5 @@ module.exports = {
     claimOffer: claimOffer,
     confirmOffer: confirmOffer,
     getOffer: getOffer,
-    getOffers : getOffers
+    getOffers: getOffers
 }

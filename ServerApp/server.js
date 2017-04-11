@@ -24,7 +24,7 @@ router.get('/', function (req, res) {
 
 router.route('/users/:userAddress/balance').get(UserCtrl.getBalance);
 router.route('/users/:userAddress/offers').get(UserCtrl.getUserOffers);
-//router.route('/users/:userAddress/rewards').get();*/
+router.route('/users/:userAddress/rewards').get(UserCtrl.getUserRewards);
 
 //offers
 router.route('/offers')

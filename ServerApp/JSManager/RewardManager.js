@@ -32,8 +32,7 @@ Reward.prototype.findId = function () {
     return this.rewardName; //TODO hash with count and timestamp
 }
 
-function RewardObject(owner, rewardName, rewarder, buyer, price, data) {
-    this.owner = owner;
+function RewardObject(rewardName, rewarder, buyer, price, data) {
     this.rewardName = utils.hexToString(rewardName);
     this.rewarder = rewarder;
     this.buyer = buyer;
@@ -98,100 +97,33 @@ function RewardManager(contractManager) {
     let dougAbi = JSON.parse(fs.readFileSync(config.abiDir + dougContractAddress));
     this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
-
-    function getRewardData(contractData, contractsManager, list, callback) {
-        /*Get Reward ABI*/
-        let offerContractAddress = contractData["Reward"];
-        let offerAbi = JSON.parse(fs.readFileSync(config.abiDir + offerContractAddress));
-
-        let rewardList = [];
-        let size = list.length;
-
-        list.forEach((reward) => {
-            if (reward.address != 0x0) {
-                let contract = contractsManager.newContractFactory(offerAbi).at(reward.address);
-
-                contract.getData((error, res) => {
-                    let ro = new RewardObject(res[0], res[1], res[2], res[3], res[4], res[5]);
-                    rewardList.push(ro);
-                    if (rewardList.length == size) {
-                        callback(null, rewardList);
-                    }
-                })
-            } else {
-                size--;
-                if (rewardList.length == size) {
-                    callback(null, rewardList);
-                }
-            }
-        })
-    }
-
-
-    function onRewardDbFound(rewardDbAddress, contractData, contractsManager, callback) {
-        /*Get RewardDb ABI */
-        let rewardsContractAddress = contractData["deployRewards"];
-        let rewardsAbi = JSON.parse(fs.readFileSync(config.abiDir + rewardsContractAddress));
-        let rewardContract = contractsManager.newContractFactory(rewardsAbi).at(rewardDbAddress);
-
-        /*Compile offers in list*/
-        let list = [];
-
-        rewardContract.tail(function (error, result) {
-            if (error) {
-                callback(error, null);
-            }
-            var currentKey = result;
-
-            function finished() {
-                getRewardData(contractData, contractsManager, list, callback);
-            }
-
-            function getElems(key) {
-                rewardContract.getElement(key, function (err, res) {
-                    if (err) {
-                        callback(err, null);
-                    }
-                    let elem = new Element(res[0], res[1], res[2], res[3]);
-                    list.push(elem);
-                    currentKey = elem.next;
-                    let head = list[0];
-                    if (currentKey != head.current && currentKey != "") {
-                        getElems(currentKey);
-                    } else {
-                        finished();
-                    }
-                })
-            }
-            getElems(currentKey);
-        })
-    }
-
-    /*Get rewards*/
-    this.getRewards = function (callback) {
+    this.getUserRewards = function (userAddress, callback) {
         let contractData = this.contractData;
         let contractsManager = this.contractsManager;
         let dougContract = this.dougContract;
 
-        if (callback) {
-            dougContract.contracts("rewards", (error, rewardAddress) => {
-                if (error) {
-                    return callback(error, null);
+        return getRewardDbAddress(contractData, contractsManager, dougContract)
+            .then((rewardDbAddress) => {
+                return getRewardList(rewardDbAddress, contractData, contractsManager, dougContract);
+            })
+            .then((list) => {
+                return getRewardData(contractData, contractsManager, list, userAddress);
+            })
+            .then((rewardList) => {
+                if (callback) callback(null, rewardList);
+                else {
+                    return new Promise((resolve, reject) => {
+                        resolve(rewardList);
+                    })
                 }
-                return onRewardDbFound(rewardAddress, contractData, contractsManager, callback);
+            }).catch((error) => {
+                throw (error);
             })
-        }
-        else {
-            return new Promise((resolve, reject) => {
-                dougContract.contracts("rewards", (error, rewardAddress) => {
-                    if (error) return reject(error);
-                    onRewardDbFound(rewardAddress, contractData, contractsManager, (error, result) => {
-                        if (error) reject(error);
-                        resolve(result);
-                    });
-                })
-            })
-        }
+
+    }
+
+    this.getRewards = function (callback) {
+        return this.getUserRewards(null, callback);
     }
 
     this.getReward = function (rewardId, callback) {
@@ -199,43 +131,108 @@ function RewardManager(contractManager) {
         let contractsManager = this.contractsManager;
         let dougContract = this.dougContract;
 
-        function get(cb) {
-            dougContract.contracts("rewards", (error, rewardAddress) => {
-                if (error) {
-                    cb(error, null);
-                } else {
-                    let rewardsContractAddress = contractData["deployRewards"];
-                    let rewardsAbi = JSON.parse(fs.readFileSync(config.abiDir + rewardsContractAddress));
-                    let rewardsContract = contractsManager.newContractFactory(rewardsAbi).at(rewardAddress);
+        return getRewardDbAddress(contractData, contractsManager, dougContract)
+            .then((rewardDbAddress) => {
+                return getRewardAddress(rewardId, rewardDbAddress, contractData, contractsManager);
+            }).then((rewardAddress) => {
+                var elem = new Element(0, 0, 0, rewardAddress);
+                return getRewardData(contractData, contractsManager, [elem], null);
+            }).then((rewardList) => {
+                let returnVal = rewardList[0] ? rewardList[0] : [];
+                if (callback) callback(null, returnVal);
+                else {
+                    return new Promise((resolve, reject) => {
+                        resolve(returnVal);
+                    })
+                }
+            }).catch((error) => {
+                throw (error);
+            })
+    }
 
-                    rewardsContract.getAddress(rewardId, (err, addr) => {
-                        if (err) {
-                            cb(err, null);
-                        }
-                        else {
-                            let list = [];
-                            list.push(new Element(0, 0, 0, addr));
+    function getRewardAddress(rewardId, rewardDbAddress, contractData, contractsManager) {
+        let rewardsContractAddress = contractData["deployRewards"];
+        let rewardsAbi = JSON.parse(fs.readFileSync(config.abiDir + rewardsContractAddress));
+        let rewardsContract = contractsManager.newContractFactory(rewardsAbi).at(rewardDbAddress);
 
-                            getRewardData(contractData, contractsManager, list, (e, result) => {
-                                cb(e, result[0]);
-                            })
+        return new Promise((resolve, reject) => {
+            rewardsContract.getAddress(rewardId, (error, address) => {
+                if (error) reject(error);
+                else resolve(address);
+            })
+        })
+    }
+
+    function getRewardDbAddress(contractData, contractsManager, dougContract) {
+        return new Promise((resolve, reject) => {
+            dougContract.contracts("rewards", (error, rewardDbAddress) => {
+                if (error) reject(error);
+                else resolve(rewardDbAddress);
+            })
+        })
+    }
+
+    function getRewardList(rewardDbAddress, contractData, contractsManager, dougContract) {
+        let rewardsContractAddress = contractData["deployRewards"];
+        let rewardsAbi = JSON.parse(fs.readFileSync(config.abiDir + rewardsContractAddress));
+        let rewardContract = contractsManager.newContractFactory(rewardsAbi).at(rewardDbAddress);
+
+        return new Promise((resolve, reject) => {
+            let list = [];
+
+            rewardContract.tail((error, result) => {
+                if (error) reject(error);
+                var currentKey = result;
+                function getElems(key) {
+                    rewardContract.getElement(key, function (err, res) {
+                        let elem = new Element(res[0], res[1], res[2], res[3]);
+                        list.push(elem);
+                        currentKey = elem.next;
+                        let head = list[0];
+                        if (currentKey != head.current && currentKey != "") {
+                            getElems(currentKey);
+                        } else {
+                            resolve(list);
                         }
                     })
                 }
+                getElems(currentKey);
             })
-        }
+        })
+    }
 
-        if(callback){
-            get(callback);
-        }
-        else {
-            return new Promise((resolve, reject)=>{
-                get((error, result)=>{
-                    if(error)reject();
-                    else resolve(result);
-                })
+    function getRewardData(contractData, contractsManager, list, userAddress) {
+        /*Get Reward ABI*/
+        let offerContractAddress = contractData["Reward"];
+        let offerAbi = JSON.parse(fs.readFileSync(config.abiDir + offerContractAddress));
+
+        let rewardList = [];
+        let size = list.length;
+        return new Promise((resolve, reject) => {
+            list.forEach((reward) => {
+                if (reward.address != 0x0) {
+                    let contract = contractsManager.newContractFactory(offerAbi).at(reward.address);
+
+                    contract.getData((error, res) => {
+                        if (error) reject(error);
+                        let ro = new RewardObject(res[0], res[1], res[2], res[3], res[4]);
+                        if (!userAddress || userAddress == ro.rewarder || userAddress == ro.buyer) {
+                            rewardList.push(ro);
+                        } else {
+                            size--;
+                        }
+                        if (rewardList.length == size) {
+                            resolve(rewardList);
+                        }
+                    })
+                } else {
+                    size--;
+                    if (rewardList.length == size) {
+                        resolve(null, rewardList);
+                    }
+                }
             })
-        }
+        })
     }
 }
 

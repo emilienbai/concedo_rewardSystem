@@ -137,17 +137,16 @@ function OfferManager(contractsManager) {
                 return getOfferList(offerDbAddress, contractData, contractsManager, dougContract);
             })
             .then((list) => {
-                return new Promise((resolve, reject) => {
-                    getOfferData(contractData, contractsManager, list, userAddress, (error, result) => {
-                        if (callback) callback(error, result);
-                        else {
-                            if (error) reject(error);
-                            resolve(result);
-                        }
-                    });
-                })
-
-            }).catch((error) => {
+                return getOfferData(contractData, contractsManager, list, userAddress);
+            }).then((offerList) => {
+                if (callback) callback(null, offerList);
+                else {
+                    return new Promise((resolve, reject) => {
+                        resolve(offerList);
+                    })
+                }
+            })
+            .catch((error) => {
                 throw (error);
             })
     }
@@ -168,19 +167,15 @@ function OfferManager(contractsManager) {
             })
             .then((offerAddress) => {
                 var elem = new Element(0, 0, 0, offerAddress);
-                return new Promise((resolve, reject) => {
-                    getOfferData(contractData, contractsManager, [elem], null, (error, result) => {
-                        if (callback) callback(error, result);
-                        else {
-                            if (error) reject(error);
-                            if (result[0]) {
-                                resolve(result[0]);
-                            } else {
-                                resolve([]);
-                            }
-                        }
-                    });
-                })
+                return getOfferData(contractData, contractsManager, [elem], null);
+            }).then((offerList) => {
+                let returnVal = offerList[0] ? offerList[0] : [];
+                if (callback) callback(null, returnVal);
+                else {
+                    return new Promise((resolve, reject) => {
+                        resolve(returnVal);
+                    })
+                }
             }).catch((error) => {
                 throw (error);
             })
@@ -192,7 +187,6 @@ function OfferManager(contractsManager) {
         let offersAbi = JSON.parse(fs.readFileSync(config.abiDir + offersContractAddress));
         let offerContract = contractsManager.newContractFactory(offersAbi).at(offerDbAddress);
 
-        let list = [];
         return new Promise((resolve, reject) => {
             offerContract.getAddress(offerId, function (error, result) {
                 if (error) reject(error);
@@ -249,7 +243,7 @@ function OfferManager(contractsManager) {
      * @param {Array} list - List of 'Element'
      * @param {function} callback 
      */
-    function getOfferData(contractData, contractsManager, list, userAddress, callback) {
+    function getOfferData(contractData, contractsManager, list, userAddress) {
         /*Get Offer ABI*/
         let offerContractAddress = contractData["Offer"];
         let offerAbi = JSON.parse(fs.readFileSync(config.abiDir + offerContractAddress));
@@ -257,29 +251,31 @@ function OfferManager(contractsManager) {
         let offerList = [];
         let size = list.length;
 
-        list.forEach((offer) => {
-            if (offer.address != 0x0) {
-                let contract = contractsManager.newContractFactory(offerAbi).at(offer.address);
+        return new Promise((resolve, reject) => {
+            list.forEach((offer) => {
+                if (offer.address != 0x0) {
+                    let contract = contractsManager.newContractFactory(offerAbi).at(offer.address);
 
-                contract.getData((error, res) => {
-                    let oo = new OfferObject(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
-                    if (!userAddress || userAddress == oo.beneficiary || userAddress == oo.volunteer) {
-                        offerList.push(oo);
-                    } else {
-                        size--;
-                    }
+                    contract.getData((error, res) => {
+                        if (error) reject(error);
+                        let oo = new OfferObject(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
+                        if (!userAddress || userAddress == oo.beneficiary || userAddress == oo.volunteer) {
+                            offerList.push(oo);
+                        } else {
+                            size--;
+                        }
+                        if (offerList.length == size) {
+                            resolve(offerList);
+                        }
+                    })
+                } else {
+                    size--;
                     if (offerList.length == size) {
-                        callback(null, offerList);
+                        resolve(offerList);
                     }
-                })
-            } else {
-                size--;
-                if (offerList.length == size) {
-                    callback(null, offerList);
                 }
-            }
+            })
         })
-
     }
 
 }

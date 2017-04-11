@@ -22,7 +22,9 @@ router.get('/', function (req, res) {
     res.json({ message: 'hooray! welcome to our api!' });
 });
 
-router.route('/balances/:userAddress').get(UserCtrl.getBalance);
+router.route('/users/:userAddress/balance').get(UserCtrl.getBalance);
+router.route('/users/:userAddress/offers').get(UserCtrl.getUserOffers);
+//router.route('/users/:userAddress/rewards').get();*/
 
 //offers
 router.route('/offers')

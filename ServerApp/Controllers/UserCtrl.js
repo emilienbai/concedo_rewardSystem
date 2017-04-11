@@ -22,20 +22,21 @@ function getBalance(request, response) {
     }
 }
 
-function getUserOffers(request, response){
-    try{
+function getUserOffers(request, response) {
+    try {
         let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let oManager = new offerManager.OfferManager(contractManager);
         //TODO : maybe check that credential and params are equals
         oManager.getUserOffers(request.params.userAddress)
-        .then((result)=>{
-            resposnse.status(200).json(result);
-        })
-    } catch(error){
+            .then((result) => {
+                response.status(200).json(result);
+            })
+    } catch (error) {
         response.status(400).send(error);
     }
 }
 
 module.exports = {
-    getBalance: getBalance
+    getBalance: getBalance,
+    getUserOffers: getUserOffers
 }

@@ -74,10 +74,10 @@ var permManagerVolunteer = new PermissionManager.PermisssionManager(contractsMan
 var perms = PermissionManager.perms;
 
 function AddActionAndSetPermission() {
-    actionManager.addAllAction()
+    actionManager.addAllAction(true)
         .then(() => {
-            var userFull = new UserManager.User("Mouse", "Mickey", "DisneyCity", "0333334455", "mickey@mouse.com");
-            return userManager.addUser(full.address, "Full", userFull.encrypt());
+            var userFull = new UserManager.User("Mouse", "Mickey", "DisneyCity", "0333334455", "mickey@mouse.com", "full");
+            return userManager.addUser(full.address, "Full", userFull);
         })
         .then((result) => {
             console.log("Add user Mickey Mouse -> " + result);
@@ -86,7 +86,7 @@ function AddActionAndSetPermission() {
         .then((result) => {
             console.log("Set full perm -> " + result);
             if (result)
-                return permManagerFull.setAllActionPerm();
+                return permManagerFull.setAllActionPerm(true);
             else throw ("permission not set");
         })
         .then(() => {
@@ -110,18 +110,18 @@ var bankManager = new BankManager.BankManager(contractsManagerFull, ()=>{
 //*********************************Users***************************************/
 
 function addUsersAndSetPerms() {
-    let userVolunteer = new UserManager.User("Doe", "John Volunteer", "Luleå", "0123456789", "john@doe.se");
-    let userElderly = new UserManager.User("Mamene", "Lorenzo Elderly", "0312456789", "lorenzo@mamene.sal");
-    let userRewarder = new UserManager.User("Potter", "Harry Rewarder", "0312456789", "harry@potter.fr");
+    var userVolunteer = new UserManager.User("Doe", "John Volunteer", "Luleå", "0123456789", "john@doe.se", "volunteer");
+    var userElderly = new UserManager.User("Mamene", "Lorenzo Elderly","Luleå", "0312456789", "lorenzo@mamene.sal", "elderly");
+    var userRewarder = new UserManager.User("Potter", "Harry Rewarder", "Luleå", "0312456789", "harry@potter.fr", "rewarder");
 
-    userManager.addUser(partVolunteer.address, "volunteer", userVolunteer.encrypt())
+    userManager.addUser(partVolunteer.address, "volunteer", userVolunteer)
         .then((result) => {
             console.log("Add user John Doe -> " + result);
-            return userManager.addUser(partElderly.address, "elderly", userElderly.encrypt());
+            return userManager.addUser(partElderly.address, "elderly", userElderly);
         })
         .then((result) => {
             console.log("Add user Lorenzo Mamene -> " + result);
-            return userManager.addUser(partRewarder.address, "rewarder", userRewarder.encrypt());
+            return userManager.addUser(partRewarder.address, "rewarder", userRewarder);
         })
         .then((result) => {
             console.log("Add user Harry Potter -> " + result);
@@ -141,14 +141,14 @@ function addUsersAndSetPerms() {
         }).catch(console.error);
 }
 
-//node serv addUsersAndSetPerms();
+//addUsersAndSetPerms();
 
-/*
+
 userManager.getUsers()
     .then((result) => {
         console.log(result);
     }).catch(console.error)
-*/
+
 //***************************************Offer*********************************/
 
 var offerManagerFull = new OfferManager.OfferManager(contractsManagerFull);
@@ -196,7 +196,21 @@ offerManagerFull.getOffers()
     console.log(result);
 }).catch(console.error);
 */
-
+/*
+offerManagerFull.getOffers()
+.then((list)=>{
+    console.log(list);
+}).catch((error)=>{
+    console.error(error);
+})*/
+/*
+offerManagerFull.getOffer("bbbOffer")
+    .then((offer) => {
+        console.log(offer);
+    }).catch((error) => {
+        console.error(error);
+    })
+*/
 //***************************Rewards*******************************************/
 var rewardManagerFull = new RewardManager.RewardManager(contractsManagerFull);
 var rewardManagerVolunteer = new RewardManager.RewardManager(contractsManagerVolunteer);
@@ -234,4 +248,15 @@ rewardManagerFull.getRewards()
 .then((result)=>{
     console.log(result);
 }).catch(console.error);
+*/
+/*
+rewardManagerFull.getReward("bbbReward")
+.then((result)=>{
+    console.log(result);
+})
+*/
+/*
+actionManager.clear().then((result)=>{
+    console.log(result);
+})
 */

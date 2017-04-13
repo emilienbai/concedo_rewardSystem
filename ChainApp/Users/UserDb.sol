@@ -4,14 +4,20 @@ import "./User.sol";
 
 contract UserDb is UserList, Validee {
    
-    function addUser(address userAddress, bytes32 pseudo, bytes encryptedData) returns (address){
+    function addUser(address userAddress, bytes32 pseudo, uint expectedPerm,  bytes encryptedData) returns (address){
         if(!validate("adduser")) return 0x0;
-        address newUser = address(new User(userAddress, pseudo, encryptedData));
+        address newUser = address(new User(userAddress, pseudo, expectedPerm, encryptedData));
         
+        bool res = false;
         if(newUser != 0x0){
-            _addElement(userAddress, newUser);
+            res = _addElement(userAddress, newUser);
         }
-        return list[userAddress].contractAddress;
+        if(!res){
+           return 0x0; 
+        }
+        else {
+            return list[userAddress].contractAddress;
+        }
     }
     
     function removeUser(address userAddress) returns (bool){

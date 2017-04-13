@@ -4,7 +4,7 @@ import "../Interfaces/ContractProvider.sol";
 
 contract ActionAddUser is Action {
 
-    function execute(address sender, address userAddress, bytes32 pseudo, uint intVal, bytes userData) returns (bool){
+    function execute(address sender, address userAddress, bytes32 pseudo, uint expectedPerm, bytes userData) returns (bool){
         if(!isActionManager()){
             return false;
         }
@@ -14,7 +14,7 @@ contract ActionAddUser is Action {
             return false;
         }
         var userDb = Users(udb);
-        address newAddr = userDb.addUser(userAddress, pseudo, userData);
+        address newAddr = userDb.addUser(userAddress, pseudo, expectedPerm, userData);
         return newAddr != 0x0;
     }
 }

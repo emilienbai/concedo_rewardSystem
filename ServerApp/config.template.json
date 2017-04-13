@@ -1,4 +1,9 @@
 {
     "erisdbURL": "Address of the blockchain",
-    "abiDir": "Absolute path to the abi directory"
+    "abiDir": "Absolute path to the abi directory",
+    "account": {
+        "address": "Address of an account : it will be used ",
+        "pubKey": "Its public key",
+        "privKey": "Its private key"
+    }
 }

@@ -1,5 +1,6 @@
 var erisC = require('eris-contracts');
 var fs = require ('fs');
+var perms = require('./PermissionManager');
 var utils = require('./Utils');
 var config = require('../config');
 
@@ -12,21 +13,39 @@ var config = require('../config');
  * @param {String} phone 
  * @param {String} email 
  */
-function User(name, surname, address, phone, email){
+function User(name, surname, address, phone, email, type){
     this.name = name;
     this.surname = surname;
     this.address = address;
     this.phone = phone;
     this.email = email;
+    this.type = type;
 }
 
 User.prototype.encrypt = function(){
     return JSON.stringify(this); //TODO true encryption
 }
 
-function UserObject(owner, pseudo, perm, encryptedData){
+User.prototype.getExpectedPerm = function(){
+    switch(this.type){
+        case "volunteer": 
+            return perms.perms.VOLUNTEER;
+            break;
+        case "elderly":
+            return perms.perms.ELDERLY;
+            break;            
+        case "rewarder":
+            return perms.perms.REWARDER;
+            break;
+        default:
+            return 0;            
+    }
+}
+
+function UserObject(owner, pseudo, expectedPerm, perm, encryptedData){
     this.owner = owner;
     this.pseudo = utils.hexToString(pseudo);
+    this.expectedPerm = expectedPerm.toNumber();
     this.perm = perm.toNumber();
     this.encryptedData = utils.hexToString(encryptedData);
 }
@@ -68,8 +87,8 @@ function UserManager(contractsManager) {
         })
     }
 
-    this.addUser = function(userAddress, pseudo, userData, callback){
-        return this.executeAction("adduser", userAddress, pseudo, 0, userData, callback);
+    this.addUser = function(userAddress, pseudo, user, callback){
+        return this.executeAction("adduser", userAddress, pseudo, user.getExpectedPerm(), user.encrypt(), callback);
     }
 
     this.removeUser =  function(address, callback){
@@ -93,7 +112,7 @@ function UserManager(contractsManager) {
                 let contract = contractsManager.newContractFactory(userAbi).at(user.address);
 
                 contract.getData((error, res)=>{
-                    let uo = new UserObject(res[0], res[1], res[2], res[3]);
+                    let uo = new UserObject(res[0], res[1], res[2], res[3], res[4]);
                     userList.push(uo);
                     if(userList.length == size){
                         callback(null, userList);

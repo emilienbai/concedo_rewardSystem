@@ -3,6 +3,7 @@ var offerManager = require('../JSManager/OfferManager');
 var rewardManager = require('../JSManager/RewardManager');
 var accountManager = require('../JSManager/AccountManager');
 var userManager = require('../JSManager/UserManager');
+var permManager = require('../JSManager/PermissionManager');
 var utils = require('../JSManager/Utils');
 var config = require('../config');
 var erisC = require('eris-contracts');
@@ -88,9 +89,30 @@ function addUser(request, response) {
     }
 }
 
+function setUserPermission(request, response) {
+    try {
+        if (!request.params.userAddress || !request.body.perm)
+            throw ({ error: "missing user address in params or perm level in body" })
+
+        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let pManager = new permManager.PermisssionManager(contractManager);
+        return pManager.setUserPermission(request.params.userAddress, request.body.perm)
+            .then((result) => {
+                response.status(200).json({
+                    permSet: result
+                })
+            }).catch((error)=>{
+                throw(error);
+            })
+    } catch (error) {
+        response.status(400).json(error);
+    }
+}
+
 module.exports = {
     getBalance: getBalance,
     getUserOffers: getUserOffers,
     getUserRewards: getUserRewards,
-    addUser: addUser
+    addUser: addUser,
+    setUserPermission: setUserPermission
 }

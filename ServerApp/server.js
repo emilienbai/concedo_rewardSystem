@@ -23,6 +23,7 @@ router.get('/', function (req, res) {
 });
 
 router.route('/users').post(UserCtrl.addUser);
+router.route('/users/:userAddress/permission').put(UserCtrl.setUserPermission);
 router.route('/users/:userAddress/balance').get(UserCtrl.getBalance);
 router.route('/users/:userAddress/offers').get(UserCtrl.getUserOffers);
 router.route('/users/:userAddress/rewards').get(UserCtrl.getUserRewards);

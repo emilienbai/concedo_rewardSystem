@@ -228,7 +228,7 @@ function RewardManager(contractManager) {
                 } else {
                     size--;
                     if (rewardList.length == size) {
-                        resolve(null, rewardList);
+                        resolve(rewardList);
                     }
                 }
             })

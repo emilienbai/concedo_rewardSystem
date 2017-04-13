@@ -18,7 +18,7 @@ describe('Test add and remove user', function () {
 
     describe('Test add user', function () {
         it('should add a user', function () {
-            return common.managers.full.userManager.addUser(common.address.full.address, "Full", common.users.full.encrypt())
+            return common.managers.full.userManager.addUser(common.address.full.address, "Full", common.users.full)
                 .then(() => {
                     return common.managers.full.userManager.getUsers()
                         .then((list) => {

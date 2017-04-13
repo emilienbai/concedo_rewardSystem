@@ -7,7 +7,7 @@ describe('Test Add Rewards with perms', function () {
     before(function () {
         return common.managers.full.actionManager.addAllAction()
             .then(() => {
-                return common.managers.full.userManager.addUser(common.address.full.address, "Full user", "{}");
+                return common.managers.full.userManager.addUser(common.address.full.address, "Full user", common.users.full);
             })
             .then(() => {
                 return common.managers.full.permManager.setUserPermission(common.address.full.address, common.permLevels.FULL);
@@ -37,7 +37,7 @@ describe('Test Add Rewards with perms', function () {
 
     describe('Rewarder adds Reward', function () {
         it('Should actually add the reward', function () {
-            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder.encrypt())
+            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder)
                 .then((res) => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.REWARDER);
                 })
@@ -55,7 +55,7 @@ describe('Test Add Rewards with perms', function () {
 
     describe('Volunteer adds Reward', function () {
         it('Should not actually add the reward', function () {
-            return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
+            return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer)
                 .then((res) => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER);
                 })
@@ -73,7 +73,7 @@ describe('Test Add Rewards with perms', function () {
 
     describe('Elderly adds Reward', function () {
         it('Should not actually add the reward', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Volunteer", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Volunteer", common.users.elderly)
                 .then((res) => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
@@ -91,7 +91,7 @@ describe('Test Add Rewards with perms', function () {
 
     describe('Rewarder adds twice the same reward', function () {
         it('Should add the reward only once', function () {
-            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder.encrypt())
+            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder)
                 .then((res) => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.REWARDER);
                 })

@@ -7,7 +7,7 @@ describe('Test remove Rewards with perms', function () {
     before(function () {
         return common.managers.full.actionManager.addAllAction()
             .then(() => {
-                return common.managers.full.userManager.addUser(common.address.full.address, "Full user", "{}");
+                return common.managers.full.userManager.addUser(common.address.full.address, "Full user", common.users.full);
             })
             .then(() => {
                 return common.managers.full.permManager.setUserPermission(common.address.full.address, common.permLevels.FULL);
@@ -37,7 +37,7 @@ describe('Test remove Rewards with perms', function () {
 
     describe('Rewarder remove its own Reward', function () {
         it('Should actually remove the reward', function () {
-            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder.encrypt())
+            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder)
                 .then((res) => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.REWARDER);
                 })
@@ -58,12 +58,12 @@ describe('Test remove Rewards with perms', function () {
 
     describe('Rewarder remove someone else Reward', function () {
         it('Should not remove the reward', function () {
-            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder.encrypt())
+            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder)
                 .then((res) => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.REWARDER);
                 })
                 .then((res) => {
-                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Rewarder2", common.users.volunteer.encrypt());
+                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Rewarder2", common.users.volunteer);
                 })
                 .then((res) => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.REWARDER);
@@ -85,18 +85,18 @@ describe('Test remove Rewards with perms', function () {
 
     describe('Rewarder remove a bought reward', function () {
         it('Should not remove the reward', function () {
-            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder.encrypt())
+            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder)
                 .then((res) => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.REWARDER);
                 })
                 .then((res) => {
-                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "volunteer", common.users.volunteer.encrypt());
+                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "volunteer", common.users.volunteer);
                 })
                 .then((res) => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER);
                 })
                 .then((res) => {
-                    return common.managers.full.userManager.addUser(common.address.elderly.address, "elderly", common.users.elderly.encrypt());
+                    return common.managers.full.userManager.addUser(common.address.elderly.address, "elderly", common.users.elderly);
                 })
                 .then((res) => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);

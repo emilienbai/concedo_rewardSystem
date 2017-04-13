@@ -68,12 +68,12 @@ describe('Test Confirm Offer with perms', function () {
 
     describe('Elderly confirms a claimed Offer', function () {
         it('Should accept the claim action', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
                 .then(() => {
-                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
+                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER)
@@ -101,12 +101,12 @@ describe('Test Confirm Offer with perms', function () {
 
     describe('Elderly confirms a not claimed Offer', function () {
         it('Should not accept the confirm action', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
                 .then(() => {
-                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
+                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER)
@@ -131,18 +131,18 @@ describe('Test Confirm Offer with perms', function () {
 
     describe('Elderly confirms someone else Offer', function () {
         it('Should not accept the confirm action', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
                 .then(() => {
-                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
+                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER)
                 })
                 .then(() => {
-                    return common.managers.full.userManager.addUser(common.address.rewarder.address, "Elderly2", common.users.rewarder.encrypt())
+                    return common.managers.full.userManager.addUser(common.address.rewarder.address, "Elderly2", common.users.rewarder)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.ELDERLY)

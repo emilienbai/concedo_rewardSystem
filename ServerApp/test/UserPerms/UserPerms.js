@@ -23,7 +23,7 @@ describe('Test set user perm', function () {
             })
             .then(() => {
                 //Add user full
-                return common.managers.full.userManager.addUser(common.address.full.address, "Full", common.users.full.encrypt())
+                return common.managers.full.userManager.addUser(common.address.full.address, "Full", common.users.full)
             })
     })
 

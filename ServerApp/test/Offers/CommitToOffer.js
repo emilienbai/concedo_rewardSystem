@@ -53,12 +53,12 @@ describe('Test commit to Offer', function () {
 
     describe('Volunteer commits to an Offer', function () {
         it('Should accept the volunteer', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
                 .then(() => {
-                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
+                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER)
@@ -80,18 +80,18 @@ describe('Test commit to Offer', function () {
 
     describe('Volunteer commits to a non available Offer', function () {
         it('Should accept the volunteer', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
                 .then(() => {
-                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
+                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER)
                 })
                 .then(() => {
-                    return common.managers.full.userManager.addUser(common.address.rewarder.address, "Volunteer2", common.users.rewarder.encrypt())
+                    return common.managers.full.userManager.addUser(common.address.rewarder.address, "Volunteer2", common.users.rewarder)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.VOLUNTEER)
@@ -116,12 +116,12 @@ describe('Test commit to Offer', function () {
 
     describe('Elderly commits to an Offer', function () {
         it('Should not accept the commit action', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
                 .then(() => {
-                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
+                    return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.ELDERLY)
@@ -143,12 +143,12 @@ describe('Test commit to Offer', function () {
 
     describe('Rewarder commits to an Offer', function () {
         it('Should not accept the commit action', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
                 .then(() => {
-                    return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder.encrypt())
+                    return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.REWARDER)

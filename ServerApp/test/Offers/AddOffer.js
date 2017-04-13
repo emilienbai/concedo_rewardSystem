@@ -47,7 +47,7 @@ describe('Test Add Offer with perms', function () {
 
     describe('Elderly adds Offer', function () {
         it('Should actually add the offer', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
@@ -65,7 +65,7 @@ describe('Test Add Offer with perms', function () {
 
     describe('Volunteer adds Offer', function () {
         it('Should not add any offer', function () {
-            return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
+            return common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER);
                 })
@@ -83,7 +83,7 @@ describe('Test Add Offer with perms', function () {
 
     describe('Rewarder adds Offer', function () {
         it('Should not add any offer', function () {
-            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder.encrypt())
+            return common.managers.full.userManager.addUser(common.address.rewarder.address, "Rewarder", common.users.rewarder)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.rewarder.address, common.permLevels.REWARDER);
                 })

@@ -59,7 +59,7 @@ describe('Test Remove Offer with perms', function () {
 
     describe('Elderly remove his own Offer', function () {
         it('Should remove the offer', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
@@ -80,12 +80,12 @@ describe('Test Remove Offer with perms', function () {
 
     describe('Elderly remove someone else Offer', function () {
         it('Should not remove the offer', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
                 .then(() => {
-                    common.managers.full.userManager.addUser(common.address.volunteer.address, "Elderly2", common.users.volunteer.encrypt())
+                    common.managers.full.userManager.addUser(common.address.volunteer.address, "Elderly2", common.users.volunteer)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.ELDERLY);
@@ -108,12 +108,12 @@ describe('Test Remove Offer with perms', function () {
 
     describe('Elderly remove his own Offer which someone committed', function () {
         it('Should not remove the offer', function () {
-            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly.encrypt())
+            return common.managers.full.userManager.addUser(common.address.elderly.address, "Elderly", common.users.elderly)
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.elderly.address, common.permLevels.ELDERLY);
                 })
                 .then(() => {
-                    common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer.encrypt())
+                    common.managers.full.userManager.addUser(common.address.volunteer.address, "Volunteer", common.users.volunteer)
                 })
                 .then(() => {
                     return common.managers.full.permManager.setUserPermission(common.address.volunteer.address, common.permLevels.VOLUNTEER);

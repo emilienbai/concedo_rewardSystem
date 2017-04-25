@@ -71,7 +71,7 @@ function getRewards(request, response) {//todo improve
     try {
         let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let rmanager = new rewardManager.RewardManager(contractManager);
-        rmanager.getRewards()
+        rmanager.getRewards(request.params.available==="true")
             .then((result) => {
                 response.status(200).json(result)
             })

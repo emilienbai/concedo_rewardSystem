@@ -28,11 +28,11 @@ router.route('/users/:userAddress/balance').get(UserCtrl.getBalance);
 router.route('/users/:userAddress/offers').get(UserCtrl.getUserOffers);
 router.route('/users/:userAddress/rewards').get(UserCtrl.getUserRewards);
 
-
-
 //offers
 router.route('/offers')
     .post(offerCtrl.createOffer)
+
+router.route('/offers/:available')    
     .get(offerCtrl.getOffers)
 
 router.route('/offers/:offerId')
@@ -46,6 +46,8 @@ router.route('/offers/:offerId/confirm').put(offerCtrl.confirmOffer);
 //rewards
 router.route('/rewards')
     .post(rewardCtrl.createReward)
+
+router.route('/rewards/:available') 
     .get(rewardCtrl.getRewards);
 
 router.route('/rewards/:rewardId')

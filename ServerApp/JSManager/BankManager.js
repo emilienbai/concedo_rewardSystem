@@ -23,7 +23,7 @@ function BankManager(contractManager, callback) {
                 let bankCurrentAddress = bankAddress;
                 //Get ABI 
                 let bankContractAddress = contractData["deployBank"];
-                let bankAbi = JSON.parse(fs.readFileSync(config.abiDir + bankContractAddress)); //TODO check if works
+                let bankAbi = JSON.parse(fs.readFileSync(config.abiDir + bankContractAddress));
 
                 let bankContract = contractsManager.newContractFactory(bankAbi).at(bankContractAddress);
                 bankContract.balance(userAddress, (error, result) => {

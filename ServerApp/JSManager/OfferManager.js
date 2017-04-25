@@ -172,7 +172,7 @@ function OfferManager(contractsManager) {
      * @param {Address} userAddress - User address we want related offers
      * @param {function} callback - callback function
      */
-    this.getUserOffers = function (userAddress, callback) {
+    this.getUserOffers = function (userAddress, availableOnly, callback) {
         let contractData = this.contractData;
         let contractsManager = this.contractsManager;
         let dougContract = this.dougContract;
@@ -182,7 +182,7 @@ function OfferManager(contractsManager) {
                 return getOfferList(offerDbAddress, contractData, contractsManager, dougContract);
             })
             .then((list) => {
-                return getOfferData(contractData, contractsManager, list, userAddress);
+                return getOfferData(contractData, contractsManager, list, userAddress, availableOnly);
             }).then((offerList) => {
                 if (callback) callback(null, offerList);
                 else {
@@ -200,8 +200,8 @@ function OfferManager(contractsManager) {
      * Get all the offers of the database
      * @param {function} callback - Callback function
      */
-    this.getOffers = function (callback) {
-        return this.getUserOffers(null, callback);
+    this.getOffers = function (availableOnly, callback) {
+        return this.getUserOffers(null, availableOnly, callback);
     }
 
     /**
@@ -220,7 +220,7 @@ function OfferManager(contractsManager) {
             })
             .then((offerAddress) => {
                 var elem = new Element(0, 0, 0, offerAddress);
-                return getOfferData(contractData, contractsManager, [elem], null);
+                return getOfferData(contractData, contractsManager, [elem], null, null);
             }).then((offerList) => {
                 let returnVal = offerList[0] ? offerList[0] : [];
                 if (callback) callback(null, returnVal);
@@ -314,7 +314,7 @@ function OfferManager(contractsManager) {
      * @param {Array} list - List of 'Element'
      * @param {function} callback 
      */
-    function getOfferData(contractData, contractsManager, list, userAddress) {
+    function getOfferData(contractData, contractsManager, list, userAddress, availableOnly) {
         /*Get Offer ABI*/
         let offerContractAddress = contractData["Offer"];
         let offerAbi = JSON.parse(fs.readFileSync(config.abiDir + offerContractAddress));
@@ -330,7 +330,8 @@ function OfferManager(contractsManager) {
                     contract.getData((error, res) => {
                         if (error) reject(error);
                         let oo = new OfferObject(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
-                        if (!userAddress || userAddress == oo.beneficiary || userAddress == oo.volunteer) {
+                        if ((!userAddress || userAddress == oo.beneficiary || userAddress == oo.volunteer)
+                                && (!availableOnly || oo.beneficiary == 0x0)) {
                             offerList.push(oo);
                         } else {
                             size--;

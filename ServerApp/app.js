@@ -93,7 +93,7 @@ function AddActionAndSetPermission() {
             console.log("Actions deployed and permissions set !");
         }).catch(console.error);
 }
-//AddActionAndSetPermission();
+//AddActionAndSetPermission(true);
 
 /*
 var bankManager = new BankManager.BankManager(contractsManagerFull, ()=>{

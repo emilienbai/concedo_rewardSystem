@@ -117,7 +117,7 @@ function getOffers(request, response) { //todo improve
     try {
         let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let omanager = new offerManager.OfferManager(contractManager);
-        omanager.getOffers()
+        omanager.getOffers(request.params.available==="true")
             .then((result) => {
                 if (result[0]) {
                     response.status(200).json(result);

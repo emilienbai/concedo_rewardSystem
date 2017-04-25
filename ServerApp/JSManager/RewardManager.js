@@ -97,7 +97,7 @@ function RewardManager(contractManager) {
     let dougAbi = JSON.parse(fs.readFileSync(config.abiDir + dougContractAddress));
     this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
-    this.getUserRewards = function (userAddress, callback) {
+    this.getUserRewards = function (userAddress, availableOnly, callback) {
         let contractData = this.contractData;
         let contractsManager = this.contractsManager;
         let dougContract = this.dougContract;
@@ -107,7 +107,7 @@ function RewardManager(contractManager) {
                 return getRewardList(rewardDbAddress, contractData, contractsManager, dougContract);
             })
             .then((list) => {
-                return getRewardData(contractData, contractsManager, list, userAddress);
+                return getRewardData(contractData, contractsManager, list, userAddress, availableOnly);
             })
             .then((rewardList) => {
                 if (callback) callback(null, rewardList);
@@ -122,8 +122,8 @@ function RewardManager(contractManager) {
 
     }
 
-    this.getRewards = function (callback) {
-        return this.getUserRewards(null, callback);
+    this.getRewards = function (availableOnly, callback) {
+        return this.getUserRewards(null, availableOnly, callback);
     }
 
     this.getReward = function (rewardId, callback) {
@@ -201,7 +201,7 @@ function RewardManager(contractManager) {
         })
     }
 
-    function getRewardData(contractData, contractsManager, list, userAddress) {
+    function getRewardData(contractData, contractsManager, list, userAddress, availableOnly) {
         /*Get Reward ABI*/
         let offerContractAddress = contractData["Reward"];
         let offerAbi = JSON.parse(fs.readFileSync(config.abiDir + offerContractAddress));
@@ -216,7 +216,8 @@ function RewardManager(contractManager) {
                     contract.getData((error, res) => {
                         if (error) reject(error);
                         let ro = new RewardObject(res[0], res[1], res[2], res[3], res[4]);
-                        if (!userAddress || userAddress == ro.rewarder || userAddress == ro.buyer) {
+                        if ((!userAddress || userAddress == ro.rewarder || userAddress == ro.buyer)
+                            && (!availableOnly || ro.buyer == 0x0)) {
                             rewardList.push(ro);
                         } else {
                             size--;

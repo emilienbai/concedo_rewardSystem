@@ -91,13 +91,13 @@ function addUser(request, response) {
                 let uManager = new userManager.UserManager(contractManager);
                 let uData = new userManager.User(u.name, u.surname, u.birthdate, u.address, u.phone, u.email, u.type);
                 //for wallah testing - Rewarder user
-
+/*
                 creds = {
                     address: "DFE8A4EFF35193479BE8A230CE0BD1546ABD1A83",
                     pubKey: "044A85C207F4245D72AED37A2B68B4A3E23BA67B593469B7C11261421AAE6D03",
                     privKey: "24CBB3D74E2CBA47CFC801B35797E71CB6759677D3625A474B91E6DEEBEC3294044A85C207F4245D72AED37A2B68B4A3E23BA67B593469B7C11261421AAE6D03"
                 }
-
+*/
                 /*
                                 response.status(200).json({
                                     added: true,

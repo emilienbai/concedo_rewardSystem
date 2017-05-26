@@ -290,7 +290,6 @@ function OfferManager(contractsManager) {
         return new Promise((resolve, reject) => {
             /*Compile offers in list*/
             let list = [];
-            //todo consider current key == null
             offerContract.tail(function (error, result) {
                 if (error) reject(error);
 

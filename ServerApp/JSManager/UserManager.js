@@ -3,6 +3,7 @@ var fs = require('fs');
 var perms = require('./PermissionManager');
 var utils = require('./Utils');
 var config = require('../config');
+var aes256 = require('nodejs-aes256');
 
 
 /**
@@ -25,11 +26,15 @@ function User(name, surname, address, birthdate, phone, email, type) {
 }
 
 User.prototype.encrypt = function () {
-    return JSON.stringify(this); //TODO true encryption
+    var ciphertext = aes256.encrypt(config.encryptionPassword, JSON.stringify(this));
+    return ciphertext; //TODO true encryption
 }
 
 User.prototype.decrypt = function (encryptedString) {
-    let obj = JSON.parse(encryptedString);//todo true decryption
+    var plaintext = aes256.decrypt(config.encryptionPassword, encryptedString);
+    let obj = JSON.parse(plaintext);//todo true decryption
+
+
     this.name = obj.name;
     this.surname = obj.surname;
     this.birthdate = obj.birthdate;
@@ -57,7 +62,7 @@ function UserObject(owner, pseudo, expectedPerm, perm, encryptedData) {
     this.pseudo = utils.hexToString(pseudo);
     this.expectedPerm = expectedPerm.toNumber();
     this.perm = perm.toNumber();
-    this.encryptedData = utils.hexToString(encryptedData);
+    //this.encryptedData = "";//utils.hexToString(encryptedData);
 }
 
 function Element(prev, next, current, address) {

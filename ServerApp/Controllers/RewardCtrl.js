@@ -6,7 +6,7 @@ var erisC = require('eris-contracts');
 var erisdbURL = config.erisdbURL;
 
 function checkReward(r) {
-    if (!r.rewardName || !r.price || !r.count || !r.description || !r.code) {
+    if (!r.name || !r.price || !r.count || !r.description || !r.code) {
         throw ({ error: "Missing argument in reward" });
     }
 }
@@ -18,18 +18,29 @@ function createReward(request, response) {
         let r = request.body.reward;
         checkReward(r);
         var d = new Date();
-        let reward = new rewardManager.Reward(r.rewardName, r.price, r.count, d.toString(), r.description, r.code);
+        let rIdArray = [];
+        let countGoal = r.count;
+        for (var i = 0; i < r.count; i++) {
+            let reward = new rewardManager.Reward(r.name, r.price, i, d.toString(), r.description, r.code);
 
-        rmanager.addReward(reward)
-            .then((result) => {
-                if (result) {
-                    response.status(201).json({
-                        rewardId: reward.findId()
-                    })
-                } else {
-                    response.status(401).send('Error while adding reward');
-                }
-            })
+            rmanager.addReward(reward)
+                .then((result) => {
+                    if (result) {
+                        rIdArray.push(reward.findId());
+                        checkIfDone();
+                    } else {
+                        countGoal--;
+                        checkIfDone();
+                    }
+                })
+        }
+        function checkIfDone() {
+            if (rIdArray.length == countGoal) {
+                response.status(201).json({
+                    rewardId: rIdArray
+                })
+            }
+        }
     } catch (error) {
         response.status(400).send(error);
     }
@@ -47,7 +58,7 @@ function removeReward(request, response) {
                 })
             })
     } catch (error) {
-        response.status(400).send(error);
+        response.status(400).send({ error: error });
     }
 }
 
@@ -67,11 +78,11 @@ function buyReward(request, response) {
     }
 }
 
-function getRewards(request, response) {//todo improve
+function getRewards(request, response) {
     try {
         let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let rmanager = new rewardManager.RewardManager(contractManager);
-        rmanager.getRewards(request.params.available==="true")
+        rmanager.getRewards(request.params.available === "true")
             .then((result) => {
                 response.status(200).json(result)
             })

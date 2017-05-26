@@ -2,6 +2,7 @@ var erisC = require('eris-contracts');
 var fs = require('fs');
 var utils = require('./Utils');
 var config = require('../config');
+var crypto = require('crypto');
 
 function encrypt(toEncrypt) {
     return toEncrypt; //TODO true encryption -> see if code does not depend on count ?
@@ -17,11 +18,11 @@ function encrypt(toEncrypt) {
  */
 function Reward(rewardName, price, count, timestamp, description, code) {
     this.rewardName = rewardName;
-    this.price = price;
+    this.price = parseInt(price, 10);
     this.count = count;
     this.timestamp;
     this.description = description;
-    this.encryptedCode = encrypt(code);
+    this.code = encrypt(code);
 }
 
 Reward.prototype.toString = function () {
@@ -29,16 +30,21 @@ Reward.prototype.toString = function () {
 }
 
 Reward.prototype.findId = function () {
-    return this.rewardName; //TODO hash with count and timestamp
+    let str = this.rewardName + this.timestamp + this.count;
+    //Use of 256bit hash function should prevent hash collision
+    let hash = crypto.createHash('sha256')
+    hash.update(str);
+    return hash.digest('hex');
+
 }
 
-function RewardObject(rewardName, rewarder, buyer, price, data) {
-    this.rewardName = utils.hexToString(rewardName);
+function RewardObject(rewardId, rewarder, buyer, price, data) {
+    this.rewardId = rewardId.toLowerCase();
     this.rewarder = rewarder;
     this.buyer = buyer;
     this.price = price.toNumber();
     let r = JSON.parse(utils.hexToString(data));
-    this.data = new Reward(r.rewardName, r.price, r.count, r.timestamp, r.description, r.encryptedCode);
+    this.data = new Reward(r.rewardName, r.price, r.count, r.timestamp, r.description, r.code);
 }
 
 /**
@@ -90,7 +96,7 @@ function RewardManager(contractManager) {
     }
 
     this.buyReward = function (rewardName, callback) {
-        return this.executeAction("buyreward", 0x0, rewardName, 0, "", callback);
+        return this.executeAction("buyreward", "0x0", rewardName, 0, "", callback);
     }
 
     let dougContractAddress = this.contractData["deployDoug"];

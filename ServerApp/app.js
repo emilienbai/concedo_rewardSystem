@@ -111,7 +111,7 @@ var bankManager = new BankManager.BankManager(contractsManagerFull, ()=>{
 
 function addUsersAndSetPerms() {
     var userVolunteer = new UserManager.User("Doe", "John Volunteer", "Luleå", "0123456789", "john@doe.se", "volunteer");
-    var userElderly = new UserManager.User("Mamene", "Lorenzo Elderly","Luleå", "0312456789", "lorenzo@mamene.sal", "elderly");
+    var userElderly = new UserManager.User("Mamene", "Lorenzo Elderly", "Luleå", "0312456789", "lorenzo@mamene.sal", "elderly");
     var userRewarder = new UserManager.User("Potter", "Harry Rewarder", "Luleå", "0312456789", "harry@potter.fr", "rewarder");
 
     userManager.addUser(partVolunteer.address, "volunteer", userVolunteer)
@@ -143,12 +143,12 @@ function addUsersAndSetPerms() {
 
 //addUsersAndSetPerms();
 
-
+/*
 userManager.getUsers()
     .then((result) => {
         console.log(result);
     }).catch(console.error)
-
+*/
 //***************************************Offer*********************************/
 
 var offerManagerFull = new OfferManager.OfferManager(contractsManagerFull);
@@ -255,6 +255,13 @@ rewardManagerFull.getReward("bbbReward")
     console.log(result);
 })
 */
+actionManager.addAction('clear', 'deployActionClearDb')
+    .then(result => {
+        console.log(result);
+        actionManager.clear().then((result) => {
+            console.log(result);
+        })
+    })
 /*
 actionManager.clear().then((result)=>{
     console.log(result);

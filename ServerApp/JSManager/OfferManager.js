@@ -2,6 +2,7 @@ var erisC = require('eris-contracts');
 var fs = require('fs');
 var utils = require('./Utils');
 var config = require('../config');
+var crypto = require('crypto');
 
 /**
  * Constructor for object offer
@@ -36,7 +37,7 @@ function Offer(offerName, period, duration, location, type, description, option)
  */
 function OfferObject(beneficiary, offerId, reward, data, volunteer, claimed, confirmed, confirmedOn) {
     this.beneficiary = beneficiary;
-    this.offerId = utils.hexToString(offerId);
+    this.offerId = offerId.toLowerCase();
     this.reward = reward.toNumber();
     let o = JSON.parse(utils.hexToString(data));
     this.data = new Offer(o.offerName, o.period, o.duration, o.location, o.type, o.description, o.option);
@@ -71,14 +72,19 @@ Offer.prototype.toString = function () {
  * Determine the Id for a newly created offer
  */
 Offer.prototype.findId = function () {
-    return this.offerName; //TODO make hash with offerName+time
+    let str = this.offerName + this.period;
+    //Use of 256bit hash function should prevent hash collision
+    let hash = crypto.createHash('sha256')
+    hash.update(str);
+    return hash.digest('hex');
 }
 
 /**
  * Compute the amounte of the reward based on duration and options
  */
 Offer.prototype.computeReward = function () {
-    return this.duration; //TODO consider options
+    let r = parseInt(this.duration, 10);
+    return r; //TODO consider options
 }
 
 /**
@@ -331,7 +337,7 @@ function OfferManager(contractsManager) {
                         if (error) reject(error);
                         let oo = new OfferObject(res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]);
                         if ((!userAddress || userAddress == oo.beneficiary || userAddress == oo.volunteer)
-                                && (!availableOnly || oo.beneficiary == 0x0)) {
+                            && (!availableOnly || oo.volunteer == 0x0)) {
                             offerList.push(oo);
                         } else {
                             size--;

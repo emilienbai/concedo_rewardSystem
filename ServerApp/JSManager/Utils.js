@@ -1,3 +1,5 @@
+var accountManager = require('./AccountManager');
+
 /**
  * Convert hexadecimal to readable string
  * @param {String} hex - String to convert
@@ -26,6 +28,24 @@ function credentialFromHeaders(headers) {
     if (!headers.address || !headers.pubkey || !headers.privkey) {
         throw ({ error: "missing params in header" });
     }
+
+    addr = accountManager.addressFromKeyPair({
+        pubKey: headers.pubkey,
+        privKey: headers.privkey
+    });
+    if(addr != headers.address){
+        throw({ error: "address not matching credentials"});
+    }
+
+    let verif = accountManager.checkKeyPair({
+        pubKey: headers.pubkey,
+        privKey: headers.privkey
+    });
+
+    if(!verif){
+        throw({error:"Keypair not valid"});
+    }
+
     return {
         "address": headers.address,
         "pubKey": headers.pubkey,

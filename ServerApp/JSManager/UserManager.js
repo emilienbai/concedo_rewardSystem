@@ -27,14 +27,12 @@ function User(name, surname, address, birthdate, phone, email, type) {
 
 User.prototype.encrypt = function () {
     var ciphertext = aes256.encrypt(config.encryptionPassword, JSON.stringify(this));
-    return ciphertext; //TODO true encryption
+    return ciphertext;
 }
 
 User.prototype.decrypt = function (encryptedString) {
     var plaintext = aes256.decrypt(config.encryptionPassword, encryptedString);
-    let obj = JSON.parse(plaintext);//todo true decryption
-
-
+    let obj = JSON.parse(plaintext);
     this.name = obj.name;
     this.surname = obj.surname;
     this.birthdate = obj.birthdate;

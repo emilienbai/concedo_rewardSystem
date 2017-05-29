@@ -18,6 +18,25 @@ function generateKeyPair() {
     };
 }
 
+function checkKeyPair(keyPair) {
+    try {
+        let testMessage = "this is a test message to sign";
+        let sig = ed25519.Sign(new Buffer(testMessage, 'utf8'), new Buffer(keyPair.privKey, "hex"));
+        let pub = new Buffer(keyPair.pubKey, "hex");
+        let verif = ed25519.Verify(new Buffer(testMessage, 'utf8'), sig, pub)
+
+        if (verif) {
+            return true;
+        } else {
+            return false;
+        }
+
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
 /**
  * Create an address from a public kay, compatible with Eris blockchaine
  * @param {Object} keyPair - Public and private key created with ed25519
@@ -75,5 +94,7 @@ function addAccount() {
 
 
 module.exports = {
-    addAccount: addAccount
+    addAccount: addAccount,
+    addressFromKeyPair: addressFromKeyPair,
+    checkKeyPair: checkKeyPair
 }

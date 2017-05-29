@@ -69,9 +69,26 @@ function buyReward(request, response) {
         if (!request.params.rewardId) throw ({ error: "Missing reward ID" })
         rmanager.buyReward(request.params.rewardId)
             .then((result) => {
-                response.status(200).json({
-                    bought: result
-                })
+                let code = "";
+                if (result) {
+                    rmanager.getReward(request.params.rewardId)
+                        .then(rewardObject => {
+                            rewardObject.data.decrypt();
+                            code = rewardObject.data.code;
+
+                            response.status(200).json({
+                                bought: result,
+                                code: code
+                            })
+
+                        })
+                } else {
+                    response.status(200).json({
+                        bought: result,
+                        code: code
+                    })
+                }
+
             })
     } catch (error) {
         response.status(400).send(error);
@@ -84,6 +101,7 @@ function getRewards(request, response) {
         let rmanager = new rewardManager.RewardManager(contractManager);
         rmanager.getRewards(request.params.available === "true")
             .then((result) => {
+                rewardManager.removeCode(result);
                 response.status(200).json(result)
             })
     } catch (error) {
@@ -98,6 +116,11 @@ function getReward(request, response) {
         if (!request.params.rewardId) throw ({ error: "Missing reward ID" })
         rmanager.getReward(request.params.rewardId)
             .then((result) => {
+                if(result.rewarder == request.headers.address || result.buyer == request.headers.address){
+                    result.data.decrypt();
+                }else {
+                    result.data.code = "";
+                }
                 response.status(200).json(result)
             })
     } catch (error) {

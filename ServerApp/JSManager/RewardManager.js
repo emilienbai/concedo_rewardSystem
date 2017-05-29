@@ -3,11 +3,18 @@ var fs = require('fs');
 var utils = require('./Utils');
 var config = require('../config');
 var crypto = require('crypto');
-
+var aes256 = require('nodejs-aes256');
+/*
 function encrypt(toEncrypt) {
-    return toEncrypt; //TODO true encryption -> see if code does not depend on count ?
+    let ciphertext = aes256.encrypt(config.rewardPassword, toEncrypt);
+    return ciphertext;
 }
 
+function decrypt(cipherText) {
+    let plaintext = aes256.decrypt(config.rewardPassword, cipherText);
+    return plaintext;
+}
+*/
 /**
  * Constructor for the reward object
  * @param {String} rewardName 
@@ -22,11 +29,21 @@ function Reward(rewardName, price, count, timestamp, description, code) {
     this.count = count;
     this.timestamp;
     this.description = description;
-    this.code = encrypt(code);
+    this.code = code//encrypt(code);
 }
 
 Reward.prototype.toString = function () {
     return JSON.stringify(this);
+}
+
+Reward.prototype.encrypt = function () {
+    let ciphertext = aes256.encrypt(config.rewardPassword, this.code);
+    this.code = ciphertext;
+}
+
+Reward.prototype.decrypt = function () {
+    let plaintext = aes256.decrypt(config.rewardPassword, this.code);
+    this.code = plaintext;
 }
 
 Reward.prototype.findId = function () {
@@ -88,6 +105,7 @@ function RewardManager(contractManager) {
 
 
     this.addReward = function (reward, callback) {
+        reward.encrypt();
         return this.executeAction("addreward", "0x0", reward.findId(), reward.price, reward.toString(), callback);
     };
 
@@ -142,7 +160,7 @@ function RewardManager(contractManager) {
                 return getRewardAddress(rewardId, rewardDbAddress, contractData, contractsManager);
             }).then((rewardAddress) => {
                 var elem = new Element(0, 0, 0, rewardAddress);
-                return getRewardData(contractData, contractsManager, [elem], null);
+                return getRewardData(contractData, contractsManager, [elem], null, false);
             }).then((rewardList) => {
                 let returnVal = rewardList[0] ? rewardList[0] : [];
                 if (callback) callback(null, returnVal);
@@ -152,7 +170,7 @@ function RewardManager(contractManager) {
                     })
                 }
             }).catch((error) => {
-                throw (error);
+                reject(error);
             })
     }
 
@@ -243,7 +261,14 @@ function RewardManager(contractManager) {
     }
 }
 
+function removeCode(rewardObjectArray) {
+    for (var i = 0; i < rewardObjectArray.length; i++) {
+        rewardObjectArray[i].data.code = "";
+    }
+}
+
 module.exports = {
     Reward: Reward,
     RewardManager: RewardManager,
+    removeCode: removeCode
 }

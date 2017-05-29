@@ -6,5 +6,6 @@
         "pubKey": "Its public key",
         "privKey": "Its private key"
     },
-    "encryptionPassword":"passwordtoencryptdataonthechain"
+    "encryptionPassword": "passwordtoencryptdataonthechain",
+    "rewardPassword": "password to encrypt reward password"
 }

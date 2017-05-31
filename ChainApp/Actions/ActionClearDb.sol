@@ -1,4 +1,4 @@
-import "./ActionManager.sol";
+import "./Action.sol";
 import "../Interfaces/DbInterface.sol";
 
 contract ActionClearDb is Action {
@@ -23,6 +23,6 @@ contract ActionClearDb is Action {
     }
 
     function permission() returns (uint){
-        return 0;
+        return 40;
     }
 }

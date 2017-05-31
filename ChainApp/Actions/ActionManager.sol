@@ -7,18 +7,6 @@ import "./ActiveAction.sol";
 
 contract ActionManager is DougEnabled {
 
-  struct ActionLogEntry {
-    address caller;
-    bytes32 action;
-    uint blockNumber;
-    bool success;
-  }
-
-
-  event ShoutLog(address indexed addr, bytes32 indexed action, uint indexed intVal);
-
-  bool LOGGING = true;
-
   // This is where we keep the "active action".
   // TODO need to keep track of uses of (STOP) as that may cause activeAction
   // to remain set and opens up for abuse. (STOP) is used as a temporary array
@@ -26,52 +14,49 @@ contract ActionManager is DougEnabled {
   // careful. Does it revert the tx entirely now, or does it come with some sort
   // of recovery mechanism? Otherwise it is still super dangerous and should never
   // ever be used. Ever.
-  //address public activeAction;
 
   uint permToLock = 40; // Current max.
   bool locked;
 
-  // Adding a logger here, and not in a separate contract. This is wrong.
-  // Will replace with array once that's confirmed to work with structs etc.
-  uint public nextEntry = 0;
-  mapping(uint => ActionLogEntry) public logEntries;
-
   function ActionManager(){
-    permToLock = 255;    
+    permToLock = 40;    
   }
 
+  /**
+  * @notice Handle execution of all actions
+  * @param actionName {bytes32} - Name of the action to execute
+  * @param addr {address} - Param typed address
+  * @param str {bytes32} - Param of type bytes32
+  * @param intVal {uint} - Param of type unsigned int
+  * @param data {bytes} - Param of type bytes
+  * @return result {bool} - Result of the execution
+  */
   function execute(bytes32 actionName, address addr, bytes32 str, uint intVal, bytes data) returns (bool result) {
+    //execution is considered failed except specified otherwise
     result = false;
+    //Get the action DB address
     address actionDb = ContractProvider(DOUG).contracts("actiondb");
     if (actionDb == 0x0){
-      _log(actionName,false);
-      result = false;
       return;
     }
     
+    // Get the action to execute address
     address actn = ActionDb(actionDb).actions(actionName);
-    // If no action with the given name exists - cancel.
     if (actn == 0x0){
-      _log(actionName,false);
-      result = false;
       return;
     }
-
-    
-    
-      // Permissions stuff
+   
+    //Get the address of user database
     address pAddr = ContractProvider(DOUG).contracts("users");
-    // Only check permissions if there is a permissions contract.
     if(pAddr != 0x0){
       Permissionner p = Permissionner(pAddr);
 
-      // First we check the permissions of the account that's trying to execute the action.
+      //Retrieve user level of permission
       uint perm = p.perms(msg.sender);
 
       // Now we check that the action manager isn't locked down. In that case, special
       // permissions is needed.
       if(locked && perm < permToLock){
-        _log(actionName,false);
         result = false;
         return;
       }
@@ -80,37 +65,46 @@ contract ActionManager is DougEnabled {
       uint permReq = Action(actn).permission();
 
       // Either authorized user or Admin
-      if (perm != permReq && perm < permToLock && permReq != 0){
-        _log(actionName,false);
+      if (perm != permReq && perm <= permToLock && permReq != 0){
         result = false;
         return;
       }
     }
     
-    // Set this as the currently active action.
+    // Set this as the currently active action, then execute
     setActive(actn);
     result = Action(actn).execute(msg.sender, addr, str, intVal, data);
-
     setActive(0x0);
-    _log(actionName,result);
-
     return;
   }
 
-  function getActive() returns (address){
+  /**
+  * @notice Get the address of the currently active action
+  * @return {address} - Address of the current active action
+  */
+  function getActive() internal constant returns (address){
     address activeActionContract = ContractProvider(DOUG).contracts("activeaction");
     if(activeActionContract == 0x0) return 0x0;
     ActiveAction aa = ActiveAction(activeActionContract);
     return aa.get();
   }
 
-  function setActive(address newActive) returns (address){
+  /**
+  * @notice Set the address of the currently active action
+  * @param newActive {address} - Address of the newly active action
+  * @return {address} - Address that is stored
+  */
+  function setActive(address newActive) internal returns (address){
     address activeActionContract = ContractProvider(DOUG).contracts("activeaction");
     if(activeActionContract == 0x0) return 0x0;
     ActiveAction aa = ActiveAction(activeActionContract);
     return aa.set(newActive);
   }
 
+  /**
+  * @notice Lock the action manager to prevent some action execution
+  * @return {bool} - True if the action manager have been locked
+  */
   function lock() returns (bool) {
     address activeAction = getActive();
     address actionDb = ContractProvider(DOUG).contracts("actiondb");
@@ -125,8 +119,13 @@ contract ActionManager is DougEnabled {
       return false;
     }
     locked = true;
+    return true;
   }
 
+  /**
+  * @notice  Unlock the action Manager
+  * @return {bool} - True if the action Manager have been unlockced
+  */
   function unlock() returns (bool) {
     address activeAction = getActive();
     address actionDb = ContractProvider(DOUG).contracts("actiondb");
@@ -141,15 +140,6 @@ contract ActionManager is DougEnabled {
       return false;
     }
     locked = false;
+    return true;
   }
-
-  function _log(bytes32 actionName, bool success) internal {
-    ActionLogEntry le = logEntries[nextEntry++];
-    le.caller = msg.sender;
-    le.action = actionName;
-    le.success = success;
-    le.blockNumber = block.number;
-    ShoutLog(le.caller, le.action, 0);
-  }
-
 }

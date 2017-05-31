@@ -1,8 +1,20 @@
-import "./ActionManager.sol";
+import "./Action.sol";
 import "../Interfaces/Rewards.sol";
 
+/**
+* Remove a reward
+*/
 contract ActionRemoveReward is Action{
 
+    /**
+    * @notice Abstract: Execute the action
+    * @param sender {address} - User who transacts on the chain
+    * @param addr {address} - Unused
+    * @param rewardName {bytes32} - Id of the reward to remove
+    * @param intVal {uint} - Unused
+    * @param data {bytes} - Unused
+    * @return {bool} - Signify if the action went well
+    */
     function execute(address sender, address addr, bytes32 rewardName, uint intVal, bytes data) returns(bool){
         if(!isActionManager()) return false;
 

@@ -1,3 +1,5 @@
 contract DbInterface {
+
     function clearDb();
+
 }

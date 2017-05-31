@@ -7,4 +7,5 @@ contract Rewards{
     function buy(bytes32 rewardName, address buyer) returns (bool);
 
     function getData(bytes32 rewardName) returns(address, address, uint);
+    
 }

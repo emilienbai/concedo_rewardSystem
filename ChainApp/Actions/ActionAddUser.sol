@@ -1,9 +1,21 @@
+import "./Action.sol";
 import "../Interfaces/Users.sol";
-import "./ActionManager.sol";
 import "../Interfaces/ContractProvider.sol";
 
+/**
+* Add a new User to the database
+*/
 contract ActionAddUser is Action {
 
+    /**
+    * @notice Add a new User
+    * @param sender {address} - User who transacts on the chain
+    * @param userAddress {address} - Address of the new user
+    * @param pseudo {bytes32} - pseudo of the new user
+    * @param expectedPerm {uint} - perm level expected from the new user
+    * @param userData {bytes} - Data concerning the new user
+    * @return {bool} - Signify if the action went well
+    */
     function execute(address sender, address userAddress, bytes32 pseudo, uint expectedPerm, bytes userData) returns (bool){
         if(!isActionManager()){
             return false;

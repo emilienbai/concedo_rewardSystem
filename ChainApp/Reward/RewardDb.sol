@@ -78,6 +78,7 @@ contract RewardDb is LinkedList, Validee{
          address rewardAddress = list[rewardName].contractAddress;
          if(rewardAddress == 0x0) return (0x0, 0x0, 0);
 
+         Reward r = Reward(rewardAddress);
          price = r.price();
          rewarder = r.rewarder();
          buyer = r.buyer();   

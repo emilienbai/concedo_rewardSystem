@@ -61,11 +61,12 @@ contract UserList {
         elem.userAddress = userAddress;
         elem.contractAddress = contractAddr;
 
-        // Two cases - empty or not.
+        //If list is empty, the inserted contract is both head and tail
         if (size == 0) {
             tail = userAddress;
             head = userAddress;
-        } else {
+        } 
+        else {//Newly inserted contract is considered head
             list[head].next = userAddress;
             list[userAddress].prev = head;
             head = userAddress;
@@ -82,10 +83,12 @@ contract UserList {
     function _removeElement(address userAddress) internal returns(bool) {
         Element elem = list[userAddress];
         
+        //Return false if the contract does not exist
         if (elem.userAddress == 0x0) {
             return false;
         }
 
+        //If only one element is in the list, reset head and tail element
         if (size == 1) {
             tail = 0x0;
             head = 0x0;

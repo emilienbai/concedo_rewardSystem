@@ -19,22 +19,27 @@ contract ActionRemoveUser is Action {
     * @return {bool} - Signify if the action went well
     */
     function execute(address sender, address userAddress, bytes32 str, uint intVal, bytes data) returns (bool){
-        if(!isActionManager()){
-            return false;
-        }
+        if(!isActionManager()) return false;
+        
+        //Access DOUG contract
         ContractProvider dg = ContractProvider(DOUG);
+
+        //Access user database
         address udb = dg.contracts("users");
         if(udb == 0x0){
             return false;
         }
 
         var userDb = Users(udb);
+        //Remove user
         if(userDb.removeUser(userAddress)){
+            //Access bank
             address bdb = dg.contracts("bank");
             if(bdb == 0x0){
                 return false;
             }
             Cleaner cl = Cleaner(bdb);
+            //Empty user account
             return cl.clean(userAddress);
         }
         return false;        

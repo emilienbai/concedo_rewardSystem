@@ -19,11 +19,15 @@ contract ActionAddReward is Action{
     function execute (address sender, address addr, bytes32 rewardName, uint price, bytes rewardData) returns (bool){
         if(!isActionManager()) return false;
 
+        //Access DOUG contract
         ContractProvider dg = ContractProvider(DOUG);
+        
+        //Access reward database
         address rdb = dg.contracts("rewards");
         if (rdb == 0x0) return false;
 
         var rewardDb = Rewards(rdb);
+        //Add the reward
         return rewardDb.addReward(rewardName, sender, price, rewardData);
     }
 }

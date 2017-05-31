@@ -62,10 +62,12 @@ contract LinkedList {
       elem.contractName = name;
       elem.contractAddress = addr;
 
+      //If list is empty, the inserted contract is both head and tail
       if(size == 0){
         tail = name;
         head = name;
-      } else {
+      } 
+      else {//Newly inserted contract is considered head
         list[head].next = name;
         list[name].prev = head;
         head = name;
@@ -82,10 +84,12 @@ contract LinkedList {
     function _removeElement(bytes32 name) internal returns (bool) {
       Element elem = list[name];
 
+      //Return false if the contract does not exist
       if(elem.contractName == ""){
         return false;
       }
 
+      //If only one element is in the list, reset head and tail element
       if(size == 1){
         tail = "";
         head = "";

@@ -17,14 +17,18 @@ contract ActionSetUserPermission is Action {
     * @return {bool} - Signify if the action went well
     */
     function execute(address sender, address addr, bytes32 str, uint perm, bytes data) returns (bool) {
-        if(!isActionManager()){
-            return false;
-        }
+        if(!isActionManager()) return false;
+        
+        //Access DOUG contract
         ContractProvider dg = ContractProvider(DOUG);
+
+        //Access user databse
         address perms = dg.contracts("users");
         if(perms == 0x0){
             return false;
         }
+
+        //Set user permission
         return Permissionner(perms).setPermission(addr,perm);
     }
 

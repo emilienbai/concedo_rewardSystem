@@ -16,16 +16,19 @@ contract ActionAddOffer is Action{
     * @return {bool} - Signify if the action went well
     */
     function execute(address sender, address addr, bytes32 offerName, uint reward, bytes offerData) returns (bool){
-        if(!isActionManager()){
-            return false;
-        }
+        if(!isActionManager()) return false;
+        
+        //Access DOUG contract
         ContractProvider dg = ContractProvider(DOUG);
+        
+        //Access offer database
         address odb = dg.contracts("offers");
         if(odb == 0x0){
             return false;
         }
 
         var offerDb = Offers(odb);
+        //Add the offer
         return  offerDb.addOffer(offerName, sender, reward, offerData);
     }
 }

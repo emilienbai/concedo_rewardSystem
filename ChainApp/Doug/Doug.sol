@@ -33,7 +33,7 @@ contract Doug is LinkedList {
       }
 
       if(!DougEnabled(addr).setDougAddress(this)){
-        //Structural fail...
+        //The specified contract is not compatible
         return false;
       }
 
@@ -47,7 +47,7 @@ contract Doug is LinkedList {
     * @return {bool} - showing if the removal succeeded or failed.
     */
     function removeContract(bytes32 name) returns (bool) {
-        if(msg.sender != owner){
+        if(msg.sender != owner){//todo add action for ActionRemoveContract
             return false;
         }
         bool re = _removeElement(name);

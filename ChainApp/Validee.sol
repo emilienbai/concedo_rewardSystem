@@ -17,13 +17,13 @@ contract Validee is DougEnabled{
         if(DOUG == 0x0){
             return false;
         }
-
+        //Get action DB address
         address adb = ContractProvider(DOUG).contracts("actiondb");
         if(adb == 0x0){
             return false;
         }
-
         ActionDbInterface adbi = ActionDbInterface(adb);
+        //Get action being executed address in action database
         address authorizedAction = adbi.actions(actionName);
         address aa = ContractProvider(DOUG).contracts("activeaction");
 
@@ -31,7 +31,15 @@ contract Validee is DougEnabled{
             return false;
         }
 
+        //Get currently active action
         address activeAction = ActiveAction(aa).get();
+
+        //Action used have to be one of those which are stored in the action DB
+        //AND action execution have to be called through the ActionManager
+        if(activeAction == 0x0 || authorizedAction == 0x0){
+            return false;
+        }
+        //Active action have to be the one being executed
         return activeAction == authorizedAction;
     }
 }

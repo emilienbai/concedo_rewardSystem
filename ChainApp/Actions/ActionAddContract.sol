@@ -16,9 +16,8 @@ contract ActionAddContract is Action {
     * @return {bool} - Signify if the action went well
     */
     function execute(address sender, address addr, bytes32 name, uint intVal, bytes data) returns (bool) {
-        if(!isActionManager()){
-            return false;
-        }
+        if(!isActionManager()) return false;
+        
         DougInterface d = DougInterface(DOUG);
         return d.addContract(name,addr);
     }

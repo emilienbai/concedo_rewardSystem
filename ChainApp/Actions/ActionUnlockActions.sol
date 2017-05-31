@@ -16,15 +16,18 @@ contract ActionUnlockActions is Action {
     * @return {bool} - Signify if the action went well
     */
     function execute(address sender, address addr, bytes32 str, uint intVal, bytes data) returns (bool) {
-        if(!isActionManager()){
-            return false;
-        }
+        if(!isActionManager()) return false;
+        
+        //Access DOUG contract
         ContractProvider dg = ContractProvider(DOUG);
+
+        //Access action manager
         address am = dg.contracts("actions");
         if(am == 0x0){
             return false;
         }
+
+        //Unlock action manager
         return ActionManager(am).unlock();
     }
-
 }

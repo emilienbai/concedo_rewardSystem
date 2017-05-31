@@ -67,11 +67,16 @@ contract Offer{
     */
     function commitTo(address _volunteer) returns (bool) {
         if(msg.sender != owner) return false;
-        if(volunteer != 0x0){ //Someone already commited
+        //Someone already commited
+        if(volunteer != 0x0){ 
             return false;
-        } else if (_volunteer == beneficiary){ //A beneficiary cannot commit to its own offer
+        } 
+        //A beneficiary cannot commit to its own offer
+        //If permission are correctly set, should not happen
+        else if (_volunteer == beneficiary){ 
             return false;
-        } else {
+        } 
+        else {
             volunteer = _volunteer;
             return true;
         }
@@ -84,10 +89,13 @@ contract Offer{
     */
     function claim(address sender) returns (bool){
         if(msg.sender != owner) return false;
+        //Only volunteer who committed can claim the offer
         if(sender == volunteer){
             claimed = true;
         }
-        return claimed;
+        else {
+            return false;
+        }
     }
     
     /**
@@ -97,6 +105,10 @@ contract Offer{
     */
     function confirm(address sender) returns (bool){
         if(msg.sender != owner) return false;
+        //A volunteer committed                             AND
+        //He claimed the offer                              AND
+        //The creator of the offer is trying to confirm it  AND
+        //The offer have not already been confirmed
         if(volunteer != 0x0 && claimed && sender == beneficiary && !confirmed){
             confirmed = true;
             confirmedOn = block.number;

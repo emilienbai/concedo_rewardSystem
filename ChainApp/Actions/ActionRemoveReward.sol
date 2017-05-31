@@ -18,11 +18,15 @@ contract ActionRemoveReward is Action{
     function execute(address sender, address addr, bytes32 rewardName, uint intVal, bytes data) returns(bool){
         if(!isActionManager()) return false;
 
+        //Access DOUG contract
         ContractProvider dg = ContractProvider(DOUG);
+
+        //Access reward database
         address rdb = dg.contracts("rewards");
         if(rdb == 0x0) return false;
 
         var rewardDb = Rewards(rdb);
+        //remove reward
         return rewardDb.removeReward(rewardName, sender);
     }
 }

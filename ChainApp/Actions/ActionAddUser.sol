@@ -17,15 +17,18 @@ contract ActionAddUser is Action {
     * @return {bool} - Signify if the action went well
     */
     function execute(address sender, address userAddress, bytes32 pseudo, uint expectedPerm, bytes userData) returns (bool){
-        if(!isActionManager()){
-            return false;
-        }
+        if(!isActionManager()) return false;
+        
+        //Access DOUG contract
         ContractProvider dg = ContractProvider(DOUG);
+
+        //Access user database
         address udb = dg.contracts("users");
         if(udb == 0x0){
             return false;
         }
         var userDb = Users(udb);
+        //Add the user
         address newAddr = userDb.addUser(userAddress, pseudo, expectedPerm, userData);
         return newAddr != 0x0;
     }

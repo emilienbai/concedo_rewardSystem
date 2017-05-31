@@ -16,18 +16,23 @@ contract ActionRemoveAction is Action {
     * @return {bool} - Signify if the action went well
     */
     function execute(address sender, address addr, bytes32 name, uint intVal, bytes data) returns (bool) {
-        if(!isActionManager()){
-            return false;
-        }
+        if(!isActionManager()) return false;
+        
+        //Access DOUG contract
         ContractProvider dg = ContractProvider(DOUG);
+
+        //Access action database
         address adb = dg.contracts("actiondb");
         if(adb == 0x0){
             return false;
         }
+
+        //Prevent deletion of "addAction"
         if(name == "addaction"){
           return false;
         }
+
+        //Remove the action
         return ActionDb(adb).removeAction(name);
     }
-
 }

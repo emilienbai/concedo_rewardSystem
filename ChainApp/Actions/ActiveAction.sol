@@ -21,7 +21,9 @@ contract ActiveAction is DougEnabled{
     * @return {address} - Address of the active action
     */
     function set(address newActive) returns (address){
+        //Access action manager
         address am = ContractProvider(DOUG).contracts("actions");
+        //Only action manager can set currently active action
         if(msg.sender != am){
             return activeAction;
         }

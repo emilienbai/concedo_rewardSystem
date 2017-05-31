@@ -37,7 +37,8 @@ contract Bank is Validee {
     if (!validate('buyreward')) 
       return false;
 
-    if (balance[from] < amount)
+    //Check user ability to send the specified amount
+    if (balance[from] <= amount)
       return false;
     
     balance[from] -= amount;

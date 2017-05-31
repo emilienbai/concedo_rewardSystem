@@ -8,10 +8,11 @@ contract ActionManagerEnabled is DougEnabled {
     */
     function isActionManager() internal constant returns (bool) {
         if(DOUG != 0x0){
+            //Access action manager address in DOUG
             address am = ContractProvider(DOUG).contracts("actions");
-            if (msg.sender == am){
+            //Check the caller is the right action manager
+            if (msg.sender == am)
                 return true;
-            }
         }
         return false;
     }

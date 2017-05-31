@@ -34,6 +34,7 @@ contract RewardDb is LinkedList, Validee{
 
         Reward r = Reward(rewardAddress);
         if(r.buyer() != 0x0) return false;
+        
         if(sender == r.rewarder()){
             return _removeElement(rewardName);
         }
@@ -65,18 +66,23 @@ contract RewardDb is LinkedList, Validee{
         return list[rewardName].contractAddress;
     }
 
-    /*function getData(bytes32 rewardName) constant returns(address rewarder, address buyer, uint price){
-        
-        address rewardAddress = list[rewardName].contractAddress;
-        if(rewardAddress == 0x0) return (0x0, 0x0, 0);
+    /**
+    * @notice Get interesting data concerning a reward
+    * @param rewardName {bytes32} - Id of the reward
+    * @return rewarder {address} - Address of the creator of the reward
+    * @return buyer {address} - Address of the buyer of the reward
+    * @return price {uint} - Price of the reward
+    */
+    function getData(bytes32 rewardName) constant returns(address rewarder, address buyer, uint price){
+         
+         address rewardAddress = list[rewardName].contractAddress;
+         if(rewardAddress == 0x0) return (0x0, 0x0, 0);
 
-        Reward r = Reward(rewardAddress);
-        price = r.price();
-        rewarder = r.rewarder();
-        buyer = r.buyer();
-    }*/
-    //todo before commit delete
-
+         price = r.price();
+         rewarder = r.rewarder();
+         buyer = r.buyer();   
+    }
+   
     /**
     * @notice Clear the reward database
     */

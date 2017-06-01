@@ -25,6 +25,7 @@ router.get('/', function (req, res) {
 router.route('/users').post(UserCtrl.addUser);
 router.route('/users').get(UserCtrl.getUsers);
 router.route('/users/unauthorized').get(UserCtrl.getUnauthorizedUsers);
+router.route('/users/:userAddress').get(UserCtrl.getUser);
 router.route('/users/:userAddress/permission').put(UserCtrl.setUserPermission);
 router.route('/users/:userAddress/balance').get(UserCtrl.getBalance);
 router.route('/users/:userAddress/offers').get(UserCtrl.getUserOffers);

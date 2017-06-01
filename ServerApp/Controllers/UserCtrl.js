@@ -46,6 +46,28 @@ function getUsers(request, response) {
     }
 }
 
+function getUser(request, response) {
+    try {
+         if (!request.params.userAddress)
+            throw ({ error: "missing user address in params" });
+        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let uManager = new userManager.UserManager(contractManager);
+        return uManager.getPseudoUser(request.headers.address)
+            .then(userObject => {
+                if (userObject.perm >= permManager.perms.ADMIN || userObject.owner == request.params.userAddress)
+                    return uManager.getFullUser(request.params.userAddress);
+                else {
+                    response.status(401).json({ error: "Unauthorized Request" });
+                }
+            })
+            .then(result => {
+                response.status(200).json(result);
+            })
+    } catch (error) {
+        response.status(400).json(error);
+    }
+}
+
 function getUnauthorizedUsers(request, response) {
     try {
         let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
@@ -55,8 +77,6 @@ function getUnauthorizedUsers(request, response) {
                 if (userObject.perm >= permManager.perms.ADMIN)
                     return uManager.getUnauthorizedUsers();
                 else {
-                    console.log("zob");
-                    //let e = new Error("unauthorized Request");
                     response.status(401).json({ error: "Unauthorized Request" });
                 }
             })
@@ -214,5 +234,6 @@ module.exports = {
     addUser: addUser,
     setUserPermission: setUserPermission,
     getUsers: getUsers,
+    getUser: getUser,
     getUnauthorizedUsers: getUnauthorizedUsers
 }

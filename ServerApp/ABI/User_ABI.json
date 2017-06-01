@@ -1,0 +1,99 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "perm",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getData",
+        "outputs": [
+            {
+                "name": "_userAddress",
+                "type": "address"
+            },
+            {
+                "name": "_pseudo",
+                "type": "bytes32"
+            },
+            {
+                "name": "_expectedPerm",
+                "type": "uint256"
+            },
+            {
+                "name": "_perm",
+                "type": "uint256"
+            },
+            {
+                "name": "_encryptedData",
+                "type": "bytes"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "pseudo",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_perm",
+                "type": "uint256"
+            }
+        ],
+        "name": "setPermission",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "remove",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_userAddress",
+                "type": "address"
+            },
+            {
+                "name": "_pseudo",
+                "type": "bytes32"
+            },
+            {
+                "name": "_expectedPerm",
+                "type": "uint256"
+            },
+            {
+                "name": "_encryptedData",
+                "type": "bytes"
+            }
+        ],
+        "type": "constructor"
+    }
+]

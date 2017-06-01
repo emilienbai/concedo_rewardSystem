@@ -1,0 +1,87 @@
+[
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "dougAddr",
+                "type": "address"
+            }
+        ],
+        "name": "setDougAddress",
+        "outputs": [
+            {
+                "name": "result",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "actionName",
+                "type": "bytes32"
+            },
+            {
+                "name": "addr",
+                "type": "address"
+            },
+            {
+                "name": "str",
+                "type": "bytes32"
+            },
+            {
+                "name": "intVal",
+                "type": "uint256"
+            },
+            {
+                "name": "data",
+                "type": "bytes"
+            }
+        ],
+        "name": "execute",
+        "outputs": [
+            {
+                "name": "result",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "unlock",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "remove",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "lock",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "type": "constructor"
+    }
+]

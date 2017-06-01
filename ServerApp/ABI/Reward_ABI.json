@@ -1,0 +1,104 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getData",
+        "outputs": [
+            {
+                "name": "_rewardName",
+                "type": "bytes32"
+            },
+            {
+                "name": "_rewarder",
+                "type": "address"
+            },
+            {
+                "name": "_buyer",
+                "type": "address"
+            },
+            {
+                "name": "_price",
+                "type": "uint256"
+            },
+            {
+                "name": "_data",
+                "type": "bytes"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "buyer",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "price",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "rewarder",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_buyer",
+                "type": "address"
+            }
+        ],
+        "name": "buy",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_rewarder",
+                "type": "address"
+            },
+            {
+                "name": "_rewardName",
+                "type": "bytes32"
+            },
+            {
+                "name": "_price",
+                "type": "uint256"
+            },
+            {
+                "name": "_data",
+                "type": "bytes"
+            }
+        ],
+        "type": "constructor"
+    }
+]

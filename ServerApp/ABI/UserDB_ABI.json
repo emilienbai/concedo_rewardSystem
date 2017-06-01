@@ -1,0 +1,182 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "tail",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "dougAddr",
+                "type": "address"
+            }
+        ],
+        "name": "setDougAddress",
+        "outputs": [
+            {
+                "name": "result",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "head",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "size",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "userAddress",
+                "type": "address"
+            }
+        ],
+        "name": "removeUser",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "remove",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "userAddress",
+                "type": "address"
+            },
+            {
+                "name": "pseudo",
+                "type": "bytes32"
+            },
+            {
+                "name": "expectedPerm",
+                "type": "uint256"
+            },
+            {
+                "name": "encryptedData",
+                "type": "bytes"
+            }
+        ],
+        "name": "addUser",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "userAddr",
+                "type": "address"
+            }
+        ],
+        "name": "perms",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "userAddress",
+                "type": "address"
+            }
+        ],
+        "name": "getElement",
+        "outputs": [
+            {
+                "name": "prev",
+                "type": "address"
+            },
+            {
+                "name": "next",
+                "type": "address"
+            },
+            {
+                "name": "userAddr",
+                "type": "address"
+            },
+            {
+                "name": "contractAddress",
+                "type": "address"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "addr",
+                "type": "address"
+            },
+            {
+                "name": "perm",
+                "type": "uint256"
+            }
+        ],
+        "name": "setPermission",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "clearDb",
+        "outputs": [],
+        "type": "function"
+    }
+]

@@ -46,6 +46,28 @@ function getUsers(request, response) {
     }
 }
 
+function getUnauthorizedUsers(request, response) {
+    try {
+        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let uManager = new userManager.UserManager(contractManager);
+        return uManager.getPseudoUser(request.headers.address)
+            .then(userObject => {
+                if (userObject.perm >= permManager.perms.ADMIN)
+                    return uManager.getUnauthorizedUsers();
+                else {
+                    console.log("zob");
+                    //let e = new Error("unauthorized Request");
+                    response.status(401).json({ error: "Unauthorized Request" });
+                }
+            })
+            .then(result => {
+                response.status(200).json(result);
+            })
+    } catch (error) {
+        response.status(400).json(error);
+    }
+}
+
 function getUserOffers(request, response) {
     try {
         let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
@@ -54,7 +76,7 @@ function getUserOffers(request, response) {
             throw ({ error: "missing user address in params" })
         if (request.params.userAddress != request.headers.address) {
             throw ({ error: "Not allowed to see someone else offers" });
-        } 
+        }
         oManager.getUserOffers(request.params.userAddress)
             .then((result) => {
                 response.status(200).json(result);
@@ -91,13 +113,13 @@ function addUser(request, response) {
                 let uManager = new userManager.UserManager(contractManager);
                 let uData = new userManager.User(u.name, u.surname, u.birthdate, u.address, u.phone, u.email, u.type);
                 //for wallah testing - Rewarder user
-/*
-                creds = {
-                    address: "DFE8A4EFF35193479BE8A230CE0BD1546ABD1A83",
-                    pubKey: "044A85C207F4245D72AED37A2B68B4A3E23BA67B593469B7C11261421AAE6D03",
-                    privKey: "24CBB3D74E2CBA47CFC801B35797E71CB6759677D3625A474B91E6DEEBEC3294044A85C207F4245D72AED37A2B68B4A3E23BA67B593469B7C11261421AAE6D03"
-                }
-*/
+                /*
+                                creds = {
+                                    address: "DFE8A4EFF35193479BE8A230CE0BD1546ABD1A83",
+                                    pubKey: "044A85C207F4245D72AED37A2B68B4A3E23BA67B593469B7C11261421AAE6D03",
+                                    privKey: "24CBB3D74E2CBA47CFC801B35797E71CB6759677D3625A474B91E6DEEBEC3294044A85C207F4245D72AED37A2B68B4A3E23BA67B593469B7C11261421AAE6D03"
+                                }
+                */
                 /*
                                 response.status(200).json({
                                     added: true,
@@ -191,5 +213,6 @@ module.exports = {
     getUserRewards: getUserRewards,
     addUser: addUser,
     setUserPermission: setUserPermission,
-    getUsers: getUsers
+    getUsers: getUsers,
+    getUnauthorizedUsers: getUnauthorizedUsers
 }

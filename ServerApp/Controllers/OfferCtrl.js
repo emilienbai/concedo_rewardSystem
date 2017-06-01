@@ -144,7 +144,7 @@ function getVolunteer(request, response) {
                 let volunteer = result.volunteer;
 
                 if (beneficiary == request.headers.address){
-                    umanager.getUser(volunteer)
+                    umanager.getFullUser(volunteer)
                     .then((user)=>{
                         response.status(200).json(user);
                     })

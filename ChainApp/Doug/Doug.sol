@@ -1,7 +1,8 @@
 import "../LinkedList.sol";
+import "../Validee.sol";
 import "./DougEnabled.sol";
 
-contract Doug is LinkedList {
+contract Doug is LinkedList, Validee {
 
   /**
   * Address of the chain user who put this contract on
@@ -27,7 +28,7 @@ contract Doug is LinkedList {
     function addContract(bytes32 name, address addr) returns (bool) {
        // Only the owner may add, and the contract has to be DougEnabled and
        // return true when setting the Doug address.
-      if(msg.sender != owner){ //TODO add support for actionAddContract
+      if(msg.sender != owner && !validate("addcontract")){
         // Access denied.
         return false;
       }
@@ -47,7 +48,7 @@ contract Doug is LinkedList {
     * @return {bool} - showing if the removal succeeded or failed.
     */
     function removeContract(bytes32 name) returns (bool) {
-        if(msg.sender != owner){//todo add action for ActionRemoveContract
+        if(msg.sender != owner && !validate("removecontract")){
             return false;
         }
         bool re = _removeElement(name);

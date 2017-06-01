@@ -7,14 +7,6 @@ import "./ActiveAction.sol";
 
 contract ActionManager is DougEnabled {
 
-  // This is where we keep the "active action".
-  // TODO need to keep track of uses of (STOP) as that may cause activeAction
-  // to remain set and opens up for abuse. (STOP) is used as a temporary array
-  // out-of bounds exception for example (or is planned to), which means be
-  // careful. Does it revert the tx entirely now, or does it come with some sort
-  // of recovery mechanism? Otherwise it is still super dangerous and should never
-  // ever be used. Ever.
-
   uint permToLock = 40; // Current max.
   bool locked;
 

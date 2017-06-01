@@ -90,8 +90,9 @@ contract Offer{
     function claim(address sender) returns (bool){
         if(msg.sender != owner) return false;
         //Only volunteer who committed can claim the offer
-        if(sender == volunteer){
+        if(sender == volunteer && !claimed){
             claimed = true;
+            return true;
         }
         else {
             return false;

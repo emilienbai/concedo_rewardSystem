@@ -4,7 +4,7 @@ var perms = require('./PermissionManager');
 var utils = require('./Utils');
 var config = require('../config');
 var aes256 = require('nodejs-aes256');
-
+const am = require("./ActionManager");
 
 /**
  * Constructor for user
@@ -72,52 +72,36 @@ function Element(prev, next, current, address) {
     this.address = address;
 }
 
-
 function UserManager(contractsManager) {
     /*Get data from deployement*/
     this.contractData = require('../../jobs_output.json');
 
-    this.contractsManager = contractsManager
-    /*Get action manager*/
-    let actionManagerContractAddress = this.contractData["deployActionManager"];
-    let actionManagerAbi = JSON.parse(fs.readFileSync(config.abiDir + actionManagerContractAddress));
-    this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
+    this.contractsManager = contractsManager;
+    this.actionManager = new am.ActionManager(this.contractsManager);
 
-    /*Get UserDb*/
-    let userDbContractAddress = this.contractData["deployUsers"];
-    let userDbAbi = JSON.parse(fs.readFileSync(config.abiDir + userDbContractAddress));
-    this.userDbContract = this.contractsManager.newContractFactory(userDbAbi).at(userDbContractAddress);
+    let dougContractAddress = this.contractData["deployDoug"];
+    const dougAbi = JSON.parse(fs.readFileSync(config.abiDir + "Doug_ABI.json"));
+    this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
-    this.executeAction = function (actionName, address, str, intVal, data, callback) {
-        var amc = this.actionManagerContract;
-        if (callback) {
-            return amc.execute(actionName, address, str, intVal, data, callback);
-        }
-        return new Promise((resolve, reject) => {
-            amc.execute(actionName, address, str, intVal, data,
-                (error, result) => {
-                    if (error) reject(error);
-                    resolve(result);
-                })
-        })
-    }
+    const usersABI = JSON.parse(fs.readFileSync(config.abiDir + "UserDB_ABI.json"));
+    const userAbi = JSON.parse(fs.readFileSync(config.abiDir + "User_ABI.json"));
 
     this.addUser = function (userAddress, pseudo, user, callback) {
-        return this.executeAction("adduser", userAddress, pseudo, user.getExpectedPerm(), user.encrypt(), callback);
+        return this.actionManager.executeAction("adduser", userAddress, pseudo, user.getExpectedPerm(), user.encrypt(), callback);
     }
 
     this.removeUser = function (address, callback) {
-        return this.executeAction("removeuser", address, "", 0, callback);
+        return this.actionManager.executeAction("removeuser", address, "", 0, callback);
     }
 
     this.getFullUser = function (userAddress, callback) {
-        let contractData = this.contractData;
         let contractsManager = this.contractsManager;
         let dougContract = this.dougContract;
-        if (callback) getUser(contractData, contractsManager, dougContract, userAddress, true, callback);
+
+        if (callback) getUser(contractsManager, dougContract, userAddress, true, callback);
         else {
             return new Promise((resolve, reject) => {
-                getUser(contractData, contractsManager, dougContract, userAddress, true, (error, user) => {
+                getUser(contractsManager, dougContract, userAddress, true, (error, user) => {
                     if (error) reject(error);
                     resolve(user);
                 })
@@ -126,13 +110,12 @@ function UserManager(contractsManager) {
     }
 
     this.getPseudoUser = function (userAddress, callback) {
-        let contractData = this.contractData;
         let contractsManager = this.contractsManager;
         let dougContract = this.dougContract;
-        if (callback) getUser(contractData, contractsManager, dougContract, userAddress, false, callback);
+        if (callback) getUser(contractsManager, dougContract, userAddress, false, callback);
         else {
             return new Promise((resolve, reject) => {
-                getUser(contractData, contractsManager, dougContract, userAddress, false, (error, user) => {
+                getUser(contractsManager, dougContract, userAddress, false, (error, user) => {
                     if (error) reject(error);
                     resolve(user);
                 })
@@ -141,14 +124,13 @@ function UserManager(contractsManager) {
     }
 
     this.getUsers = function (callback) {
-        let contractData = this.contractData;
         let contractsManager = this.contractsManager;
         let dougContract = this.dougContract;
 
         if (callback) {
             return getUserDbAddress(dougContract)
                 .then(userDbAddress => {
-                    return getElemList(userDbAddress, contractData, contractsManager, false, callback);
+                    return getElemList(userDbAddress, contractsManager, false, callback);
                 })
                 .catch(error => {
                     callback(error, null);
@@ -157,7 +139,7 @@ function UserManager(contractsManager) {
             return new Promise((resolve, reject) => {
                 return getUserDbAddress(dougContract)
                     .then(userDbAddress => {
-                        getElemList(userDbAddress, contractData, contractsManager, false, (error, result) => {
+                        getElemList(userDbAddress, contractsManager, false, (error, result) => {
                             if (error) reject(error);
                             resolve(result);
                         })
@@ -170,14 +152,13 @@ function UserManager(contractsManager) {
     }
 
     this.getUnauthorizedUsers = function (callback) {
-        let contractData = this.contractData;
         let contractsManager = this.contractsManager;
         let dougContract = this.dougContract;
 
-        if (callback) getUnauthorizedUsers(contractData, contractsManager, dougContract, callback);
+        if (callback) getUnauthorizedUsers(contractsManager, dougContract, callback);
         else {
             return new Promise((resolve, reject) => {
-                getUnauthorizedUsers(contractData, contractsManager, dougContract, (error, users) => {
+                getUnauthorizedUsers(contractsManager, dougContract, (error, users) => {
                     if (error) reject(error);
                     resolve(users);
                 })
@@ -185,10 +166,10 @@ function UserManager(contractsManager) {
         }
     }
 
-    function getUnauthorizedUsers(contractData, contractsManager, dougContract, callback) {
+    function getUnauthorizedUsers(contractsManager, dougContract, callback) {
         return getUserDbAddress(dougContract)
             .then(userDbAddress => {
-                getElemList(userDbAddress, contractData, contractsManager, true, (error, result) => {
+                getElemList(userDbAddress, contractsManager, true, (error, result) => {
                     let ArrRes = [];
                     for (var i = 0; i < result.length; i++) {
                         if (result[i].perm == 0) {
@@ -208,14 +189,13 @@ function UserManager(contractsManager) {
             })
     }
 
-
-    function getUser(contractData, contractsManager, dougContract, userAddress, full, callback) {
+    function getUser(contractsManager, dougContract, userAddress, full, callback) {
         return getUserDbAddress(dougContract)
             .then(userDbAddress => {
-                return getUserContractAddress(userAddress, userDbAddress, contractData, contractsManager)
+                return getUserContractAddress(userAddress, userDbAddress, contractsManager)
             })
             .then(userElem => {
-                return getUserData(contractData, contractsManager, [userElem], true, (error, userList) => {
+                return getUserData(contractsManager, [userElem], true, (error, userList) => {
                     if (userList[0]) {
                         if (full) {
                             let u = new User("", "", "", "", "", "");
@@ -243,9 +223,7 @@ function UserManager(contractsManager) {
         })
     }
 
-    function getUserContractAddress(userAddress, userDbAddress, contractData, contractsManager) {
-        let usersContractsAddress = contractData["deployUsers"];
-        let usersAbi = JSON.parse(fs.readFileSync(config.abiDir + usersContractsAddress));
+    function getUserContractAddress(userAddress, userDbAddress,contractsManager) {
         let usersContract = contractsManager.newContractFactory(usersAbi).at(userDbAddress);
 
         return new Promise((resolve, reject) => {
@@ -257,16 +235,7 @@ function UserManager(contractsManager) {
 
     }
 
-
-    let dougContractAddress = this.contractData["deployDoug"];
-    let dougAbi = JSON.parse(fs.readFileSync(config.abiDir + dougContractAddress));
-    this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
-
-    function getUserData(contractData, contractsManager, list, fullUser, callback) {
-        //Get User ABI 
-        let userContractAddress = contractData["User"];
-        let userAbi = JSON.parse(fs.readFileSync(config.abiDir + userContractAddress));
-
+    function getUserData(contractsManager, list, fullUser, callback) {
         let userList = [];
         let size = list.length;
 
@@ -298,11 +267,8 @@ function UserManager(contractsManager) {
         }
     }
 
-    function getElemList(userDbAddress, contractData, contractsManager, fullUser, callback) {
-        //Get UserDb ABI 
-        let usersContractAddress = contractData["deployUsers"];
-        let usersABI = JSON.parse(fs.readFileSync(config.abiDir + usersContractAddress));
-        let userContract = contractsManager.newContractFactory(userDbAbi).at(usersContractAddress);
+    function getElemList(userDbAddress, contractsManager, fullUser, callback) {
+        let userContract = contractsManager.newContractFactory(usersABI).at(userDbAddress);
 
         /*Compile offers in list*/
         let list = [];
@@ -314,7 +280,7 @@ function UserManager(contractsManager) {
             var currentKey = result;
 
             function finished() {
-                getUserData(contractData, contractsManager, list, fullUser, callback);
+                getUserData(contractsManager, list, fullUser, callback);
             }
 
             function getElems(key) {

@@ -1,6 +1,7 @@
 var erisC = require('eris-contracts');
 var fs = require('fs');
 var config = require('../config');
+const am = require('./ActionManager');
 
 var perms = {
     ALL: 0,
@@ -12,38 +13,15 @@ var perms = {
 }
 
 function PermissionManager(contractsManager) {
-    /*GetData from deployment*/
-    this.contractData = require("../../jobs_output.json");
-
     this.contractsManager = contractsManager;
-    /*Get action manager*/
-    let actionManagerContractAddress = this.contractData["deployActionManager"];
-    let actionManagerAbi = JSON.parse(fs.readFileSync(config.abiDir + actionManagerContractAddress));
-    this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
-
-    this.executeAction = function (actionName, address, str, intVal, data, callback) {
-        if (callback) {
-            return this.actionManagerContract
-                .execute(actionName, address, str, intVal, data, callback)
-        }
-        let amc = this.actionManagerContract;
-        return new Promise((resolve, reject) => {
-            amc.execute(actionName,
-                address, str, intVal, data,
-                (error, result) => {
-                    if (error) reject(error);
-                    resolve(result);
-                })
-        })
-
-    }
+    this.actionManager = am.ActionManager(this.contractsManager);
 
     this.setUserPermission = function (userAddress, permission, callback) {
-        return this.executeAction("setuserpermission", userAddress, "", permission, "", callback);
+        return this.actionManager.executeAction("setuserpermission", userAddress, "", permission, "", callback);
     }
 
     this.setActionPermission = function (actionName, permission, callback) {
-        return this.executeAction("setactionpermission", 0x0, actionName, permission, "", callback);
+        return this.actionManager.executeAction("setactionpermission", 0x0, actionName, permission, "", callback);
     }
 
     this.setAllActionPerm = function (verbose) {

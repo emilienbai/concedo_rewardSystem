@@ -3,6 +3,7 @@ var fs = require('fs');
 var utils = require('./Utils');
 var config = require('../config');
 var crypto = require('crypto');
+const am = require('./ActionManager')
 
 /**
  * Constructor for object offer
@@ -55,9 +56,9 @@ function OfferObject(beneficiary, offerId, reward, data, volunteer, claimed, con
  * @param {Address} address - Address of the contract
  */
 function Element(prev, next, current, address) {
-    this.prev = utils.hexToString(prev);
-    this.next = utils.hexToString(next);
-    this.current = utils.hexToString(current);
+    this.prev = prev;
+    this.next = next;
+    this.current = current;
     this.address = address;
 }
 
@@ -94,39 +95,16 @@ Offer.prototype.computeReward = function () {
 function OfferManager(contractsManager) {
     /*Get data from deployement*/
     this.contractData = require('../../jobs_output.json');
-
     this.contractsManager = contractsManager;
-    //Get action manager
-    let actionManagerContractAddress = this.contractData["deployActionManager"];
-    let actionManagerAbi = JSON.parse(fs.readFileSync(config.abiDir + actionManagerContractAddress));
-    this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
+    this.actionManager = new am.ActionManager(this.contractsManager);
+
     //Get DOUG address
-    let dougContractAddress = this.contractData["deployDoug"];
-    let dougAbi = JSON.parse(fs.readFileSync(config.abiDir + dougContractAddress));
+    const dougContractAddress = this.contractData["deployDoug"];
+    const dougAbi = JSON.parse(fs.readFileSync(config.abiDir + "Doug_ABI.json"));
     this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
-    /**
-     * Call execute on the action manager
-     * @param {String} actionName - Name of the action to execute on the chain
-     * @param {Address} address - address typed parameter
-     * @param {String} str - string typed parameter
-     * @param {Number} intVal - int typed parameter
-     * @param {String} data - string type parameter with "unlimited" size
-     * @param {function} callback - callback function
-     */
-    this.executeAction = function (actionName, address, str, intVal, data, callback) {
-        var amc = this.actionManagerContract;
-        if (callback) {
-            return amc.execute(actionName, address, str, intVal, data, callback);
-        }
-        return new Promise((resolve, reject) => {
-            amc.execute(actionName, address, str, intVal, data,
-                (error, result) => {
-                    if (error) reject(error);
-                    resolve(result);
-                })
-        })
-    }
+    const offersAbi = JSON.parse(fs.readFileSync(config.abiDir + "OfferDB_ABI.json"));
+    const offerAbi = JSON.parse(fs.readFileSync(config.abiDir + "Offer_ABI.json"));
 
     /**
      * Add a new offer to the database
@@ -134,7 +112,7 @@ function OfferManager(contractsManager) {
      * @param {function} callback - callback function
      */
     this.addOffer = function (offer, callback) {
-        return this.executeAction("addoffer", "0x0", offer.findId(), offer.computeReward(), offer.toString(), callback);
+        return this.actionManager.executeAction("addoffer", "0x0", offer.findId(), offer.computeReward(), offer.toString(), callback)
     };
 
     /**
@@ -143,7 +121,7 @@ function OfferManager(contractsManager) {
      * @param {function} callback - callback function
      */
     this.removeOffer = function (offerId, callback) {
-        return this.executeAction("removeoffer", "0x0", offerId, 0, "", callback);
+        return this.actionManager.executeAction("removeoffer", "0x0", offerId, 0, "", callback);
     }
 
     /**
@@ -152,7 +130,7 @@ function OfferManager(contractsManager) {
      * @param {function} callback - callback function
      */
     this.commitToOffer = function (offerId, callback) {
-        return this.executeAction("committooffer", "0x0", offerId, 0, "", callback);
+        return this.actionManager.executeAction("committooffer", "0x0", offerId, 0, "", callback);
     }
 
     /**
@@ -161,7 +139,7 @@ function OfferManager(contractsManager) {
      * @param {function} callback - callback function
      */
     this.claimOffer = function (offerId, callback) {
-        return this.executeAction("claimoffer", "0x0", offerId, 0, "", callback);
+        return this.actionManager.executeAction("claimoffer", "0x0", offerId, 0, "", callback);
     }
 
     /**
@@ -170,7 +148,7 @@ function OfferManager(contractsManager) {
      * @param {function} callback - callback function
      */
     this.confirmOffer = function (offerId, callback) {
-        return this.executeAction("confirmoffer", 0x0, offerId, 0, "", callback);
+        return this.actionManager.executeAction("confirmoffer", 0x0, offerId, 0, "", callback);
     }
 
     /**
@@ -185,10 +163,10 @@ function OfferManager(contractsManager) {
 
         return getOfferDbAddress(dougContract)
             .then((offerDbAddress) => {
-                return getOfferList(offerDbAddress, contractData, contractsManager, dougContract);
+                return getOfferList(offerDbAddress, contractsManager, dougContract);
             })
             .then((list) => {
-                return getOfferData(contractData, contractsManager, list, userAddress, availableOnly);
+                return getOfferData(contractsManager, list, userAddress, availableOnly);
             }).then((offerList) => {
                 if (callback) callback(null, offerList);
                 else {
@@ -216,17 +194,16 @@ function OfferManager(contractsManager) {
      * @param {function} callback - Callback function
      */
     this.getOffer = function (offerId, callback) {
-        let contractData = this.contractData;
         let contractsManager = this.contractsManager;
         let dougContract = this.dougContract;
 
         return getOfferDbAddress(dougContract)
             .then((offerDbAddress) => {
-                return getOfferAddress(offerId, offerDbAddress, contractData, contractsManager);
+                return getOfferAddress(offerId, offerDbAddress, contractsManager);
             })
             .then((offerAddress) => {
                 var elem = new Element(0, 0, 0, offerAddress);
-                return getOfferData(contractData, contractsManager, [elem], null, null);
+                return getOfferData(contractsManager, [elem], null, null);
             }).then((offerList) => {
                 let returnVal = offerList[0] ? offerList[0] : [];
                 if (callback) callback(null, returnVal);
@@ -244,15 +221,10 @@ function OfferManager(contractsManager) {
      * Get an offer address from its name
      * @param {String} offerId - Name of the offer
      * @param {Address} offerDbAddress - Address of the offer database
-     * @param {*} contractData 
      * @param {Object} contractsManager - Contract manager to use to query the database
      */
-    function getOfferAddress(offerId, offerDbAddress, contractData, contractsManager) {
-        /*Get OfferDB ABI */
-        let offersContractAddress = contractData["deployOffers"];
-        let offersAbi = JSON.parse(fs.readFileSync(config.abiDir + offersContractAddress));
+    function getOfferAddress(offerId, offerDbAddress, contractsManager) {
         let offerContract = contractsManager.newContractFactory(offersAbi).at(offerDbAddress);
-
         return new Promise((resolve, reject) => {
             offerContract.getAddress(offerId, function (error, result) {
                 if (error) reject(error);
@@ -278,13 +250,10 @@ function OfferManager(contractsManager) {
     /**
      * Get list of the offers name and their addresses
      * @param {Address} offerDbAddress - Address of the offer DB
-     * @param {*} contractData 
      * @param {Object} contractsManager - Contract Manager used to query the chain
      * @param {Object} dougContract - Doug contract interface
      */
-    function getOfferList(offerDbAddress, contractData, contractsManager, dougContract) {
-        let offersContractAddress = contractData["deployOffers"];
-        let offersAbi = JSON.parse(fs.readFileSync(config.abiDir + offersContractAddress));
+    function getOfferList(offerDbAddress, contractsManager, dougContract) {
         let offerContract = contractsManager.newContractFactory(offersAbi).at(offerDbAddress);
 
         return new Promise((resolve, reject) => {
@@ -294,13 +263,14 @@ function OfferManager(contractsManager) {
                 if (error) reject(error);
 
                 var currentKey = result;
+
                 function getElems(key) {
                     offerContract.getElement(key, function (err, res) {
                         let elem = new Element(res[0], res[1], res[2], res[3]);
                         list.push(elem);
                         currentKey = elem.next;
-                        let head = list[0];
-                        if (currentKey != head.current && currentKey != "") {
+                        let tail = list[0];
+                        if (currentKey != tail.current && parseInt(currentKey, 16) != 0) {
                             getElems(currentKey);
                         } else {
                             resolve(list);
@@ -314,15 +284,12 @@ function OfferManager(contractsManager) {
 
     /**
      * Get a list of offer from a list of addresses
-     * @param {Object} contractData - Data from the output of epm.yaml
      * @param {Object} contractsManager - The contract manager
      * @param {Array} list - List of 'Element'
+     * @param {Address} userAddress - User address if user related request
      * @param {function} callback 
      */
-    function getOfferData(contractData, contractsManager, list, userAddress, availableOnly) {
-        /*Get Offer ABI*/
-        let offerContractAddress = contractData["Offer"];
-        let offerAbi = JSON.parse(fs.readFileSync(config.abiDir + offerContractAddress));
+    function getOfferData(contractsManager, list, userAddress, availableOnly) {
 
         let offerList = [];
         let size = list.length;
@@ -354,7 +321,6 @@ function OfferManager(contractsManager) {
             })
         })
     }
-
 }
 
 module.exports = {

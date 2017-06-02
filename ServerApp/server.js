@@ -31,11 +31,6 @@ router.route('/users/:userAddress/balance').get(UserCtrl.getBalance);
 router.route('/users/:userAddress/offers').get(UserCtrl.getUserOffers);
 router.route('/users/:userAddress/rewards').get(UserCtrl.getUserRewards);
 
-router.route('/ping').get((req, res) => {
-    console.log("zob");
-    res.status(200).json({ 'result': 'true' })
-})
-
 //offers
 router.route('/offers')
     .post(offerCtrl.createOffer)

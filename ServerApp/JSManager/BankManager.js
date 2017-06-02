@@ -8,30 +8,26 @@ function BankManager(contractManager, callback) {
 
     this.contractsManager = contractManager;
     /*Get DOUG*/
-    let dougContractAddress = this.contractData["deployDoug"];
-    let dougAbi = JSON.parse(fs.readFileSync(config.abiDir + dougContractAddress));
+    const dougContractAddress = this.contractData["deployDoug"];
+    const dougAbi = JSON.parse(fs.readFileSync(config.abiDir + "Doug_ABI.json"));
     this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
 
+    const bankAbi = JSON.parse(fs.readFileSync(config.abiDir + "Bank_ABI.json"));
+
     this.getBalance = function (userAddress, callback) {
-        let contractData = this.contractData;
         let contractsManager = this.contractsManager;
         let dougContract = this.dougContract;
 
         function get(cb) {
             dougContract.contracts("bank", (error, bankAddress) => {
                 if (error) return cb(error, null);
-                let bankCurrentAddress = bankAddress;
-                //Get ABI 
-                let bankContractAddress = contractData["deployBank"];
-                let bankAbi = JSON.parse(fs.readFileSync(config.abiDir + bankContractAddress));
 
-                let bankContract = contractsManager.newContractFactory(bankAbi).at(bankContractAddress);
+                let bankContract = contractsManager.newContractFactory(bankAbi).at(bankAddress);
                 bankContract.balance(userAddress, (error, result) => {
                     cb(error, result);
                 })
             })
         }
-
         if (callback) {
             get(callback);
         } else {

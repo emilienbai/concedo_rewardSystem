@@ -7,26 +7,49 @@ function ActionManager(contractsManager) {
     this.contractData = require('../../jobs_output.json');
 
     this.contractsManager = contractsManager;
-    /*Get action manager*/
-    let actionManagerContractAddress = this.contractData["deployActionManager"];
-    let actionManagerAbi = JSON.parse(fs.readFileSync(config.abiDir + actionManagerContractAddress));
-    this.actionManagerContract = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerContractAddress);
+
+    let dougContractAddress = this.contractData["deployDoug"];
+    const dougAbi = JSON.parse(fs.readFileSync(config.abiDir + "Doug_ABI.json"));
+    this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
+
+    const actionManagerAbi = JSON.parse(fs.readFileSync(config.abiDir + "ActionManager_ABI.json"));
+
+    this.getActionManagerAddress = function () {
+        let dougContract = this.dougContract;
+
+        return new Promise((resolve, reject) => {
+            dougContract.contracts("actions", (error, actionManagerAddress) => {
+                if (error) reject(error);
+                resolve(actionManagerAddress);
+            })
+        })
+    }
 
     this.executeAction = function (actionName, address, str, intVal, data, callback) {
-        if (callback) {
-            return this.actionManagerContract
-                .execute(actionName, address, str, intVal, data, callback)
-        }
-        let amc = this.actionManagerContract;
-        return new Promise((resolve, reject) => {
-            amc.execute(actionName,
-                address, str, intVal, data,
-                (error, result) => {
-                    if (error) reject(error);
-                    resolve(result);
+        let contractsManager = this.contractsManager;
+        return this.getActionManagerAddress()
+            .then(actionManagerAddress => {
+                let amc = this.contractsManager.newContractFactory(actionManagerAbi).at(actionManagerAddress);
+                if (callback) {
+                    return amc.execute(actionName, address, str, intVal, data, callback);
+                }
+                return new Promise((resolve, reject) => {
+                    amc.execute(actionName, address, str, intVal, data,
+                        (error, result) => {
+                            if (error) reject(error);
+                            resolve(result);
+                        })
                 })
-        })
-
+            })
+            .catch(error => {
+                if (callback) {
+                    callback(error, null);
+                } else {
+                    return new Promise((resolve, reject) => {
+                        reject(error);
+                    })
+                }
+            })
     }
 
     /*AddAction Method*/
@@ -39,23 +62,18 @@ function ActionManager(contractsManager) {
         return this.executeAction("removeaction", 0x0, actionName, 0, "", callback);
     }
 
-    this.clear = function (callback){
+    this.clear = function (callback) {
         return this.executeAction("clear", 0x0, "", 0, "", callback);
     }
 
-    let dougContractAddress = this.contractData["deployDoug"];
-    let dougAbi = JSON.parse(fs.readFileSync(config.abiDir + dougContractAddress));
-    this.dougContract = this.contractsManager.newContractFactory(dougAbi).at(dougContractAddress);
-
     function onActionDbFound(actionName, actionDbAddress, contractData, contractsManager, callback) {
-        let actionsContractAddress = contractData["deployActionDb"];
-        let actionsAbi = JSON.parse(fs.readFileSync(config.abiDir + actionsContractAddress));
+        const actionsAbi = JSON.parse(fs.readFileSync(config.abiDir + "ActionDB_ABI.json"));
         let actionsContract = contractsManager.newContractFactory(actionsAbi).at(actionDbAddress);
 
-        actionsContract.getPermission(actionName, (error, result)=>{
-                if(error) callback(error, null);
-                callback(null, result.toNumber());
-            })
+        actionsContract.getPermission(actionName, (error, result) => {
+            if (error) callback(error, null);
+            callback(null, result.toNumber());
+        })
     }
 
     this.getActionPerm = function (actionName, callback) {

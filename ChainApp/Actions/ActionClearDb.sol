@@ -21,8 +21,4 @@ contract ActionClearDb is Action {
 
         return true;    
     }
-
-    function permission() returns (uint){
-        return 40;
-    }
 }

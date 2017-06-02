@@ -65,10 +65,10 @@ var rewardManagerRewarder = new RewardManager.RewardManager(contractsManagerRewa
 var permManagerVolunteer = new PermissionManager.PermisssionManager(contractsManagerVolunteer);
 
 //********************************Users**********************************
-var userFull = new UserManager.User("Full", "User", "Full Location", "0123456789", "full@users.com");
-var userVolunteer = new UserManager.User("Volunteer", "User", "Volunteer Location", "2345678901", "volunteer@user.com");
-var userElderly = new UserManager.User("Elederly", "User", "Elderly Location", "4567890123", "elderly@users.com");
-var userRewarder = new UserManager.User("Rewarder", "User", "Rewarder Location", "6789012345", "rewarder@users.com");
+var userFull = new UserManager.User("Full", "User", "Full Location", "birthdate", "0123456789", "full@users.com", "full");
+var userVolunteer = new UserManager.User("Volunteer", "User", "Volunteer Location","birthdate", "2345678901", "volunteer@user.com", "volunteer");
+var userElderly = new UserManager.User("Elederly", "User", "Elderly Location","birthdate", "4567890123", "elderly@users.com", "elderly");
+var userRewarder = new UserManager.User("Rewarder", "User", "Rewarder Location","birthdate", "6789012345", "rewarder@users.com", "rewarder");
 
 //************************************Offers********************************************************
 let aaaOffer = new OfferManager.Offer("aaaOffer", "18/04/2017", 60, "Lulea", "gardening", "description...", {});

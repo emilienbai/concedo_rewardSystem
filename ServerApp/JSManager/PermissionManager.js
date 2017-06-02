@@ -14,7 +14,7 @@ var perms = {
 
 function PermissionManager(contractsManager) {
     this.contractsManager = contractsManager;
-    this.actionManager = am.ActionManager(this.contractsManager);
+    this.actionManager = new am.ActionManager(this.contractsManager);
 
     this.setUserPermission = function (userAddress, permission, callback) {
         return this.actionManager.executeAction("setuserpermission", userAddress, "", permission, "", callback);

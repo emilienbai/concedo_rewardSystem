@@ -48,23 +48,26 @@ function getUsers(request, response) {
 
 function getUser(request, response) {
     try {
-         if (!request.params.userAddress)
+        if (!request.params.userAddress)
             throw ({ error: "missing user address in params" });
         let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let uManager = new userManager.UserManager(contractManager);
         return uManager.getPseudoUser(request.headers.address)
             .then(userObject => {
+                if (userObject == null) {
+                    return response.status(404).json({ error: "User not found" });
+                }
                 if (userObject.perm >= permManager.perms.ADMIN || userObject.owner == request.params.userAddress)
-                    return uManager.getFullUser(request.params.userAddress);
+                    return uManager.getFullUser(request.params.userAddress)
+                        .then(result => {
+                            return response.status(200).json(result);
+                        })
                 else {
-                    response.status(401).json({ error: "Unauthorized Request" });
+                    return response.status(401).json({ error: "Unauthorized Request" });
                 }
             })
-            .then(result => {
-                response.status(200).json(result);
-            })
     } catch (error) {
-        response.status(400).json(error);
+        return response.status(400).json(error);
     }
 }
 

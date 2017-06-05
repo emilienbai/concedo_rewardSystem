@@ -224,7 +224,7 @@ function UserManager(contractsManager) {
     }
 
     function getUserContractAddress(userAddress, userDbAddress,contractsManager) {
-        let usersContract = contractsManager.newContractFactory(usersAbi).at(userDbAddress);
+        let usersContract = contractsManager.newContractFactory(usersABI).at(userDbAddress);
 
         return new Promise((resolve, reject) => {
             usersContract.getElement(userAddress, (error, res) => {

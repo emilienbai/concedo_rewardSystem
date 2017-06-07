@@ -1,4 +1,4 @@
-var erisC = require('eris-contracts');
+var burrowC = require('@monax/legacy-contracts');
 var fs = require('fs');
 var perms = require('./PermissionManager');
 var utils = require('./Utils');

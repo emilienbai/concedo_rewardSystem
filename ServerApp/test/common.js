@@ -7,7 +7,7 @@ var RewardManager = require('../JSManager/RewardManager');
 var BankManager = require('../JSManager/BankManager');
 var PermissionManager = require('../JSManager/PermissionManager');
 var fs = require('fs');
-var erisC = require('eris-contracts');
+var burrowC = require('@monax/legacy-contracts');
 var utils = require('../JSManager/Utils');
 
 var erisdbURL = "http://localhost:1337/rpc";
@@ -17,10 +17,10 @@ var contractData = require('../../jobs_output.json');
 // properly instantiate the contract objects manager(userAddress) using the )erisdb URL
 // and the account data (which is a temporary hack)
 var accountData = require('../../../../chains/concedo_chain/accounts.json');
-var contractsManagerFull = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_full_000);
-var contractsManagerVolunteer = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_000);
-var contractsManagerElderly = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_001);
-var contractsManagerRewarder = erisC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_002);
+var contractsManagerFull = burrowC.newContractManagerDev(erisdbURL, accountData.concedo_chain_full_000);
+var contractsManagerVolunteer = burrowC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_000);
+var contractsManagerElderly = burrowC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_001);
+var contractsManagerRewarder = burrowC.newContractManagerDev(erisdbURL, accountData.concedo_chain_participant_002);
 
 
 var full = accountData.concedo_chain_full_000;

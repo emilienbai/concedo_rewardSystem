@@ -1,4 +1,4 @@
-var edbFactory = require('eris-db');
+var edbFactory = require('@monax/legacy-db');
 var crypto = require('crypto');
 var ed25519 = require('ed25519');
 var config = require('../config');

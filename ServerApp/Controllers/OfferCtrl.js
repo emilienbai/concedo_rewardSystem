@@ -2,7 +2,7 @@ var offerManager = require('../JSManager/OfferManager');
 var userManager = require('../JSManager/UserManager');
 var utils = require('../JSManager/Utils');
 var config = require('../config');
-var erisC = require('eris-contracts');
+var burrowC = require('@monax/legacy-contracts');
 
 var erisdbURL = config.erisdbURL;
 
@@ -15,7 +15,7 @@ function checkOffer(o) {
 
 function createOffer(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let omanager = new offerManager.OfferManager(contractManager);
         let o = request.body.offer;
         checkOffer(o);
@@ -39,7 +39,7 @@ function createOffer(request, response) {
 
 function removeOffer(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let omanager = new offerManager.OfferManager(contractManager);
         if (!request.params.offerId) throw ({ error: "Missing offer ID" })
         omanager.removeOffer(request.params.offerId)
@@ -55,7 +55,7 @@ function removeOffer(request, response) {
 
 function commitToOffer(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let omanager = new offerManager.OfferManager(contractManager);
         if (!request.params.offerId) throw ({ error: "Missing offer ID" })
         omanager.commitToOffer(request.params.offerId)
@@ -71,7 +71,7 @@ function commitToOffer(request, response) {
 
 function claimOffer(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let omanager = new offerManager.OfferManager(contractManager);
         if (!request.params.offerId) throw ({ error: "Missing offer ID" })
         omanager.claimOffer(request.params.offerId)
@@ -87,7 +87,7 @@ function claimOffer(request, response) {
 
 function confirmOffer(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let omanager = new offerManager.OfferManager(contractManager);
         if (!request.params.offerId) throw ({ error: "Missing offer ID" })
         omanager.confirmOffer(request.params.offerId)
@@ -103,7 +103,7 @@ function confirmOffer(request, response) {
 
 function getOffer(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let omanager = new offerManager.OfferManager(contractManager);
         if (!request.params.offerId) throw ({ error: "Missing offer ID" })
         omanager.getOffer(request.params.offerId)
@@ -117,7 +117,7 @@ function getOffer(request, response) {
 
 function getOffers(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let omanager = new offerManager.OfferManager(contractManager);
         omanager.getOffers(request.params.available === "true")
             .then((result) => {
@@ -134,7 +134,7 @@ function getOffers(request, response) {
 
 function getVolunteer(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let omanager = new offerManager.OfferManager(contractManager);
         let umanager = new userManager.UserManager(contractManager);
         if (!request.params.offerId) throw ({ error: "Missing offer ID" })

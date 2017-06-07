@@ -1,7 +1,7 @@
 var rewardManager = require('../JSManager/RewardManager');
 var utils = require('../JSManager/Utils');
 var config = require('../config');
-var erisC = require('eris-contracts');
+var burrowC = require('@monax/legacy-contracts');
 
 var erisdbURL = config.erisdbURL;
 
@@ -13,7 +13,7 @@ function checkReward(r) {
 
 function createReward(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let rmanager = new rewardManager.RewardManager(contractManager);
         let r = request.body.reward;
         checkReward(r);
@@ -48,7 +48,7 @@ function createReward(request, response) {
 
 function removeReward(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let rmanager = new rewardManager.RewardManager(contractManager);
         if (!request.params.rewardId) throw ({ error: "Missing reward ID" })
         rmanager.removeReward(request.params.rewardId)
@@ -64,7 +64,7 @@ function removeReward(request, response) {
 
 function buyReward(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let rmanager = new rewardManager.RewardManager(contractManager);
         if (!request.params.rewardId) throw ({ error: "Missing reward ID" })
         rmanager.buyReward(request.params.rewardId)
@@ -97,7 +97,7 @@ function buyReward(request, response) {
 
 function getRewards(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let rmanager = new rewardManager.RewardManager(contractManager);
         rmanager.getRewards(request.params.available === "true")
             .then((result) => {
@@ -111,7 +111,7 @@ function getRewards(request, response) {
 
 function getReward(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let rmanager = new rewardManager.RewardManager(contractManager);
         if (!request.params.rewardId) throw ({ error: "Missing reward ID" })
         rmanager.getReward(request.params.rewardId)

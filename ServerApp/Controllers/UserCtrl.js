@@ -6,7 +6,7 @@ var userManager = require('../JSManager/UserManager');
 var permManager = require('../JSManager/PermissionManager');
 var utils = require('../JSManager/Utils');
 var config = require('../config');
-var erisC = require('eris-contracts');
+var burrowC = require('@monax/legacy-contracts');
 
 var erisdbURL = config.erisdbURL;
 
@@ -18,7 +18,7 @@ function checkUser(u) {
 
 function getBalance(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let bManager = new bankManager.BankManager(contractManager);
 
         bManager.getBalance(request.params.userAddress)
@@ -34,7 +34,7 @@ function getBalance(request, response) {
 
 function getUsers(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let uManager = new userManager.UserManager(contractManager);
         uManager.getUsers()
             .then((result) => {
@@ -50,7 +50,7 @@ function getUser(request, response) {
     try {
         if (!request.params.userAddress)
             throw ({ error: "missing user address in params" });
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let uManager = new userManager.UserManager(contractManager);
         return uManager.getPseudoUser(request.headers.address)
             .then(userObject => {
@@ -73,7 +73,7 @@ function getUser(request, response) {
 
 function getUnauthorizedUsers(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let uManager = new userManager.UserManager(contractManager);
         return uManager.getPseudoUser(request.headers.address)
             .then(userObject => {
@@ -93,7 +93,7 @@ function getUnauthorizedUsers(request, response) {
 
 function getUserOffers(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let oManager = new offerManager.OfferManager(contractManager);
         if (!request.params.userAddress)
             throw ({ error: "missing user address in params" })
@@ -111,7 +111,7 @@ function getUserOffers(request, response) {
 
 function getUserRewards(request, response) {
     try {
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let rManager = new rewardManager.RewardManager(contractManager);
         if (!request.params.userAddress)
             throw ({ error: "missing user address in params" })
@@ -132,9 +132,9 @@ function addUser(request, response) {
         accountManager.addAccount()
             .then((credentials) => {
                 creds = credentials;
-                let contractManager = erisC.newContractManagerDev(erisdbURL, credentials);
+                let contractManager = burrowC.newContractManagerDev(erisdbURL, credentials);
                 let uManager = new userManager.UserManager(contractManager);
-                let uData = new userManager.User(u.name, u.surname, u.birthdate, u.address, u.phone, u.email, u.type);
+                let uData = new userManager.User(u.name, u.surname, u.address, u.birthdate, u.phone, u.email, u.type);
                 //for wallah testing - Rewarder user
                 /*
                                 creds = {
@@ -152,13 +152,13 @@ function addUser(request, response) {
                             })
                 */
                 //for wallah testing - Volunteer user
-                /*
+                
                 creds = {
                     address: "BC350BC65E67C782284FAFC02DBABDF6CFE6FBCC",
                     pubKey: "8FF72D82DD9AB54EEEB1F5419486A3E5D4940A51D94BC96D796BC6A23A3EE47A",
                     privKey: "41CCA822A0249586FA0E3A05A8378758B403474310EBD0A7BBACC05066ABE9758FF72D82DD9AB54EEEB1F5419486A3E5D4940A51D94BC96D796BC6A23A3EE47A"
                 }
-                
+                /*
                 
                                 response.status(200).json({
                                     added: true,
@@ -166,8 +166,8 @@ function addUser(request, response) {
                                     
                                 })
                             })
-                
                 */
+                
                 //for wallah testing - Elderly user
 
                 /*
@@ -214,7 +214,7 @@ function setUserPermission(request, response) {
         if (!request.params.userAddress || !request.body.perm)
             throw ({ error: "missing user address in params or perm level in body" })
 
-        let contractManager = erisC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
+        let contractManager = burrowC.newContractManagerDev(erisdbURL, utils.credentialFromHeaders(request.headers));
         let pManager = new permManager.PermisssionManager(contractManager);
         return pManager.setUserPermission(request.params.userAddress, request.body.perm)
             .then((result) => {

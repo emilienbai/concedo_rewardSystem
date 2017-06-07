@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 /**
 * This contract defines a Linkedlist structure to store contracts
 */

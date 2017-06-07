@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 contract Permissionner {
 
     function perms(address addr) constant returns (uint) { }

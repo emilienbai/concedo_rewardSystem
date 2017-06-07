@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 import "../LinkedList.sol";
 import "./Reward.sol";
 import "../Validee.sol";

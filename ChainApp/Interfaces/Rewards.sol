@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 contract Rewards{
 
     function addReward(bytes32 rewardName, address rewarder, uint price, bytes data) returns (bool);

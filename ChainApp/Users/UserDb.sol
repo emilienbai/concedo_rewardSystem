@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 import "./UserList.sol";
 import "../Validee.sol";
 import "./User.sol";

@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 import "./Doug/DougEnabled.sol";
 import "./Interfaces/ContractProvider.sol";
 import "./Interfaces/ActionDbInterface.sol";

@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 contract Reward {
     /**
     * Adress of the database where the offer is stored

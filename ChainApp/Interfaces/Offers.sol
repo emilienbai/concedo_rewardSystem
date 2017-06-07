@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 contract Offers {
 
     function addOffer(bytes32 offerName, address beneficiary, uint reward, bytes data) returns (bool);

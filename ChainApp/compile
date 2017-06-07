@@ -5,6 +5,6 @@ sleep 1
 echo "1"
 sleep 1
 rm ../abi/*
-eris pkgs do -c concedo_chain -a $1 -b ../abi
+monax pkgs do -c concedo_chain -a $1 --abi-path ../abi
 
 cp ./jobs_output.json ../

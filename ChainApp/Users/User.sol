@@ -1,3 +1,5 @@
+pragma solidity ^0.4.4;
+
 /**
 * Contract used to store user data
 */

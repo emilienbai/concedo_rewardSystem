@@ -201,6 +201,8 @@ function setUserPerm(address, permValue, value, callback) {
                 "params": tx
             };
             return postRPC(data)
+            //Here we use postRPC instead of given library because it
+            //allows us to get the result of the operation
                 .then(result => {
                     console.log(result);
                     callback(true);

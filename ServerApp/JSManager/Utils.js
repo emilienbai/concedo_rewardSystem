@@ -21,7 +21,8 @@ function hexToString(hex) {
 }
 
 /**
- * 
+ * Create credential object from HTTP headers
+ * Also checks key-pair integrity/validity
  * @param {Object} headers - Header of a Http request 
  */
 function credentialFromHeaders(headers) {

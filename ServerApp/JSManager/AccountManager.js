@@ -2,6 +2,7 @@ var edbFactory = require('@monax/legacy-db');
 var crypto = require('crypto');
 var ed25519 = require('ed25519');
 var config = require('../config');
+var ltx = require('./LocalTransactionner');
 
 var edb = edbFactory.createInstance(config.erisdbURL);
 
@@ -65,29 +66,26 @@ function createCredential() {
 
 
 /**
- * Add an account to the chain by sending 1 token to its address (and taking it back)
+ * Add an account to the chain by sending 1000 tokens to its address
  */
 function addAccount() {
     var credentials = createCredential();
     let transaction = edb.txs();
     return new Promise((resolve, reject) => {
-        transaction.sendAndHold(config.account.privKey, credentials.address, 1, null, (error, result) => {
+        transaction.sendAndHold(config.account.privKey, credentials.address, 1000, null, (error, result) => {
             if (error) {
-                console.error("Aller");
                 console.error(error);
                 reject(error);
+            } else {
+                ltx.setUserPerm(credentials.address, ltx.PermValue.Call, true, (PermSet => {
+                    if (PermSet) {
+                        console.log(credentials);
+                        resolve(credentials);
+                    }else {
+                        resolve(null);
+                    }
+                }))
             }
-            /*transaction.sendAndHold(credentials.privKey, config.account.address, 1, null, (error, result) => {
-                if (error) {
-                    console.error("Retour");
-                    console.error(error);
-                    reject(error);
-                }
-                resolve(credentials);
-            })
-            TODO Solve the return funds problems
-            */
-            resolve(credentials);
         })
     })
 }

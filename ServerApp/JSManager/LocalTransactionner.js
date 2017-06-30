@@ -19,7 +19,7 @@ const PermValue = {
     Root: 0x01,
     Send: 0x02,
     Call: 0x04,
-    createContract: 0x08,
+    CreateContract: 0x08,
     CreateAccount: 0x10,
     Bond: 0x20,
     Name: 0x40,

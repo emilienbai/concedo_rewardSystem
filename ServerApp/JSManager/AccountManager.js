@@ -77,14 +77,11 @@ function addAccount() {
                 console.error(error);
                 reject(error);
             } else {
-                ltx.setUserPerm(credentials.address, ltx.PermValue.Call, true, (PermSet => {
-                    if (PermSet) {
-                        console.log(credentials);
-                        resolve(credentials);
-                    }else {
-                        resolve(null);
-                    }
-                }))
+                ltx.setUserPerm(config.account.address, config.account.privKey,
+                    credentials.address, ltx.PermValue.Call, true, (error, result) => {
+                        if(error) reject(error);
+                        else resolve (true)
+                    })
             }
         })
     })

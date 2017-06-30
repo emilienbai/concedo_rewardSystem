@@ -2,7 +2,7 @@ var ed25519 = require('ed25519');
 var config = require('../config');
 var canonicalJson = require('canonical-json');
 var ramda = require('ramda');
-var request = require('request-promise');
+var edbFactory = require('@monax/legacy-db');
 
 const TxType = {
     Send: 0x01,
@@ -32,46 +32,21 @@ const PermValue = {
     RmRole: 0x2000,
 }
 
-/**
- * Do a JSON RPC request on the chain
- * @param {Object} data  request data (at least 'method' and 'jsonrpc' version)
- */
-function postRPC(data) {
-    const options = {
-        method: 'POST',
-        uri: config.erisdbURL,
-        body: data,
-        json: true
-    };
+const edb = edbFactory.createInstance(config.erisdbURL);
+const accounts = edb.accounts();
+const blockchain = edb.blockchain();
+const transactions = edb.txs();
 
-    return new Promise((resolve, reject) => {
-        return request(options)
-            .then((parsedBody) => {
-                if (parsedBody.result)
-                    resolve(parsedBody.result);
-                else
-                    throw (parsedBody.error)
-            }).catch(error => {
-                reject(error);
-            })
-    })
-}
 
 /**
  * Get the ID of the blockchain
  */
 function getChainID() {
-    let data = {
-        "jsonrpc": "2.0",
-        "method": "burrow.getChainId"
-    }
     return new Promise((resolve, reject) => {
-        return postRPC(data)
-            .then(result => {
-                resolve(result.chain_id);
-            }).catch(error => {
-                reject(error)
-            })
+        blockchain.getInfo((error, chainID) => {
+            if (error) reject(error);
+            else resolve(chainID.chain_id)
+        })
     })
 }
 
@@ -81,18 +56,11 @@ function getChainID() {
  * @param {String} address - Adress of the account which will send the transaction
  */
 function getSequence(address) {
-    let data = {
-        "jsonrpc": "2.0",
-        "method": "burrow.getAccount",
-        "params": { "address": address }
-    }
     return new Promise((resolve, reject) => {
-        return postRPC(data)
-            .then(result => {
-                resolve(parseInt(result.sequence, 10))
-            }).catch(error => {
-                reject(error)
-            })
+        accounts.getAccount(address, (error, value) => {
+            if (error) reject(error);
+            else resolve(value.sequence);
+        })
     })
 }
 
@@ -150,33 +118,34 @@ function assembleTx(type, input, args, signature) {
 
 /**
  * Create a permission transaction on the chain
- * @param {String} address - Adress of the premission receiver 
+ * @param {*} pAddr - Address of the user setting the permission 
+ * @param {*} privKey - Private key used to sign 
+ * @param {String} dAddr - Adress of the premission receiver 
  * @param {Uint} permValue - Value of permission to apply / take back 
  * @param {bool} value - Apply or take back permission
  */
-function createPermTx(address, permValue, value) {
-
-    const type = TxType.Perm;
+function createPermTx(pAddr, privKey, dAddr, permValue, value) {
+    const type = 0x20;
     var chainId;
     var sequence;
     return new Promise((resolve, reject) => {
         return getChainID()
             .then(id => {
                 chainId = id;
-                return getSequence(config.account.address);
+                return getSequence(pAddr);
             }).then(seq => {
                 sequence = seq;
                 var input = {
-                    address: config.account.address,
+                    address: pAddr,
                     amount: 1,
                     sequence: sequence + 1
                 }
                 var args = [
                     2,
-                    { address: address, permission: permValue, value: value }
+                    { address: dAddr, permission: permValue, value: value }
                 ]
                 var signBytes = writeSignBytes(chainId, type, args, input)
-                var signature = signTx(signBytes, config.account.privKey);
+                var signature = signTx(signBytes, privKey);
                 var tx = assembleTx(type, input, args, signature);
                 resolve(tx);
             }).catch(error => {
@@ -187,33 +156,22 @@ function createPermTx(address, permValue, value) {
 
 /**
  * Set permission for the user
- * @param {String} address - Adress of the premission receiver 
+ * @param {*} pAddr - Address of the user setting the permission
+ * @param {*} privKey - Private key used to sign
+ * @param {String} dAddr - Adress of the permission receiver 
  * @param {Uint} permValue - Value of permission to apply / take back 
  * @param {bool} value - Apply or take back permission
- * @param {*} callback - return true if action went well
+ * @param {function} callback - return true if action went well
  */
-function setUserPerm(address, permValue, value, callback) {
-    createPermTx(address, permValue, value)
+function setUserPerm(pAddr, privKey, dAddr, permValue, value, callback) {
+    createPermTx(pAddr, privKey, dAddr, permValue, value)
         .then(tx => {
-            const data = {
-                "jsonrpc": "2.0",
-                "method": "burrow.broadcastTx",
-                "params": tx
-            };
-            return postRPC(data)
-            //Here we use postRPC instead of given library because it
-            //allows us to get the result of the operation
-                .then(result => {
-                    console.log(result);
-                    callback(true);
-                })
-        }).catch(error => {
-            console.error("Error while setting user permission", error);
-            callback(false);
+            let transactions = edb.txs();
+            transactions.broadcastTx(tx, callback)
         })
 }
 
 module.exports = {
-    setUserPerm: setUserPerm, 
+    setUserPerm: setUserPerm,
     PermValue: PermValue
 }
